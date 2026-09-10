@@ -29,8 +29,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceColors
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppColors
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 
@@ -38,10 +38,10 @@ import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 fun emptyGamePane(onAddGame: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.padding(
-            start = GameSpaceDimensions.space8,
-            end = GameSpaceDimensions.space8,
-            top = GameSpaceDimensions.space4,
-            bottom = GameSpaceDimensions.space8,
+            start = ParallelAppDimensions.space8,
+            end = ParallelAppDimensions.space8,
+            top = ParallelAppDimensions.space4,
+            bottom = ParallelAppDimensions.space8,
         ),
         color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.large,
@@ -49,7 +49,7 @@ fun emptyGamePane(onAddGame: () -> Unit, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space8, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8, Alignment.CenterVertically),
         ) {
             Icon(Icons.Filled.SportsEsports, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Text(stringResource(R.string.no_game_selected), style = MaterialTheme.typography.titleMedium)
@@ -70,10 +70,10 @@ fun gamePane(
 ) {
     Surface(
         modifier = modifier.padding(
-            start = GameSpaceDimensions.space8,
-            end = GameSpaceDimensions.space8,
-            top = GameSpaceDimensions.space4,
-            bottom = GameSpaceDimensions.space8,
+            start = ParallelAppDimensions.space8,
+            end = ParallelAppDimensions.space8,
+            top = ParallelAppDimensions.space4,
+            bottom = ParallelAppDimensions.space8,
         ),
         color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.large,
@@ -95,8 +95,8 @@ private fun sessionToolbar(session: GameSession, compact: Boolean, canDelete: Bo
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = GameSpaceDimensions.space8),
-        horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+            .padding(horizontal = ParallelAppDimensions.space8),
+        horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(modifier = Modifier.weight(1f))
@@ -105,7 +105,7 @@ private fun sessionToolbar(session: GameSession, compact: Boolean, canDelete: Bo
             metricText(stringResource(R.string.metric_fps), stringResource(R.string.metric_value_fps, session.framesPerSecond))
         }
         stateBadge(session.state)
-        IconButton(onClick = onDelete, enabled = canDelete, modifier = Modifier.size(GameSpaceDimensions.touchTarget)) {
+        IconButton(onClick = onDelete, enabled = canDelete, modifier = Modifier.size(ParallelAppDimensions.touchTarget)) {
             Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete_session))
         }
     }
@@ -116,7 +116,7 @@ private fun gameStage(modifier: Modifier, gameName: String, compact: Boolean) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = GameSpaceDimensions.space8)
+            .padding(horizontal = ParallelAppDimensions.space8)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.background)
             .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.28f), MaterialTheme.shapes.medium),
@@ -124,12 +124,12 @@ private fun gameStage(modifier: Modifier, gameName: String, compact: Boolean) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+            verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
         ) {
             Box(
                 modifier = Modifier
                     .size(
-                        if (compact) GameSpaceDimensions.stageIconCompact else GameSpaceDimensions.stageIcon,
+                        if (compact) ParallelAppDimensions.stageIconCompact else ParallelAppDimensions.stageIcon,
                     )
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
@@ -154,8 +154,8 @@ private fun controlDock(onLaunch: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(GameSpaceDimensions.space8),
-        horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space8, Alignment.End),
+            .padding(ParallelAppDimensions.space8),
+        horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8, Alignment.End),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(modifier = Modifier.weight(1f))
@@ -178,17 +178,17 @@ private fun metricText(label: String, value: String) {
 @Composable
 private fun stateBadge(state: SessionState) {
     val (label, color) = when (state) {
-        SessionState.starting -> stringResource(R.string.session_starting) to GameSpaceColors.warning
-        SessionState.running -> stringResource(R.string.session_running) to GameSpaceColors.success
+        SessionState.starting -> stringResource(R.string.session_starting) to ParallelAppColors.warning
+        SessionState.running -> stringResource(R.string.session_running) to ParallelAppColors.success
         SessionState.paused -> stringResource(R.string.session_paused) to MaterialTheme.colorScheme.primary
         SessionState.stopped -> stringResource(R.string.session_stopped) to MaterialTheme.colorScheme.onSurfaceVariant
         SessionState.failed -> stringResource(R.string.session_failed) to MaterialTheme.colorScheme.error
     }
     Row(
-        horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+        horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.size(GameSpaceDimensions.statusDot).clip(CircleShape).background(color))
+        Box(modifier = Modifier.size(ParallelAppDimensions.statusDot).clip(CircleShape).background(color))
         Text(label, color = color, style = MaterialTheme.typography.labelMedium)
     }
 }

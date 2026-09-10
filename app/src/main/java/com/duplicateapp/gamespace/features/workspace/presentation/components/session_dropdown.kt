@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileTarget
 
@@ -51,7 +51,7 @@ fun sessionDropdown(
             shape = MaterialTheme.shapes.medium,
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = GameSpaceDimensions.space12, vertical = GameSpaceDimensions.space6),
+                modifier = Modifier.padding(horizontal = ParallelAppDimensions.space12, vertical = ParallelAppDimensions.space6),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -67,7 +67,7 @@ fun sessionDropdown(
                 Icon(
                     Icons.Filled.ArrowDropDown,
                     contentDescription = stringResource(R.string.choose_session),
-                    modifier = Modifier.size(GameSpaceDimensions.iconSmall),
+                    modifier = Modifier.size(ParallelAppDimensions.iconSmall),
                 )
             }
         }
@@ -75,8 +75,8 @@ fun sessionDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.widthIn(
-                min = GameSpaceDimensions.dropdownMenuMinWidth,
-                max = GameSpaceDimensions.dropdownMenuMaxWidth,
+                min = ParallelAppDimensions.dropdownMenuMinWidth,
+                max = ParallelAppDimensions.dropdownMenuMaxWidth,
             ),
         ) {
             sessions.forEach { session ->

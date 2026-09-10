@@ -2,7 +2,7 @@
 
 ## Goal
 
-Run multiple independent instances of an arbitrary third-party Android game and render each instance inside a Game Space tab without root access or game modifications.
+Run multiple independent instances of an arbitrary third-party Android game and render each instance inside a Parallel_app tab without root access or game modifications.
 
 ## Result
 
@@ -17,9 +17,9 @@ On 2026-09-10, The Universe 4.7.1 was built from source and tested on a Pixel Ta
 
 This proves the basic Parallel Space flow on the Android 15 emulator. It does not yet prove Android 16 compatibility, long-session stability, notifications, Google/Facebook sign-in, purchases, or anti-cheat compatibility.
 
-The profile-launcher variant was validated on the Pixel 9 emulator: Game Space requested Android's managed-profile consent flow, became profile owner after consent, and Android created user 11 named Game Space. This proves one additional isolated installation can be created without a server; it does not enable in-tab embedding.
+The profile-launcher variant was validated on the Pixel 9 emulator: Parallel_app requested Android's managed-profile consent flow, became profile owner after consent, and Android created user 11 named Parallel_app. This proves one additional isolated installation can be created without a server; it does not enable in-tab embedding.
 
-The no-server companion path was validated on a Pixel 9 emulator. Game Space used `LauncherApps` to open the same test package in user 0 and managed profile user 10; Android reported the second activity as running under user 10, proving independent profile execution. The game still opens as a separate Android task rather than inside the Game Space surface.
+The no-server companion path was validated on a Pixel 9 emulator. Parallel_app used `LauncherApps` to open the same test package in user 0 and managed profile user 10; Android reported the second activity as running under user 10, proving independent profile execution. The game still opens as a separate Android task rather than inside the Parallel_app surface.
 
 - Android isolates every application by UID and sandbox.
 - Cross-application activity embedding requires the target application to opt in and trust the host certificate. Arbitrary games do not provide that opt-in.
@@ -68,7 +68,7 @@ Do not implement hidden-API task embedding, APK rewriting, runtime code injectio
 
 Continue with The Universe only in a clearly labeled personal/sideload flavor. Keep the Play-compatible companion build independent so the virtual runtime, broad package visibility, hidden-API hooks, and inherited permissions cannot leak into a Play artifact.
 
-The runtime is now exposed behind Game Space's `VirtualGameRuntime` boundary; Compose does not call The Universe APIs directly. The integrated APK was smoke-tested on Android 15: the existing Open game action imported `vn.tinhlinh.game2dhay` into virtual user 0 and launched it through Game Space's own proxy task.
+The runtime is now exposed behind Parallel_app's `VirtualGameRuntime` boundary; Compose does not call The Universe APIs directly. The integrated APK was smoke-tested on Android 15: the existing Open game action imported `vn.tinhlinh.game2dhay` into virtual user 0 and launched it through Parallel_app's own proxy task.
 
 The remaining gate is the physical Android 16 tablet test, followed by migrating the temporary Original/Managed labels to explicit copy indexes and supporting more than two virtual users.
 

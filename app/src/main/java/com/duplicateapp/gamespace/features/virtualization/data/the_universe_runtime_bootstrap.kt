@@ -9,14 +9,14 @@ object TheUniverseRuntimeBootstrap {
     fun attach(context: Context) {
         val core: TheUniverseCore = TheUniverseCore.get()
         core.closeCodeInit()
-        core.doAttachBaseContext(context, GameSpaceClientConfiguration(context.packageName))
+        core.doAttachBaseContext(context, ParallelAppClientConfiguration(context.packageName))
     }
 
     fun create() {
         TheUniverseCore.get().doCreate()
     }
 
-    private class GameSpaceClientConfiguration(
+    private class ParallelAppClientConfiguration(
         private val packageName: String,
     ) : ClientConfiguration() {
         override fun getHostPackageName(): String = packageName

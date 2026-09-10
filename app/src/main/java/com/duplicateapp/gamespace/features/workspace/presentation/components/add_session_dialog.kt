@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.InstalledGame
 
 @Composable
@@ -22,11 +22,11 @@ fun addSessionDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.choose_game_to_copy)) },
         text = {
-            LazyColumn(modifier = Modifier.heightIn(max = GameSpaceDimensions.dialogListMaxHeightExpanded)) {
+            LazyColumn(modifier = Modifier.heightIn(max = ParallelAppDimensions.dialogListMaxHeightExpanded)) {
                 items(games, key = InstalledGame::packageName) { game ->
                     Column(
                         modifier = Modifier.fillMaxWidth().clickable { onAdd(game.label, game) }
-                            .padding(vertical = GameSpaceDimensions.space12),
+                            .padding(vertical = ParallelAppDimensions.space12),
                     ) {
                         Text(game.label, style = MaterialTheme.typography.titleSmall)
                         Text(game.packageName, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)

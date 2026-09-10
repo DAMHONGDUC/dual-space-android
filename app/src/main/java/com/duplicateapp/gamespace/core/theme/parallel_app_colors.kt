@@ -2,7 +2,7 @@ package com.duplicateapp.gamespace.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-object GameSpaceColors {
+object ParallelAppColors {
     val background = Color(0xFF0F0F23)
     val surface = Color(0xFF1E1C35)
     val surfaceMuted = Color(0xFF27273B)

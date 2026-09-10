@@ -11,7 +11,7 @@ class PolicyComplianceActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val manager: DevicePolicyManager = getSystemService(DevicePolicyManager::class.java)
-        val admin = ComponentName(this, GameSpaceDeviceAdminReceiver::class.java)
+        val admin = ComponentName(this, ParallelAppDeviceAdminReceiver::class.java)
         AppLogger.action("apply_profile_compliance", emptyMap())
         try {
             manager.setProfileName(admin, getString(R.string.game_profile_name))

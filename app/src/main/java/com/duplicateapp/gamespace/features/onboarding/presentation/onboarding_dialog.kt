@@ -8,7 +8,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 
 @Composable
 fun onboardingDialog(onContinue: () -> Unit) {
@@ -16,7 +16,7 @@ fun onboardingDialog(onContinue: () -> Unit) {
         onDismissRequest = {},
         title = { Text(stringResource(R.string.onboarding_title)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space8)) {
+            Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
                 Text(stringResource(R.string.onboarding_profiles))
                 Text(stringResource(R.string.onboarding_limit))
                 Text(stringResource(R.string.onboarding_privacy))

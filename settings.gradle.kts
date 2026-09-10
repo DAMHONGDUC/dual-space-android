@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "GameSpace"
+rootProject.name = "Parallel_app"
 include(":app")
 include(":the-universe-core")
 include(":the-universe-reflection")

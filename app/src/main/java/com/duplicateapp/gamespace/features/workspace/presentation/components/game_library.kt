@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.core.graphics.drawable.toBitmap
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.logging.AppLogger
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,16 +72,16 @@ fun gameLibrary(
                 emptyLibrary(onAdd, Modifier.weight(1f))
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(GameSpaceDimensions.gameTileMinWidth),
+                    columns = GridCells.Adaptive(ParallelAppDimensions.gameTileMinWidth),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        start = GameSpaceDimensions.space16,
-                        top = GameSpaceDimensions.space12,
-                        end = GameSpaceDimensions.space16,
-                        bottom = GameSpaceDimensions.fabClearance,
+                        start = ParallelAppDimensions.space16,
+                        top = ParallelAppDimensions.space12,
+                        end = ParallelAppDimensions.space16,
+                        bottom = ParallelAppDimensions.fabClearance,
                     ),
-                    horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space12),
-                    verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space12),
+                    horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
+                    verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
                 ) {
                     items(sessions, key = GameSession::id) { session -> gameTile(session, onLaunch, onDelete) }
                 }
@@ -89,7 +89,7 @@ fun gameLibrary(
         }
         FloatingActionButton(
             onClick = onAdd,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(GameSpaceDimensions.space16),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(ParallelAppDimensions.space16),
         ) { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_game)) }
     }
 }
@@ -105,9 +105,9 @@ private fun gameTile(session: GameSession, onLaunch: (String) -> Unit, onDelete:
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(GameSpaceDimensions.space12),
+            modifier = Modifier.fillMaxWidth().padding(ParallelAppDimensions.space12),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space8),
+            verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
         ) {
             gameIcon(session.packageName)
             Text(
@@ -119,7 +119,7 @@ private fun gameTile(session: GameSession, onLaunch: (String) -> Unit, onDelete:
                 overflow = TextOverflow.Ellipsis,
             )
             Row(
-                horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 sessionStatus(session.state)
@@ -146,11 +146,11 @@ private fun gameIcon(packageName: String) {
         }
     }
     Surface(
-        modifier = Modifier.size(GameSpaceDimensions.gameIcon).clip(RoundedCornerShape(GameSpaceDimensions.iconCornerRadius)),
+        modifier = Modifier.size(ParallelAppDimensions.gameIcon).clip(RoundedCornerShape(ParallelAppDimensions.iconCornerRadius)),
         color = MaterialTheme.colorScheme.primaryContainer,
     ) {
         if (bitmap == null) {
-            Icon(Icons.Filled.SportsEsports, null, modifier = Modifier.padding(GameSpaceDimensions.space16))
+            Icon(Icons.Filled.SportsEsports, null, modifier = Modifier.padding(ParallelAppDimensions.space16))
         } else {
             Image(BitmapPainter(bitmap), null, modifier = Modifier.fillMaxSize())
         }
@@ -174,11 +174,11 @@ private fun sessionStatus(state: SessionState) {
 @Composable
 private fun emptyLibrary(onAdd: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(GameSpaceDimensions.space16),
+        modifier = modifier.fillMaxWidth().padding(ParallelAppDimensions.space16),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space8, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8, Alignment.CenterVertically),
     ) {
-        Icon(Icons.Filled.SportsEsports, null, Modifier.size(GameSpaceDimensions.emptyIcon), MaterialTheme.colorScheme.primary)
+        Icon(Icons.Filled.SportsEsports, null, Modifier.size(ParallelAppDimensions.emptyIcon), MaterialTheme.colorScheme.primary)
         Text(stringResource(R.string.empty_library_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.empty_library_description), color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         Button(onClick = onAdd) {

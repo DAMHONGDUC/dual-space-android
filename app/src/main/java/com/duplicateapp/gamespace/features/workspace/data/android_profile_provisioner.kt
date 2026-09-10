@@ -10,7 +10,7 @@ import android.os.UserManager
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioner
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
-import com.duplicateapp.gamespace.profile.GameSpaceDeviceAdminReceiver
+import com.duplicateapp.gamespace.profile.ParallelAppDeviceAdminReceiver
 
 class AndroidProfileProvisioner(private val context: Context) : ProfileProvisioner {
     private val devicePolicyManager: DevicePolicyManager = context.getSystemService(DevicePolicyManager::class.java)
@@ -33,7 +33,7 @@ class AndroidProfileProvisioner(private val context: Context) : ProfileProvision
         if (currentStatus != ProfileProvisioningStatus.available) return false
 
         return try {
-            val admin: ComponentName = ComponentName(context, GameSpaceDeviceAdminReceiver::class.java)
+            val admin: ComponentName = ComponentName(context, ParallelAppDeviceAdminReceiver::class.java)
             val intent = Intent(DevicePolicyManager.ACTION_PROVISION_MANAGED_PROFILE).apply {
                 putExtra(DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME, admin)
             }

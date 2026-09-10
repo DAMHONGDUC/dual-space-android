@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Game Space</string>
+    <string name="app_name">Parallel_app</string>
     <string name="settings">Cài đặt</string>
     <string name="sessions">Phiên game</string>
     <string name="quota_remaining">Còn %1$d giờ</string>
@@ -20,13 +20,13 @@
     <string name="profile_count">Bản sao đã sẵn sàng</string>
     <string name="profile_unsupported">Không hỗ trợ bản sao</string>
     <string name="profile_creation_failed">Không thể bắt đầu thiết lập bản sao thứ hai</string>
-    <string name="game_profile_name">Game Space</string>
+    <string name="game_profile_name">Parallel_app</string>
     <string name="profile_admin_label">Trình quản lý game profile</string>
     <string name="profile_admin_description">Tạo và kích hoạt một game profile độc lập sau khi bạn đồng ý.</string>
     <string name="add_session">Thêm game</string>
     <string name="add_game">Thêm game</string>
     <string name="no_game_selected">Chưa chọn game</string>
-    <string name="select_game_description">Thêm một game đã cài để bắt đầu sử dụng Game Space.</string>
+    <string name="select_game_description">Thêm một game đã cài để bắt đầu sử dụng Parallel_app.</string>
     <string name="add_copy">Thêm bản copy</string>
     <string name="no_copies">Chưa có bản copy nào</string>
     <string name="no_copies_description">Tạo không gian Android thứ hai, rồi thêm game đã cài trong đó.</string>
@@ -44,14 +44,14 @@
     <string name="add">Thêm</string>
     <string name="cancel">Hủy</string>
     <string name="quota_exhausted">Bạn đã dùng hết hạn mức miễn phí 180 giờ trong tháng</string>
-    <string name="onboarding_title">Chào mừng đến Game Space</string>
+    <string name="onboarding_title">Chào mừng đến Parallel_app</string>
     <string name="onboarding_profiles">Bấm Thêm game để dùng bản gốc. Chỉ chọn Bản sao thứ hai khi cần thêm một tài khoản độc lập.</string>
     <string name="onboarding_limit">Gói miễn phí theo dõi tối đa 180 giờ mỗi tháng dương lịch.</string>
-    <string name="onboarding_privacy">Việc tạo profile luôn dùng màn hình đồng ý của Android. Game Space không chỉnh sửa game.</string>
+    <string name="onboarding_privacy">Việc tạo profile luôn dùng màn hình đồng ý của Android. Parallel_app không chỉnh sửa game.</string>
     <string name="continue_label">Tiếp tục</string>
     <string name="profile_available">Chưa bật</string>
     <string name="settings_profile">Bản sao thứ hai: %1$s</string>
-    <string name="settings_privacy">Tên phiên và quota chỉ lưu trên thiết bị. Game Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
+    <string name="settings_privacy">Tên phiên và quota chỉ lưu trên thiết bị. Parallel_app không đọc hoặc chỉnh sửa dữ liệu game.</string>
     <string name="android_settings">Cài đặt Android</string>
     <string name="settings_open_failed">Không thể mở cài đặt Android</string>
     <string name="close">Đóng</string>

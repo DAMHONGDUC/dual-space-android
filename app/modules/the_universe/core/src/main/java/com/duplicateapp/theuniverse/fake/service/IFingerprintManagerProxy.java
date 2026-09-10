@@ -9,7 +9,7 @@ import com.duplicateapp.theuniverse.fake.service.base.PkgMethodProxy;
 
 
 public class IFingerprintManagerProxy extends BinderInvocationStub {
-    // Modified for Game Space: Android API 37 no longer exposes Context.FINGERPRINT_SERVICE.
+    // Modified for Parallel_app: Android API 37 no longer exposes Context.FINGERPRINT_SERVICE.
     private static final String FINGERPRINT_SERVICE = "fingerprint";
 
     public IFingerprintManagerProxy() {

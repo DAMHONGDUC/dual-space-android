@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 
@@ -21,8 +21,8 @@ fun workspaceStatusBar(session: GameSession) {
     Row(
         modifier = Modifier
             .horizontalScroll(rememberScrollState())
-            .padding(GameSpaceDimensions.space8),
-        horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+            .padding(ParallelAppDimensions.space8),
+        horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
     ) {
         statusPill(stateLabel(session.state))
         metricPill(stringResource(R.string.metric_cpu), stringResource(R.string.metric_value_percent, session.cpuPercent))
@@ -40,7 +40,7 @@ private fun statusPill(label: String) {
     Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
         Text(
             label,
-            modifier = Modifier.padding(horizontal = GameSpaceDimensions.space8, vertical = GameSpaceDimensions.space4),
+            modifier = Modifier.padding(horizontal = ParallelAppDimensions.space8, vertical = ParallelAppDimensions.space4),
             style = MaterialTheme.typography.labelSmall,
         )
     }
@@ -51,7 +51,7 @@ private fun metricPill(label: String, value: String) {
     Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.large) {
         Text(
             stringResource(R.string.metric_label_value, label, value),
-            modifier = Modifier.padding(horizontal = GameSpaceDimensions.space8, vertical = GameSpaceDimensions.space4),
+            modifier = Modifier.padding(horizontal = ParallelAppDimensions.space8, vertical = ParallelAppDimensions.space4),
             style = MaterialTheme.typography.labelSmall,
         )
     }

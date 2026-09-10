@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 
 @Composable
@@ -37,8 +37,8 @@ fun workspaceHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = GameSpaceDimensions.space12, vertical = GameSpaceDimensions.space4),
-        verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+            .padding(horizontal = ParallelAppDimensions.space12, vertical = ParallelAppDimensions.space4),
+        verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleMedium)
@@ -48,18 +48,18 @@ fun workspaceHeader(
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelMedium,
             )
-            IconButton(onClick = onSettings, modifier = Modifier.size(GameSpaceDimensions.touchTarget)) {
+            IconButton(onClick = onSettings, modifier = Modifier.size(ParallelAppDimensions.touchTarget)) {
                 Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings))
             }
         }
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-            val dropdownWidth = if (maxWidth >= GameSpaceDimensions.compactBreakpoint) {
-                GameSpaceDimensions.dropdownExpandedWidth
+            val dropdownWidth = if (maxWidth >= ParallelAppDimensions.compactBreakpoint) {
+                ParallelAppDimensions.dropdownExpandedWidth
             } else {
-                GameSpaceDimensions.dropdownCompactWidth
+                ParallelAppDimensions.dropdownCompactWidth
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space4),
+                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 sessionDropdown(

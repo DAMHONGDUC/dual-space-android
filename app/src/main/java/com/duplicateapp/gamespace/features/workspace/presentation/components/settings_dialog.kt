@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.GameSpaceDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
 
 @Composable
@@ -30,7 +30,7 @@ fun settingsDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.settings)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(GameSpaceDimensions.space8)) {
+            Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
                 Text(pluralStringResource(R.plurals.settings_quota, remainingQuotaHours, remainingQuotaHours))
                 Text(stringResource(R.string.settings_profile, profileLabel))
                 Text(stringResource(R.string.settings_privacy))

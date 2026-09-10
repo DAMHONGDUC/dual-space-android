@@ -8,10 +8,10 @@ import android.content.Intent
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.logging.AppLogger
 
-class GameSpaceDeviceAdminReceiver : DeviceAdminReceiver() {
+class ParallelAppDeviceAdminReceiver : DeviceAdminReceiver() {
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
         val manager: DevicePolicyManager = context.getSystemService(DevicePolicyManager::class.java)
-        val admin = ComponentName(context, GameSpaceDeviceAdminReceiver::class.java)
+        val admin = ComponentName(context, ParallelAppDeviceAdminReceiver::class.java)
         AppLogger.action("complete_profile_provisioning", emptyMap())
         try {
             manager.setProfileName(admin, context.getString(R.string.game_profile_name))
