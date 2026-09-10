@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="settings_quota">
+        <item quantity="one">Free quota remaining: %1$d hour</item>
+        <item quantity="other">Free quota remaining: %1$d hours</item>
+    </plurals>
+</resources>

@@ -1,0 +1,35 @@
+<lint-module
+    format="1"
+    dir="/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app"
+    name=":app"
+    type="APP"
+    maven="GameSpace:app:unspecified"
+    agpVersion="9.4.0"
+    buildFolder="build"
+    bootClassPath="/Users/ducdamdeveloper/Library/Android/sdk/platforms/android-37.0/android.jar:/Users/ducdamdeveloper/Library/Android/sdk/build-tools/36.0.0/core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-37.0"
+    highlightGradualR8Api="false">
+  <lintOptions
+      disable="AndroidGradlePluginVersion,GradleDependency,NewerVersionAvailable,ObsoleteSdkInt"
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true">
+    <severities>
+      <severity
+        id="AndroidGradlePluginVersion"
+        severity="IGNORE" />
+      <severity
+        id="GradleDependency"
+        severity="IGNORE" />
+      <severity
+        id="NewerVersionAvailable"
+        severity="IGNORE" />
+      <severity
+        id="ObsoleteSdkInt"
+        severity="IGNORE" />
+    </severities>
+  </lintOptions>
+  <variant name="debug"/>
+</lint-module>

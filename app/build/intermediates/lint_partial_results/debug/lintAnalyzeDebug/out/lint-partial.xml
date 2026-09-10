@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.4.0" type="partial_results">
+    <map id="NotificationPermission">
+        <location id="class"
+            file="$GRADLE_USER_HOME/caches/9.6.0/transforms/263c527c9f0803d63f5b189982489ca7/transformed/out/jars/classes.jar"/>
+        <entry
+            name="className"
+            string="com/duplicateapp/theuniverse/TheUniverseCore"/>
+    </map>
+    <map id="UnsafeImplicitIntentLaunch">
+            <map id="actionsSent">
+                    <map id="android.settings.SETTINGS (used to start an activity)">
+                        <location id="0"
+                            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/duplicateapp/gamespace/features/workspace/data/AndroidSettingsNavigator.kt"
+                            line="13"
+                            column="35"
+                            startOffset="540"
+                            endLine="13"
+                            endColumn="67"
+                            endOffset="572"/>
+                    </map>
+            </map>
+    </map>
+    <map id="UnsafeIntentLaunch">
+            <map id="unprotected">
+                <entry
+                    name="com.duplicateapp.gamespace.MainActivity"
+                    boolean="true"/>
+            </map>
+    </map>
+    <map id="UnusedResources">
+        <location id="R.string.add"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="44"
+            column="13"
+            startOffset="2907"
+            endLine="44"
+            endColumn="23"
+            endOffset="2917"/>
+        <location id="R.string.add_copy"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="30"
+            column="13"
+            startOffset="1882"
+            endLine="30"
+            endColumn="28"
+            endOffset="1897"/>
+        <location id="R.string.add_profile"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="19"
+            column="13"
+            startOffset="1102"
+            endLine="19"
+            endColumn="31"
+            endOffset="1120"/>
+        <location id="R.string.add_session"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="26"
+            column="13"
+            startOffset="1624"
+            endLine="26"
+            endColumn="31"
+            endOffset="1642"/>
+        <location id="R.string.choose_copied_game"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="33"
+            column="13"
+            startOffset="2101"
+            endLine="33"
+            endColumn="38"
+            endOffset="2126"/>
+        <location id="R.string.choose_game"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="37"
+            column="13"
+            startOffset="2354"
+            endLine="37"
+            endColumn="31"
+            endOffset="2372"/>
+        <location id="R.string.choose_installed_app"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="36"
+            column="13"
+            startOffset="2291"
+            endLine="36"
+            endColumn="40"
+            endOffset="2318"/>
+        <location id="R.string.copy_summary"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="34"
+            column="13"
+            startOffset="2184"
+            endLine="34"
+            endColumn="32"
+            endOffset="2203"/>
+        <location id="R.string.enable_second_copy"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="41"
+            column="13"
+            startOffset="2586"
+            endLine="41"
+            endColumn="38"
+            endOffset="2611"/>
+        <location id="R.string.no_copies"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="31"
+            column="13"
+            startOffset="1928"
+            endLine="31"
+            endColumn="29"
+            endOffset="1944"/>
+        <location id="R.string.no_copies_description"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="32"
+            column="13"
+            startOffset="1985"
+            endLine="32"
+            endColumn="41"
+            endOffset="2013"/>
+        <location id="R.string.second_copy_setup_description"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="42"
+            column="13"
+            startOffset="2652"
+            endLine="42"
+            endColumn="49"
+            endOffset="2688"/>
+        <location id="R.string.second_copy_unsupported"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="43"
+            column="13"
+            startOffset="2809"
+            endLine="43"
+            endColumn="43"
+            endOffset="2839"/>
+        <location id="R.string.session_name"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="35"
+            column="13"
+            startOffset="2237"
+            endLine="35"
+            endColumn="32"
+            endOffset="2256"/>
+        <location id="R.string.sessions"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="5"
+            column="13"
+            startOffset="157"
+            endLine="5"
+            endColumn="28"
+            endOffset="172"/>
+        <entry
+            name="model"
+            string="color[ic_launcher_background(U)],drawable[ic_launcher_foreground(U)],mipmap[ic_launcher(U),ic_launcher_round(U)],plurals[settings_quota(U)],string[app_name(U),profile_admin_description(U),profile_admin_label(U),settings(U),sessions(D),quota_remaining(U),session_running(U),session_paused(U),session_stopped(U),session_starting(U),session_failed(U),game_stage_waiting(U),open_game(U),game_opened(U),missing_managed_profile(U),game_not_installed(U),game_already_added(U),profile_permission_denied(U),add_profile(D),profile_count(U),profile_unsupported(U),profile_creation_failed(U),game_profile_name(U),add_session(D),add_game(U),no_game_selected(U),select_game_description(U),add_copy(D),no_copies(D),no_copies_description(D),choose_copied_game(D),copy_summary(D),session_name(D),choose_installed_app(D),choose_game(D),main_profile(U),work_profile(U),no_apps_in_profile(U),enable_second_copy(D),second_copy_setup_description(D),second_copy_unsupported(D),add(D),cancel(U),quota_exhausted(U),onboarding_title(U),onboarding_profiles(U),onboarding_limit(U),onboarding_privacy(U),continue_label(U),profile_available(U),settings_profile(U),settings_privacy(U),android_settings(U),settings_open_failed(U),close(U),delete_session(U),delete_session_message(U),delete(U),choose_session(U),session_summary(U),metric_cpu(U),metric_memory(U),metric_temperature(U),metric_fps(U),metric_value_percent(U),metric_value_memory(U),metric_value_temperature(U),metric_value_fps(U),metric_label_value(U),metric_compact(U),copy_count(U),quota_hours_compact(U),original_copy(U),copy_one(U),choose_game_to_copy(U),empty_library_title(U),empty_library_description(U)],style[Theme_GameSpace(U)],xml[data_extraction_rules(U),backup_rules(U),device_admin(U)];2^0^1,3^0^1;;;"/>
+    </map>
+
+</incidents>

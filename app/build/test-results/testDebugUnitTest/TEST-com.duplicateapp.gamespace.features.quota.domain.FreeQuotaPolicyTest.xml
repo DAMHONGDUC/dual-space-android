@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.duplicateapp.gamespace.features.quota.domain.FreeQuotaPolicyTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-10T16:35:27.773Z" hostname="Ducs-MacBook-Pro-M4.local" time="0.003">
+  <properties/>
+  <testcase name="two running sessions consume two session hours" classname="com.duplicateapp.gamespace.features.quota.domain.FreeQuotaPolicyTest" time="0.001"/>
+  <testcase name="remaining quota never becomes negative" classname="com.duplicateapp.gamespace.features.quota.domain.FreeQuotaPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

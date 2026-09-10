@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.4.0" type="incidents">
+
+    <incident
+        id="PluralsCandidate"
+        severity="warning"
+        message="Formatting %d followed by words (&quot;accounts&quot;): This should probably be a plural rather than a string">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/strings.xml"
+            line="73"
+            column="5"
+            startOffset="4873"
+            endLine="73"
+            endColumn="53"
+            endOffset="4921"/>
+    </incident>
+
+</incidents>

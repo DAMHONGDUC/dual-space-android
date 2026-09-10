@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="settings_quota">
+        <item quantity="other">Hạn mức miễn phí còn lại: %1$d giờ</item>
+    </plurals>
+</resources>

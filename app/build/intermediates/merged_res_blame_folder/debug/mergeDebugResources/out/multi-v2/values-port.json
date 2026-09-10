@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.duplicateapp.gamespace.app-mergeDebugResources-44:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "/Users/ducdamdeveloper/.gradle/caches/9.6.0/transforms/675adb485e07cb660089f5d86393fc90/transformed/appcompat-1.2.0/res/values-port/values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

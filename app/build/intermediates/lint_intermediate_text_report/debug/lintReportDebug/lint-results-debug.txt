@@ -1,0 +1,104 @@
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:73: Warning: Formatting %d followed by words ("accounts"): This should probably be a plural rather than a string [PluralsCandidate]
+    <string name="copy_count">%1$d accounts</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "PluralsCandidate":
+   This lint check looks for potential errors in internationalization where
+   you have translated a message which involves a quantity and it looks like
+   other parts of the string may need grammatical changes.
+
+   For example, rather than something like this:
+     <string name="try_again">Try again in %d seconds.</string>
+   you should be using a plural:
+      <plurals name="try_again">
+           <item quantity="one">Try again in %d second</item>
+           <item quantity="other">Try again in %d seconds</item>
+       </plurals>
+   This will ensure that in other languages the right set of translations are
+   provided for the different quantity classes.
+
+   (This check depends on some heuristics, so it may not accurately determine
+   whether a string really should be a quantity. You can use tools:ignore to
+   filter out false positives.
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:5: Warning: The resource R.string.sessions appears to be unused [UnusedResources]
+    <string name="sessions">Sessions</string>
+            ~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:19: Warning: The resource R.string.add_profile appears to be unused [UnusedResources]
+    <string name="add_profile">Enable second copy</string>
+            ~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:26: Warning: The resource R.string.add_session appears to be unused [UnusedResources]
+    <string name="add_session">Add game</string>
+            ~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:30: Warning: The resource R.string.add_copy appears to be unused [UnusedResources]
+    <string name="add_copy">Add copy</string>
+            ~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:31: Warning: The resource R.string.no_copies appears to be unused [UnusedResources]
+    <string name="no_copies">No game copies yet</string>
+            ~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:32: Warning: The resource R.string.no_copies_description appears to be unused [UnusedResources]
+    <string name="no_copies_description">Set up the second Android space, then add a game installed there.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:33: Warning: The resource R.string.choose_copied_game appears to be unused [UnusedResources]
+    <string name="choose_copied_game">Choose a game from the second space</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:34: Warning: The resource R.string.copy_summary appears to be unused [UnusedResources]
+    <string name="copy_summary">%1$s · Copy</string>
+            ~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:35: Warning: The resource R.string.session_name appears to be unused [UnusedResources]
+    <string name="session_name">Display name</string>
+            ~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:36: Warning: The resource R.string.choose_installed_app appears to be unused [UnusedResources]
+    <string name="choose_installed_app">Choose a game</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:37: Warning: The resource R.string.choose_game appears to be unused [UnusedResources]
+    <string name="choose_game">Choose a game</string>
+            ~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:41: Warning: The resource R.string.enable_second_copy appears to be unused [UnusedResources]
+    <string name="enable_second_copy">Enable second copy</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:42: Warning: The resource R.string.second_copy_setup_description appears to be unused [UnusedResources]
+    <string name="second_copy_setup_description">Set up a separate Android space first. Apps and sign-ins in it stay independent from the original.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:43: Warning: The resource R.string.second_copy_unsupported appears to be unused [UnusedResources]
+    <string name="second_copy_unsupported">This device cannot create a second app space.</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/ducdamdeveloper/Documents/GitHub/duplicate_app/app/src/main/res/values/strings.xml:44: Warning: The resource R.string.add appears to be unused [UnusedResources]
+    <string name="add">Add</string>
+            ~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests=true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests=true.
+
+   Available options:
+
+   **skip-libraries** (default is true):
+   Whether the unused resource check should skip reporting unused resources in libraries.
+
+   Many libraries will declare resources that are part of the library surface; other modules depending on the library will also reference the resources. To avoid reporting all these resources as unused (in the context of a library), the unused resource check normally skips reporting unused resources in libraries. Instead, run the unused resource check on the consuming app module (along with `checkDependencies=true`).
+
+   However, there are cases where you want to check that all the resources declared in a library are used; in that case, you can disable the skip option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UnusedResources">
+           <option name="skip-libraries" value="true" />
+       </issue>
+   </lint>
+   ```
+
+0 errors, 16 warnings
