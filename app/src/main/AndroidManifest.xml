@@ -7,7 +7,7 @@
         </intent>
     </queries>
     <application
-        android:name=".game_space_application"
+        android:name=".GameSpaceApplication"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GameSpace">
         <receiver
-            android:name=".profile.game_space_device_admin_receiver"
+            android:name=".profile.GameSpaceDeviceAdminReceiver"
             android:description="@string/profile_admin_description"
             android:exported="true"
             android:label="@string/profile_admin_label"
@@ -31,7 +31,7 @@
             </intent-filter>
         </receiver>
         <activity
-            android:name=".profile.provisioning_mode_activity"
+            android:name=".profile.ProvisioningModeActivity"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <intent-filter>
@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".profile.policy_compliance_activity"
+            android:name=".profile.PolicyComplianceActivity"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <intent-filter>
@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main_activity"
+            android:name=".MainActivity"
             android:exported="true"
             android:resizeableActivity="true">
             <intent-filter>

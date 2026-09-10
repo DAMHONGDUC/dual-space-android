@@ -5,19 +5,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import com.duplicateapp.gamespace.core.theme.game_space_theme
-import com.duplicateapp.gamespace.features.workspace.presentation.workspace_screen
-import com.duplicateapp.gamespace.features.workspace.presentation.workspace_view_model
+import com.duplicateapp.gamespace.core.theme.gameSpaceTheme
+import com.duplicateapp.gamespace.features.workspace.presentation.workspaceScreen
+import com.duplicateapp.gamespace.features.workspace.presentation.WorkspaceViewModel
 
 @Composable
-fun game_space_app() {
-    val view_model: workspace_view_model = viewModel(factory = workspace_view_model.factory(LocalContext.current))
+fun gameSpaceApp() {
+    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModel.Factory(LocalContext.current))
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        view_model.refresh_profile_status()
+        viewModel.refreshProfileStatus()
     }
 
-    game_space_theme {
-        workspace_screen(view_model = view_model)
+    gameSpaceTheme {
+        workspaceScreen(viewModel = viewModel)
     }
 }

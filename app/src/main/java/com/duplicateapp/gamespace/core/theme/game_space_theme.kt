@@ -4,23 +4,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-private val game_space_color_scheme = darkColorScheme(
-    primary = game_space_colors.primary_bright,
-    onPrimary = game_space_colors.background,
-    secondary = game_space_colors.accent,
-    background = game_space_colors.background,
-    onBackground = game_space_colors.text_primary,
-    surface = game_space_colors.surface,
-    onSurface = game_space_colors.text_primary,
-    surfaceVariant = game_space_colors.surface_muted,
-    onSurfaceVariant = game_space_colors.text_muted,
-    error = game_space_colors.accent,
+private val gameSpaceColorScheme = darkColorScheme(
+    primary = GameSpaceColors.primaryBright,
+    onPrimary = GameSpaceColors.background,
+    secondary = GameSpaceColors.accent,
+    background = GameSpaceColors.background,
+    onBackground = GameSpaceColors.textPrimary,
+    surface = GameSpaceColors.surface,
+    onSurface = GameSpaceColors.textPrimary,
+    surfaceVariant = GameSpaceColors.surfaceMuted,
+    onSurfaceVariant = GameSpaceColors.textMuted,
+    error = GameSpaceColors.accent,
 )
 
 @Composable
-fun game_space_theme(content: @Composable () -> Unit) {
+fun gameSpaceTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = game_space_color_scheme,
+        colorScheme = gameSpaceColorScheme,
         content = content,
     )
 }

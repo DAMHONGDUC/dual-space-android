@@ -2,28 +2,28 @@ package com.duplicateapp.gamespace.core.theme
 
 import androidx.compose.ui.unit.dp
 
-object game_space_dimensions {
-    val space_2 = 2.dp
-    val space_4 = 4.dp
-    val space_6 = 6.dp
-    val space_8 = 8.dp
-    val space_12 = 12.dp
-    val space_16 = 16.dp
-    val touch_target = 48.dp
-    val icon_small = 18.dp
-    val stage_icon_compact = 36.dp
-    val stage_icon = 44.dp
-    val status_dot = 6.dp
-    val dropdown_compact_width = 220.dp
-    val dropdown_expanded_width = 360.dp
-    val dropdown_menu_min_width = 280.dp
-    val dropdown_menu_max_width = 380.dp
-    val dialog_list_max_height = 200.dp
-    val compact_breakpoint = 600.dp
-    val game_tile_min_width = 144.dp
-    val game_icon = 72.dp
-    val empty_icon = 64.dp
-    val icon_corner_radius = 16.dp
-    val fab_clearance = 96.dp
-    val dialog_list_max_height_expanded = 440.dp
+object GameSpaceDimensions {
+    val space2 = 2.dp
+    val space4 = 4.dp
+    val space6 = 6.dp
+    val space8 = 8.dp
+    val space12 = 12.dp
+    val space16 = 16.dp
+    val touchTarget = 48.dp
+    val iconSmall = 18.dp
+    val stageIconCompact = 36.dp
+    val stageIcon = 44.dp
+    val statusDot = 6.dp
+    val dropdownCompactWidth = 220.dp
+    val dropdownExpandedWidth = 360.dp
+    val dropdownMenuMinWidth = 280.dp
+    val dropdownMenuMaxWidth = 380.dp
+    val dialogListMaxHeight = 200.dp
+    val compactBreakpoint = 600.dp
+    val gameTileMinWidth = 144.dp
+    val gameIcon = 72.dp
+    val emptyIcon = 64.dp
+    val iconCornerRadius = 16.dp
+    val fabClearance = 96.dp
+    val dialogListMaxHeightExpanded = 440.dp
 }

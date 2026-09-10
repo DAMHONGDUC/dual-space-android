@@ -2,7 +2,7 @@ package com.duplicateapp.gamespace.core.logging
 
 import android.util.Log
 
-object app_logger {
+object AppLogger {
     private const val tag = "GameSpace"
 
     fun action(name: String, data: Map<String, Any?>) {
