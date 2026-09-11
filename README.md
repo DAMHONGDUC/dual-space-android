@@ -15,6 +15,13 @@ Version 0.5 companion MVP: adaptive phone/tablet workspace, persistent personal/
 
 The `play` flavor uses Android managed profiles and excludes the container runtime. The `direct` flavor retains The Universe for separately reviewed distribution and uses the `.direct` application ID suffix.
 
+## Test
+
+```sh
+./gradlew :app:testPlayDebugUnitTest
+./gradlew :app:connectedPlayDebugAndroidTest
+```
+
 Read [docs/store-readiness.md](docs/store-readiness.md) before producing a store artifact.
 
 ## Product boundaries
