@@ -29,10 +29,13 @@ import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
 import com.duplicateapp.gamespace.features.settings.domain.LanguageRepository
 import com.duplicateapp.gamespace.features.settings.domain.ThemeMode
 import com.duplicateapp.gamespace.features.settings.domain.ThemeRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WorkspaceViewModel(
     private val repository: WorkspaceRepository,
@@ -57,6 +60,7 @@ class WorkspaceViewModel(
     private val mutableDeleteConfirmationName = MutableStateFlow<String?>(null)
     private val mutableThemeMode = MutableStateFlow(themeRepository.load())
     private val mutableAppLanguage = MutableStateFlow(languageRepository.load())
+    private var catalogLoadJob: Job? = null
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
     val selectedSessionId: StateFlow<String?> = mutableSelectedSessionId.asStateFlow()
@@ -147,15 +151,27 @@ class WorkspaceViewModel(
     }
 
     fun showAddSession(profileTarget: ProfileTarget = ProfileTarget.personal) {
-        mutableInstalledGames.value = gameCatalog.listInstalledGames(profileTarget)
         mutableIsAddSessionVisible.value = true
+        loadInstalledGames(profileTarget)
     }
 
     fun changeCatalogProfile(profileTarget: ProfileTarget) {
-        mutableInstalledGames.value = gameCatalog.listInstalledGames(profileTarget)
+        loadInstalledGames(profileTarget)
+    }
+
+    private fun loadInstalledGames(profileTarget: ProfileTarget) {
+        catalogLoadJob?.cancel()
+        mutableInstalledGames.value = emptyList()
+        catalogLoadJob = viewModelScope.launch {
+            mutableInstalledGames.value = withContext(Dispatchers.IO) {
+                gameCatalog.listInstalledGames(profileTarget)
+            }
+        }
     }
 
     fun dismissAddSession() {
+        catalogLoadJob?.cancel()
+        catalogLoadJob = null
         mutableIsAddSessionVisible.value = false
     }
 

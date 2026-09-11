@@ -1,6 +1,5 @@
 package com.duplicateapp.gamespace.features.workspace.presentation.components
 
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +31,9 @@ import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private data class GameRowModel(
     val packageName: String,
@@ -183,15 +186,21 @@ private fun accountButton(session: GameSession, onLaunch: (String) -> Unit) {
 @Composable
 private fun gameIcon(packageName: String) {
     val context = LocalContext.current
-    val bitmap: ImageBitmap? = remember(packageName) {
-        try {
-            val drawable: Drawable = context.packageManager.getApplicationIcon(packageName)
-            drawable.toBitmap(width = 144, height = 144).asImageBitmap()
-        } catch (error: Exception) {
-            AppLogger.error("load_game_icon", error, mapOf("packageName" to packageName))
-            null
+    val bitmapState = produceState<ImageBitmap?>(initialValue = null, packageName) {
+        value = withContext(Dispatchers.IO) {
+            try {
+                context.packageManager.getApplicationIcon(packageName)
+                    .toBitmap(width = gameIconBitmapSize, height = gameIconBitmapSize)
+                    .asImageBitmap()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                AppLogger.error("load_game_icon", error, mapOf("packageName" to packageName))
+                null
+            }
         }
     }
+    val bitmap: ImageBitmap? = bitmapState.value
     Surface(
         modifier = Modifier.size(ParallelAppDimensions.gameIcon).clip(RoundedCornerShape(ParallelAppDimensions.iconCornerRadius)),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -203,6 +212,8 @@ private fun gameIcon(packageName: String) {
         }
     }
 }
+
+private const val gameIconBitmapSize: Int = 144
 
 @Composable
 private fun sessionStateLabel(state: SessionState): String = stringResource(
