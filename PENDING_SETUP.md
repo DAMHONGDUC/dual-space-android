@@ -8,14 +8,16 @@ The following publisher-owned configuration is required before authentication, a
 - Add the upload and Play App Signing SHA-1 and SHA-256 certificate fingerprints.
 - Enable Google as a Firebase Authentication provider.
 - Download `google-services.json` to `app/google-services.json`; this path is gitignored.
-- Configure a backend endpoint that accepts a Firebase ID token and Google Play purchase token, verifies both, and returns the current entitlement.
+- Use the Firebase UID as the non-guessable RevenueCat App User ID after sign-in.
 
-## Google Play Billing
+## RevenueCat and Google Play Billing
 
-- Create the Premium subscription and its base plans in Play Console.
-- Choose and record the final subscription product ID in local release configuration.
-- Link the Google Cloud project and grant the backend access to the Google Play Developer API.
-- Configure Real-time Developer Notifications and handle purchase, renewal, grace-period, hold, cancellation, expiry, refund, and revocation states.
+- Create a RevenueCat project and Android app, then store its public SDK key in local release configuration.
+- Create the Premium subscription and base plans in Play Console, then import the products into RevenueCat.
+- Create the `premium` entitlement, attach the products, and configure a current Offering.
+- Link Google Play service credentials to RevenueCat and configure Google Real-time Developer Notifications.
+- Decide RevenueCat restore behavior before testing account changes; verify anonymous-to-Firebase-UID merge and transfer scenarios.
+- Configure authenticated RevenueCat webhooks only if server-side entitlement sync, support automation, or audit history is required.
 
 ## AdMob
 

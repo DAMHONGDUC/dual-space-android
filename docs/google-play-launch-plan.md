@@ -51,10 +51,12 @@ The defensible wedge is trust and game-specific reliability rather than clone co
 ## Monetization and identity
 
 - Free users keep the monthly base allowance. They can explicitly opt in to a rewarded ad for a clearly stated, fixed time extension.
-- Premium removes advertising and the play-time limit while the server-verified entitlement is active.
+- Premium removes advertising and the play-time limit while RevenueCat reports the `premium` entitlement as active.
 - Google sign-in identifies the user across reinstalls and devices; it does not prove a purchase by itself.
-- The secure backend binds a verified Google Play purchase token to the Firebase UID and owns entitlement state. The client must not grant Premium from Firestore writes, SharedPreferences, an email address, or an unverified Billing callback.
-- Handle pending purchases, renewals, grace periods, account hold, cancellation, expiry, refunds, and revocations. A purchase is granted only after backend verification and must be acknowledged promptly.
+- After Firebase sign-in, the app calls RevenueCat `logIn` with the Firebase UID and derives access only from the active `premium` entitlement in `CustomerInfo`.
+- RevenueCat owns store receipt validation and entitlement state. The client must not grant Premium from Firestore writes, SharedPreferences, an email address, or a raw Billing callback.
+- RevenueCat configuration must handle offerings, pending purchases, renewals, grace periods, account hold, cancellation, expiry, refunds, revocations, restore behavior, and anonymous-account merging.
+- RevenueCat webhooks are optional for the client experience but recommended when server-side sync, customer support automation, or independent audit history is needed.
 - Rewarded ads are user-initiated and displayed outside the launch action. Never insert an unexpected interstitial between tapping a game and opening it.
 
 ### Before production
