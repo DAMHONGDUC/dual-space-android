@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.quota.domain.FreeQuotaPolicy
+import com.duplicateapp.gamespace.features.quota.domain.PlayAccessPolicy
+import com.duplicateapp.gamespace.features.premium.domain.PremiumAccess
+import com.duplicateapp.gamespace.features.premium.domain.PremiumStatus
 import java.time.YearMonth
 
 class LocalQuotaTracker(context: Context) {
@@ -12,10 +15,40 @@ class LocalQuotaTracker(context: Context) {
 
     fun remainingHours(): Int {
         resetPeriodIfNeeded()
-        return FreeQuotaPolicy.remainingWholeHours(preferences.getLong(usedSecondsKey, 0L))
+        val remainingSeconds: Long = PlayAccessPolicy.remainingSeconds(
+            usedSeconds = preferences.getLong(usedSecondsKey, 0L),
+            rewardedBonusSeconds = preferences.getLong(rewardedBonusSecondsKey, 0L),
+        )
+        return (remainingSeconds / FreeQuotaPolicy.secondsPerHour).toInt()
     }
 
-    fun canLaunch(): Boolean = remainingHours() > 0
+    fun canLaunch(premiumAccess: PremiumAccess = PremiumAccess(PremiumStatus.inactive)): Boolean {
+        resetPeriodIfNeeded()
+        return PlayAccessPolicy.canLaunch(
+            usedSeconds = preferences.getLong(usedSecondsKey, 0L),
+            rewardedBonusSeconds = preferences.getLong(rewardedBonusSecondsKey, 0L),
+            premiumAccess = premiumAccess,
+        )
+    }
+
+    @Synchronized
+    fun grantReward(rewardId: String): Boolean {
+        require(rewardId.isNotBlank())
+        AppLogger.action("grant_rewarded_quota", mapOf("rewardId" to rewardId))
+        resetPeriodIfNeeded()
+        val claimedRewardIds: Set<String> = preferences.getStringSet(claimedRewardIdsKey, emptySet()).orEmpty()
+        if (rewardId in claimedRewardIds) {
+            AppLogger.success("grant_rewarded_quota", mapOf("rewardId" to rewardId, "granted" to false))
+            return false
+        }
+        val rewardedBonusSeconds: Long = preferences.getLong(rewardedBonusSecondsKey, 0L) + PlayAccessPolicy.rewardedSeconds
+        preferences.edit {
+            putLong(rewardedBonusSecondsKey, rewardedBonusSeconds)
+            putStringSet(claimedRewardIdsKey, claimedRewardIds + rewardId)
+        }
+        AppLogger.success("grant_rewarded_quota", mapOf("rewardId" to rewardId, "granted" to true, "bonusSeconds" to rewardedBonusSeconds))
+        return true
+    }
 
     fun startSession() {
         AppLogger.action("start_quota_session", mapOf("remainingHours" to remainingHours()))
@@ -43,6 +76,8 @@ class LocalQuotaTracker(context: Context) {
             putString(periodKey, currentPeriod)
             putLong(usedSecondsKey, 0L)
             remove(activeSinceKey)
+            remove(rewardedBonusSecondsKey)
+            remove(claimedRewardIdsKey)
         }
         AppLogger.success("reset_quota_period", mapOf("period" to currentPeriod))
     }
@@ -52,6 +87,8 @@ class LocalQuotaTracker(context: Context) {
         const val periodKey = "period"
         const val usedSecondsKey = "used_seconds"
         const val activeSinceKey = "active_since"
+        const val rewardedBonusSecondsKey = "rewarded_bonus_seconds"
+        const val claimedRewardIdsKey = "claimed_reward_ids"
         const val millisecondsPerSecond = 1_000L
     }
 }
