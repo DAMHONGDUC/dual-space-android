@@ -1,15 +1,15 @@
 # Store readiness review
 
-Reviewed on 2026-09-11. Only the `play` flavor is intended for Google Play; the `direct` flavor retains the full runtime for separate distribution.
+Reviewed on 2026-09-11. Only the `prod` flavor is intended for Google Play; the `qa` flavor retains the full runtime for local testing.
 
 ## Release blockers
 
-1. The `play` flavor excludes `packages/the_universe`; its merged manifest must be checked before every release to prevent restricted permissions from returning.
+1. The `prod` flavor excludes `packages/the_universe`; its merged manifest must be checked before every release to prevent restricted permissions from returning.
 2. Managed-profile provisioning makes the app a device policy controller. Store metadata, onboarding, and review notes must explain this core behavior accurately.
 3. Privacy and Data safety declarations must be finalized from the release AAB and actual runtime behavior.
 4. Release signing, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.
 
-The `direct` flavor is not a Google Play artifact. It still contains the broad permission manifest and native container runtime described below.
+The `qa` flavor is not a Google Play artifact. It still contains the broad permission manifest and native container runtime described below.
 
 ## Current strengths
 

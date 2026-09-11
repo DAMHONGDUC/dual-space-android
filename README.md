@@ -47,36 +47,36 @@ For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace
 
 1. Open the repository root, not the `app` directory.
 2. Run **File → Sync Project with Gradle Files**.
-3. Open **Build Variants** and select `playDebug` for the `app` module.
+3. Open **Build Variants** and select `qaDebug` for the `app` module.
 4. Select the shared **appDebug** run configuration.
 5. Select an API 29+ device and press Run.
 
-The repository also provides **appRelease**, which runs `:app:bundlePlayRelease` directly from Android Studio.
+The repository also provides **appRelease**, which runs `:app:bundleProdRelease` directly from Android Studio.
 
-Use `playDebug` for normal development and Play Store verification. `directDebug` includes the separately distributed container runtime and uses application ID `com.duplicateapp.gamespace.direct`.
+Use `qaDebug` for local testing; it includes the container runtime and uses application ID `com.duplicateapp.gamespace.qa`. Use `prodDebug` for Google Play-safe verification.
 
-If Android Studio tries to execute `:app:assembleDebug` and cannot find `app-debug.apk`, sync Gradle again and reselect `playDebug`; the actual APK is flavor-qualified.
+If Android Studio tries to execute `:app:assembleDebug` and cannot find `app-debug.apk`, sync Gradle again and reselect `qaDebug`; the actual APK is flavor-qualified.
 
 ## Run from terminal
 
 Build and install the Play debug app:
 
 ```sh
-./gradlew :app:installPlayDebug
+./gradlew :app:installQaDebug
 ```
 
 Build both debug flavors:
 
 ```sh
-./gradlew :app:assemblePlayDebug
-./gradlew :app:assembleDirectDebug
+./gradlew :app:assembleQaDebug
+./gradlew :app:assembleProdDebug
 ```
 
 Generated APKs:
 
 ```text
-app/build/outputs/apk/play/debug/app-play-debug.apk
-app/build/outputs/apk/direct/debug/app-direct-debug.apk
+app/build/outputs/apk/qa/debug/app-qa-debug.apk
+app/build/outputs/apk/prod/debug/app-prod-debug.apk
 ```
 
 ## Tests and static checks
@@ -84,19 +84,19 @@ app/build/outputs/apk/direct/debug/app-direct-debug.apk
 Run the JVM logic tests:
 
 ```sh
-./gradlew :app:testPlayDebugUnitTest
+./gradlew :app:testProdDebugUnitTest
 ```
 
 Run Compose UI tests on a connected device or emulator:
 
 ```sh
-./gradlew :app:connectedPlayDebugAndroidTest
+./gradlew :app:connectedProdDebugAndroidTest
 ```
 
 Run Android lint:
 
 ```sh
-./gradlew :app:lintPlayDebug
+./gradlew :app:lintProdDebug
 ```
 
 Reports are written under `app/build/reports/`.
@@ -115,13 +115,13 @@ Before every release:
 Build the Play release bundle:
 
 ```sh
-./gradlew :app:bundlePlayRelease
+./gradlew :app:bundleProdRelease
 ```
 
 Generated bundle:
 
 ```text
-app/build/outputs/bundle/playRelease/app-play-release.aab
+app/build/outputs/bundle/prodRelease/app-prod-release.aab
 ```
 
 The repository does not contain an upload keystore or signing passwords. Configure release signing with protected CI/Gradle credentials, or use Android Studio **Build → Generate Signed App Bundle or APK → Android App Bundle** and select the Play upload key. Never commit the keystore, aliases, or passwords.
@@ -129,8 +129,8 @@ The repository does not contain an upload keystore or signing passwords. Configu
 Before uploading, verify the signed bundle and inspect the final manifest:
 
 ```sh
-jarsigner -verify app/build/outputs/bundle/playRelease/app-play-release.aab
-./gradlew :app:processPlayReleaseMainManifest
+jarsigner -verify app/build/outputs/bundle/prodRelease/app-prod-release.aab
+./gradlew :app:processProdReleaseMainManifest
 ```
 
 Upload the AAB to an Internal testing track first, finish App content/Data safety declarations, run the Play pre-launch report, then promote with a staged rollout.
@@ -139,15 +139,15 @@ Upload the AAB to an Internal testing track first, finish App content/Data safet
 
 | Flavor | Application ID | Purpose |
 | --- | --- | --- |
-| `play` | `com.duplicateapp.gamespace` | Google Play-safe managed-profile build |
-| `direct` | `com.duplicateapp.gamespace.direct` | Separately reviewed direct distribution with The Universe runtime |
+| `prod` | `com.duplicateapp.gamespace` | Google Play-safe managed-profile build |
+| `qa` | `com.duplicateapp.gamespace.qa` | Local testing build with The Universe runtime |
 
-Do not upload the `direct` flavor to Google Play.
+Do not upload the `qa` flavor to Google Play.
 
 ## Product and policy boundaries
 
 - No auto-click, gameplay macros, memory editing, fake GPS, anti-cheat bypass, or silent installation.
-- The Play flavor must remain independent from `packages/the_universe`.
+- The `prod` flavor must remain independent from `packages/the_universe`.
 - Premium removes ads and the monthly play-time limit.
 - Free users receive 180 session-hours per monthly cycle and can earn additional time through rewarded ads.
 - A future container must reject apps declaring `REQUIRE_SECURE_ENV`.

@@ -45,13 +45,13 @@ android {
 
     flavorDimensions += "distribution"
     productFlavors {
-        create("play") {
+        create("prod") {
             dimension = "distribution"
         }
-        create("direct") {
+        create("qa") {
             dimension = "distribution"
-            applicationIdSuffix = ".direct"
-            versionNameSuffix = "-direct"
+            applicationIdSuffix = ".qa"
+            versionNameSuffix = "-qa"
         }
     }
 
@@ -88,7 +88,7 @@ kotlin {
 }
 
 dependencies {
-    "directImplementation"(project(":the-universe-core"))
+    "qaImplementation"(project(":the-universe-core"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)

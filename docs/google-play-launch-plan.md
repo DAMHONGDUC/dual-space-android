@@ -1,6 +1,6 @@
 # Google Play launch plan
 
-Reviewed on 2026-09-11. Only the `play` flavor is eligible for Google Play.
+Reviewed on 2026-09-11. Only the `prod` flavor is eligible for Google Play.
 
 ## Product position
 
@@ -12,7 +12,7 @@ Do not describe the Play build as an unlimited app cloner. The Play build opens 
 
 ### Gate 1: internal testing
 
-- Upload a signed `playRelease` Android App Bundle.
+- Upload a signed `prodRelease` Android App Bundle.
 - Complete the main store listing, privacy-policy URL, Data safety form, content rating, target audience, app access, and ads declaration.
 - Add review instructions and a short video showing profile consent, profile creation, game selection, launch, and profile removal.
 - Test the full personal/managed-profile flow on certified physical devices running Android 13 through Android 16.
@@ -28,7 +28,7 @@ Do not describe the Play build as an unlimited app cloner. The Play build opens 
 
 - Release gradually after the closed-test requirements and policy review are complete.
 - Start with device exclusions for models where managed-profile creation or cross-profile launching fails.
-- Keep the `direct` flavor and The Universe runtime outside every Play track.
+- Keep the `qa` flavor and The Universe runtime outside every Play track.
 
 ## Release blockers
 
