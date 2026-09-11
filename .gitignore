@@ -1,6 +1,7 @@
 .gradle/
 **/build/
 local.properties
+.env.local
 **/google-services.json
 *.iml
 .idea/

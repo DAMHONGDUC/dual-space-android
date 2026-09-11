@@ -1,13 +1,22 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
 
-val revenueCatApiKey: String = providers.gradleProperty("REVENUECAT_GOOGLE_API_KEY").orElse("").get()
-val revenueCatEntitlementId: String = providers.gradleProperty("REVENUECAT_ENTITLEMENT_ID").orElse("premium").get()
-val firebaseWebClientId: String = providers.gradleProperty("FIREBASE_WEB_CLIENT_ID").orElse("").get()
-val admobRewardedAdUnitId: String = providers.gradleProperty("ADMOB_REWARDED_AD_UNIT_ID").orElse("").get()
-val admobAppId: String = providers.gradleProperty("ADMOB_APP_ID").orElse("ca-app-pub-3940256099942544~3347511713").get()
+val localEnvironment: Properties = Properties().apply {
+    rootProject.file(".env.local").takeIf { file -> file.isFile }?.inputStream()?.use { stream -> load(stream) }
+}
+
+fun configuredValue(name: String, fallback: String = ""): String =
+    providers.gradleProperty(name).orNull ?: localEnvironment.getProperty(name, fallback)
+
+val revenueCatApiKey: String = configuredValue("REVENUECAT_GOOGLE_API_KEY")
+val revenueCatEntitlementId: String = configuredValue("REVENUECAT_ENTITLEMENT_ID", "premium")
+val firebaseWebClientId: String = configuredValue("FIREBASE_WEB_CLIENT_ID")
+val admobRewardedAdUnitId: String = configuredValue("ADMOB_REWARDED_AD_UNIT_ID")
+val admobAppId: String = configuredValue("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
 
 fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
