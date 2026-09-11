@@ -48,6 +48,15 @@ The defensible wedge is trust and game-specific reliability rather than clone co
 
 ## Feature priorities
 
+## Monetization and identity
+
+- Free users keep the monthly base allowance. They can explicitly opt in to a rewarded ad for a clearly stated, fixed time extension.
+- Premium removes advertising and the play-time limit while the server-verified entitlement is active.
+- Google sign-in identifies the user across reinstalls and devices; it does not prove a purchase by itself.
+- The secure backend binds a verified Google Play purchase token to the Firebase UID and owns entitlement state. The client must not grant Premium from Firestore writes, SharedPreferences, an email address, or an unverified Billing callback.
+- Handle pending purchases, renewals, grace periods, account hold, cancellation, expiry, refunds, and revocations. A purchase is granted only after backend verification and must be acknowledged promptly.
+- Rewarded ads are user-initiated and displayed outside the launch action. Never insert an unexpected interstitial between tapping a game and opening it.
+
 ### Before production
 
 1. Compatibility check: show whether managed users, profile provisioning, the selected game, and its launch activity are available before adding a session.
