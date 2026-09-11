@@ -36,7 +36,14 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             viewModel.clearLaunchMessage()
         }
     }
-    if (isAddVisible) addSessionDialog(installedGames, viewModel::dismissAddSession, viewModel::addSession)
+    if (isAddVisible) {
+        addSessionDialog(
+            games = installedGames,
+            onDismiss = viewModel::dismissAddSession,
+            onProfileChange = viewModel::changeCatalogProfile,
+            onAdd = viewModel::addSession,
+        )
+    }
     if (isOnboardingVisible) onboardingDialog(viewModel::completeOnboarding)
     if (isSettingsVisible) {
         settingsDialog(

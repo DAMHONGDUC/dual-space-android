@@ -177,13 +177,13 @@ class WorkspaceViewModel(
 
     fun addSession(name: String, game: InstalledGame) {
         val existingCopies: List<GameSession> = sessions.value.filter { session -> session.packageName == game.packageName }
-        if (existingCopies.size >= maximumCopiesPerGame) {
+        val profileAlreadyAdded: Boolean = existingCopies.any { session -> session.profileTarget == game.profileTarget }
+        if (existingCopies.size >= maximumCopiesPerGame || profileAlreadyAdded) {
             mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.game_already_added
             return
         }
-        val target: ProfileTarget = if (existingCopies.isEmpty()) ProfileTarget.personal else ProfileTarget.managed
         viewModelScope.launch {
-            repository.addSession(name, game.label, game.packageName, target)
+            repository.addSession(name, game.label, game.packageName, game.profileTarget)
             val addedSessionId: String = repository.sessions.value.last().id
             mutableSelectedSessionId.value = addedSessionId
             repository.selectSession(addedSessionId)

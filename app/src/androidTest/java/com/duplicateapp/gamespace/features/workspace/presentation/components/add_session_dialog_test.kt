@@ -26,7 +26,7 @@ class AddSessionDialogTest {
 
         composeRule.setContent {
             MaterialTheme {
-                addSessionDialog(games = emptyList(), onDismiss = {}, onAdd = { _, _ -> })
+                addSessionDialog(games = emptyList(), onDismiss = {}, onProfileChange = {}, onAdd = { _, _ -> })
             }
         }
 
@@ -44,6 +44,7 @@ class AddSessionDialogTest {
                 addSessionDialog(
                     games = listOf(game),
                     onDismiss = {},
+                    onProfileChange = {},
                     onAdd = { name, installedGame ->
                         selectedName = name
                         selectedGame = installedGame
@@ -56,6 +57,27 @@ class AddSessionDialogTest {
 
         assertEquals(gameName, selectedName)
         assertEquals(game, selectedGame)
+    }
+
+    @Test
+    fun selectingWorkProfileRequestsItsCatalog() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        var selectedProfile: ProfileTarget? = null
+
+        composeRule.setContent {
+            MaterialTheme {
+                addSessionDialog(
+                    games = emptyList(),
+                    onDismiss = {},
+                    onProfileChange = { profile -> selectedProfile = profile },
+                    onAdd = { _, _ -> },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(context.getString(R.string.work_profile)).performClick()
+
+        assertEquals(ProfileTarget.managed, selectedProfile)
     }
 
     private companion object {
