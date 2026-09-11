@@ -11,4 +11,4 @@ presentation -> domain <- data
 - `presentation` owns Compose UI, Android entry points, and view models.
 - `core` is reserved for shared infrastructure with at least two feature consumers.
 - A feature may depend on another feature only through that feature's domain surface.
-- `app/modules/the_universe` contains the low-level `core`, `compiler`, and `reflection` modules. Keep their reflection and Android compatibility boundaries intact.
+- `packages/the_universe` contains the low-level `core`, `compiler`, and `reflection` modules. Keep their reflection and Android compatibility boundaries intact.
