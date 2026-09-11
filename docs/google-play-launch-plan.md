@@ -4,7 +4,7 @@ Reviewed on 2026-09-11. Only the `prod` flavor is eligible for Google Play.
 
 ## Product position
 
-Parallel_app is a privacy-first game account switcher that uses Android's personal and managed profiles. It does not embed, modify, automate, or bypass protections in third-party games.
+Parallel Game Space is a privacy-first game account switcher that uses Android's personal and managed profiles. It does not embed, modify, automate, or bypass protections in third-party games.
 
 Do not describe the Play build as an unlimited app cloner. The Play build opens apps that are already installed in an Android profile, and device support varies by manufacturer and Android version.
 
@@ -42,7 +42,7 @@ Do not describe the Play build as an unlimited app cloner. The Play build opens 
 
 - Parallel Space reports 100M+ installs, 24 languages, two free accounts, app hiding, security lock, and a Pro tier. Its listing and reviews expose demand for clearer account identity, fewer launch failures, reliable notifications, and less intrusive monetization.
 - Multiple Accounts reports 50M+ installs and competes on broad app compatibility, simultaneous accounts, Secret Zone, and Security Lock.
-- Both major competitors now state that apps declaring `REQUIRE_SECURE_ENV` are unsupported. Parallel_app must preserve this boundary in every distribution.
+- Both major competitors now state that apps declaring `REQUIRE_SECURE_ENV` are unsupported. Parallel Game Space must preserve this boundary in every distribution.
 
 The defensible wedge is trust and game-specific reliability rather than clone count: clear profile identity, honest compatibility status, local-only state, no launch-path ads, and actionable setup diagnostics.
 
@@ -50,14 +50,14 @@ The defensible wedge is trust and game-specific reliability rather than clone co
 
 ## Monetization and identity
 
-- Free users keep the monthly base allowance. They can explicitly opt in to a rewarded ad for a clearly stated, fixed time extension.
-- Premium removes advertising and the play-time limit while RevenueCat reports the `premium` entitlement as active.
+- Free users can launch games without a time limit and see a small banner outside the launch path.
+- Premium removes every advertising surface while RevenueCat reports the `premium` entitlement as active.
 - Google sign-in identifies the user across reinstalls and devices; it does not prove a purchase by itself.
 - After Firebase sign-in, the app calls RevenueCat `logIn` with the Firebase UID and derives access only from the active `premium` entitlement in `CustomerInfo`.
 - RevenueCat owns store receipt validation and entitlement state. The client must not grant Premium from Firestore writes, SharedPreferences, an email address, or a raw Billing callback.
 - RevenueCat configuration must handle offerings, pending purchases, renewals, grace periods, account hold, cancellation, expiry, refunds, revocations, restore behavior, and anonymous-account merging.
 - RevenueCat webhooks are optional for the client experience but recommended when server-side sync, customer support automation, or independent audit history is needed.
-- Rewarded ads are user-initiated and displayed outside the launch action. Never insert an unexpected interstitial between tapping a game and opening it.
+- Banner ads stay outside the launch action. Never insert an interstitial between tapping a game and opening it.
 
 ### Before production
 

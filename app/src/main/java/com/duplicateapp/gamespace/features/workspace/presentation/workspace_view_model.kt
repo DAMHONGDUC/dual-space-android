@@ -1,23 +1,14 @@
 package com.duplicateapp.gamespace.features.workspace.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import android.content.Context
 import android.app.Activity
-import com.duplicateapp.gamespace.BuildConfig
-import com.duplicateapp.gamespace.features.ads.data.RewardedAdManager
-import com.duplicateapp.gamespace.features.auth.data.FirebaseAuthRepository
 import com.duplicateapp.gamespace.features.auth.data.GoogleCredentialProvider
 import com.duplicateapp.gamespace.features.auth.domain.AuthRepository
 import com.duplicateapp.gamespace.features.auth.domain.AuthSession
-import com.duplicateapp.gamespace.features.premium.data.RevenueCatPremiumRepository
 import com.duplicateapp.gamespace.features.premium.data.RevenueCatPurchaseManager
 import com.duplicateapp.gamespace.features.premium.domain.PremiumAccess
 import com.duplicateapp.gamespace.features.premium.domain.PremiumRepository
 import com.duplicateapp.gamespace.features.premium.domain.PremiumStatus
-import com.duplicateapp.gamespace.features.workspace.data.AndroidProfileProvisioner
-import com.duplicateapp.gamespace.features.workspace.data.AndroidGameCatalog
-import com.duplicateapp.gamespace.features.workspace.data.GameLauncherProvider
 import com.duplicateapp.gamespace.features.workspace.domain.GameLaunchResult
 import com.duplicateapp.gamespace.features.workspace.domain.GameLauncher
 import com.duplicateapp.gamespace.features.workspace.domain.LaunchUnavailableReason
@@ -27,16 +18,11 @@ import com.duplicateapp.gamespace.features.workspace.domain.GameCatalog
 import com.duplicateapp.gamespace.features.workspace.domain.InstalledGame
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileTarget
 import androidx.lifecycle.viewModelScope
-import com.duplicateapp.gamespace.features.quota.data.LocalQuotaTracker
 import com.duplicateapp.gamespace.features.onboarding.data.OnboardingStore
-import com.duplicateapp.gamespace.features.workspace.data.PersistentWorkspaceRepository
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.WorkspaceRepository
 import com.duplicateapp.gamespace.features.workspace.domain.SettingsNavigator
 import com.duplicateapp.gamespace.features.workspace.domain.SessionState
-import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
-import com.duplicateapp.gamespace.features.settings.data.LocalThemeRepository
-import com.duplicateapp.gamespace.features.settings.data.LocalLanguageRepository
 import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
 import com.duplicateapp.gamespace.features.settings.domain.LanguageRepository
 import com.duplicateapp.gamespace.features.settings.domain.ThemeMode
@@ -54,7 +40,6 @@ class WorkspaceViewModel(
     private val gameLauncher: GameLauncher,
     private val profileProvisioner: ProfileProvisioner,
     private val gameCatalog: GameCatalog,
-    private val quotaTracker: LocalQuotaTracker,
     private val onboardingStore: OnboardingStore,
     private val settingsNavigator: SettingsNavigator,
     private val themeRepository: ThemeRepository,
@@ -63,14 +48,12 @@ class WorkspaceViewModel(
     private val premiumRepository: PremiumRepository,
     private val googleCredentialProvider: GoogleCredentialProvider,
     private val purchaseManager: RevenueCatPurchaseManager,
-    private val rewardedAdManager: RewardedAdManager,
 ) : ViewModel() {
     private val mutableSelectedSessionId = MutableStateFlow(repository.selectedSessionId.value)
     private val mutableLaunchMessage = MutableStateFlow<Int?>(null)
     private val mutableProfileProvisioningStatus = MutableStateFlow(profileProvisioner.status())
     private val mutableInstalledGames = MutableStateFlow<List<InstalledGame>>(emptyList())
     private val mutableIsAddSessionVisible = MutableStateFlow(false)
-    private val mutableRemainingQuotaHours = MutableStateFlow(quotaTracker.remainingHours())
     private val mutableIsOnboardingVisible = MutableStateFlow(!onboardingStore.isComplete())
     private val mutableIsDeleteConfirmationVisible = MutableStateFlow(false)
     private val mutablePendingDeleteSessionIds = MutableStateFlow<List<String>>(emptyList())
@@ -85,7 +68,6 @@ class WorkspaceViewModel(
     val sessions: StateFlow<List<GameSession>> = repository.sessions
     val selectedSessionId: StateFlow<String?> = mutableSelectedSessionId.asStateFlow()
     val launchMessage: StateFlow<Int?> = mutableLaunchMessage.asStateFlow()
-    val remainingQuotaHours: StateFlow<Int> = mutableRemainingQuotaHours.asStateFlow()
     val profileProvisioningStatus: StateFlow<ProfileProvisioningStatus> = mutableProfileProvisioningStatus.asStateFlow()
     val installedGames: StateFlow<List<InstalledGame>> = mutableInstalledGames.asStateFlow()
     val isAddSessionVisible: StateFlow<Boolean> = mutableIsAddSessionVisible.asStateFlow()
@@ -132,16 +114,11 @@ class WorkspaceViewModel(
     }
 
     private fun launch(session: GameSession) {
-        if (!quotaTracker.canLaunch(mutablePremiumAccess.value)) {
-            mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.quota_exhausted
-            return
-        }
         viewModelScope.launch {
             repository.updateSessionState(session.id, SessionState.starting)
             mutableLaunchMessage.value = when (val result: GameLaunchResult = gameLauncher.launch(session)) {
                 is GameLaunchResult.Opened -> {
                     repository.updateSessionState(session.id, SessionState.running)
-                    quotaTracker.startSession()
                     com.duplicateapp.gamespace.R.string.game_opened
                 }
                 is GameLaunchResult.Unavailable -> {
@@ -167,8 +144,6 @@ class WorkspaceViewModel(
     }
 
     fun refreshProfileStatus() {
-        quotaTracker.settleSession()
-        mutableRemainingQuotaHours.value = quotaTracker.remainingHours()
         mutableProfileProvisioningStatus.value = profileProvisioner.status()
     }
 
@@ -301,7 +276,7 @@ class WorkspaceViewModel(
         mutableIsMonetizationBusy.value = true
         viewModelScope.launch {
             mutablePremiumAccess.value = premiumRepository.restore()
-            mutableLaunchMessage.value = if (mutablePremiumAccess.value.hasUnlimitedPlayTime) {
+            mutableLaunchMessage.value = if (mutablePremiumAccess.value.removesAds) {
                 com.duplicateapp.gamespace.R.string.premium_restored
             } else {
                 com.duplicateapp.gamespace.R.string.premium_not_found
@@ -327,50 +302,10 @@ class WorkspaceViewModel(
         )
     }
 
-    fun watchRewardedAd(activity: Activity) {
-        if (mutableIsMonetizationBusy.value || mutablePremiumAccess.value.removesAds) return
-        mutableIsMonetizationBusy.value = true
-        rewardedAdManager.show(
-            activity = activity,
-            onReward = { rewardId ->
-                quotaTracker.grantReward(rewardId)
-                mutableRemainingQuotaHours.value = quotaTracker.remainingHours()
-                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.reward_granted
-                mutableIsMonetizationBusy.value = false
-            },
-            onUnavailable = {
-                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.reward_unavailable
-                mutableIsMonetizationBusy.value = false
-            },
-        )
-    }
-
     private fun refreshPremiumAccess() {
         viewModelScope.launch {
             mutablePremiumAccess.value = mutableAuthSession.value?.let { premiumRepository.identify(it.userId) }
                 ?: premiumRepository.refresh()
-        }
-    }
-
-    class Factory(private val context: Context) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return WorkspaceViewModel(
-                PersistentWorkspaceRepository(context),
-                GameLauncherProvider.create(context),
-                AndroidProfileProvisioner(context),
-                AndroidGameCatalog(context),
-                LocalQuotaTracker(context),
-                OnboardingStore(context),
-                AndroidSettingsNavigator(context),
-                LocalThemeRepository(context),
-                LocalLanguageRepository(context),
-                FirebaseAuthRepository(context),
-                RevenueCatPremiumRepository(context, BuildConfig.REVENUECAT_API_KEY, BuildConfig.REVENUECAT_ENTITLEMENT_ID),
-                GoogleCredentialProvider(BuildConfig.FIREBASE_WEB_CLIENT_ID),
-                RevenueCatPurchaseManager(BuildConfig.REVENUECAT_ENTITLEMENT_ID),
-                RewardedAdManager(BuildConfig.ADMOB_REWARDED_AD_UNIT_ID),
-            ) as T
         }
     }
 

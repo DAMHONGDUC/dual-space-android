@@ -2,6 +2,7 @@ package com.duplicateapp.gamespace.features.workspace.presentation.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
@@ -25,14 +26,13 @@ class SettingsDialogTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun freePlanOffersSignInPurchaseAndRewardedTime() {
+    fun freePlanOffersSignInAndAdFreeUpgrade() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         var signInRequested = false
 
         composeRule.setContent {
             MaterialTheme {
                 settingsDialog(
-                    remainingQuotaHours = 10,
                     profileStatus = ProfileProvisioningStatus.available,
                     themeMode = ThemeMode.system,
                     appLanguage = AppLanguage.system,
@@ -46,7 +46,6 @@ class SettingsDialogTest {
                     onSignOut = {},
                     onPurchasePremium = {},
                     onRestorePremium = {},
-                    onWatchRewardedAd = {},
                     onDismiss = {},
                 )
             }
@@ -63,7 +62,6 @@ class SettingsDialogTest {
         composeRule.setContent {
             MaterialTheme {
                 settingsDialog(
-                    remainingQuotaHours = 0,
                     profileStatus = ProfileProvisioningStatus.available,
                     themeMode = ThemeMode.system,
                     appLanguage = AppLanguage.system,
@@ -77,13 +75,12 @@ class SettingsDialogTest {
                     onSignOut = {},
                     onPurchasePremium = {},
                     onRestorePremium = {},
-                    onWatchRewardedAd = {},
                     onDismiss = {},
                 )
             }
         }
 
         composeRule.onAllNodesWithText(context.getString(R.string.upgrade_premium)).assertCountEquals(0)
-        composeRule.onAllNodesWithText(context.getString(R.string.watch_ad_for_hour)).assertCountEquals(0)
+        composeRule.onNodeWithText(context.getString(R.string.premium_active)).assertIsDisplayed()
     }
 }

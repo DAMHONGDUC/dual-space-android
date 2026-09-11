@@ -2,6 +2,9 @@ package com.duplicateapp.gamespace.features.workspace.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Modifier
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
@@ -35,7 +37,6 @@ import com.duplicateapp.gamespace.features.premium.domain.PremiumAccess
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun settingsDialog(
-    remainingQuotaHours: Int,
     profileStatus: ProfileProvisioningStatus,
     themeMode: ThemeMode,
     appLanguage: AppLanguage,
@@ -49,7 +50,6 @@ fun settingsDialog(
     onSignOut: () -> Unit,
     onPurchasePremium: () -> Unit,
     onRestorePremium: () -> Unit,
-    onWatchRewardedAd: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val profileLabel: String = stringResource(
@@ -63,11 +63,13 @@ fun settingsDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.settings)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
-                Text(pluralStringResource(R.plurals.settings_quota, remainingQuotaHours, remainingQuotaHours))
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
+            ) {
                 Text(stringResource(R.string.settings_profile, profileLabel))
                 Text(
-                    stringResource(if (premiumAccess.hasUnlimitedPlayTime) R.string.premium_active else R.string.premium_free),
+                    stringResource(if (premiumAccess.removesAds) R.string.premium_active else R.string.premium_free),
                     style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                 )
                 authSession?.let { session ->
@@ -78,9 +80,8 @@ fun settingsDialog(
                 } else {
                     TextButton(onClick = onSignOut, enabled = !isMonetizationBusy) { Text(stringResource(R.string.sign_out)) }
                 }
-                if (!premiumAccess.hasUnlimitedPlayTime) {
+                if (!premiumAccess.removesAds) {
                     TextButton(onClick = onPurchasePremium, enabled = !isMonetizationBusy) { Text(stringResource(R.string.upgrade_premium)) }
-                    TextButton(onClick = onWatchRewardedAd, enabled = !isMonetizationBusy) { Text(stringResource(R.string.watch_ad_for_hour)) }
                 }
                 TextButton(onClick = onRestorePremium, enabled = !isMonetizationBusy) { Text(stringResource(R.string.restore_purchases)) }
                 Text(stringResource(R.string.theme), style = androidx.compose.material3.MaterialTheme.typography.labelLarge)

@@ -21,10 +21,9 @@ The following publisher-owned configuration is required before authentication, a
 
 ## AdMob
 
-- Create the Android app and a rewarded ad unit in the publisher's AdMob account.
-- Choose the exact reward duration displayed to users before they opt in.
-- Record the production AdMob app ID and rewarded ad unit ID in local release configuration.
-- Use Google's demo rewarded unit or registered test devices during development; never click production ads while testing.
+- Create the Android app and a banner ad unit in the publisher's AdMob account.
+- Record the production AdMob app ID and banner ad unit ID in local release configuration.
+- Use Google's demo banner unit or registered test devices during development; never click production ads while testing.
 
 ## Store and release
 

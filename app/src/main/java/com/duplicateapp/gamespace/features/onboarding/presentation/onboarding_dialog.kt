@@ -18,7 +18,7 @@ fun onboardingDialog(onContinue: () -> Unit) {
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
                 Text(stringResource(R.string.onboarding_profiles))
-                Text(stringResource(R.string.onboarding_limit))
+                Text(stringResource(R.string.onboarding_monetization))
                 Text(stringResource(R.string.onboarding_privacy))
             }
         },

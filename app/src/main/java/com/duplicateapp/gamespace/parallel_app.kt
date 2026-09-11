@@ -10,10 +10,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.duplicateapp.gamespace.core.theme.parallelAppTheme
 import com.duplicateapp.gamespace.features.workspace.presentation.workspaceScreen
 import com.duplicateapp.gamespace.features.workspace.presentation.WorkspaceViewModel
+import com.duplicateapp.gamespace.features.workspace.presentation.WorkspaceViewModelFactory
 
 @Composable
 fun parallelAppApp() {
-    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModel.Factory(LocalContext.current))
+    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(LocalContext.current))
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {

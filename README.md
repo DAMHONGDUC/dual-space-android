@@ -1,4 +1,4 @@
-# Parallel_app
+# Parallel Game Space
 
 Android multi-session gaming workspace built with Kotlin and Jetpack Compose. The Google Play build uses Android managed profiles; games open as separate Android tasks because Android does not allow arbitrary third-party activities to be embedded without game-side support.
 
@@ -26,7 +26,7 @@ REVENUECAT_GOOGLE_API_KEY=
 REVENUECAT_ENTITLEMENT_ID=premium
 FIREBASE_WEB_CLIENT_ID=
 ADMOB_APP_ID=
-ADMOB_REWARDED_AD_UNIT_ID=
+ADMOB_BANNER_AD_UNIT_ID=
 ```
 
 `.env.local` is ignored by Git. Gradle/CI properties take precedence over `.env.local`, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
@@ -108,7 +108,7 @@ Before every release:
 1. Update `versionCode` and `versionName` in `app/build.gradle.kts`.
 2. Provide production Firebase, RevenueCat, and AdMob configuration through the protected release environment.
 3. Configure RevenueCat's Google Play product and attach it to the `premium` entitlement.
-4. Confirm the AdMob app and rewarded-ad unit belong to the production package.
+4. Confirm the AdMob app and banner-ad unit belong to the production package.
 5. Run unit tests, connected UI tests, and lint.
 6. Review [store readiness](docs/store-readiness.md) and the [Google Play launch plan](docs/google-play-launch-plan.md).
 
@@ -148,6 +148,6 @@ Do not upload the `qa` flavor to Google Play.
 
 - No auto-click, gameplay macros, memory editing, fake GPS, anti-cheat bypass, or silent installation.
 - The `prod` flavor must remain independent from `packages/the_universe`.
-- Premium removes ads and the monthly play-time limit.
-- Free users receive 180 session-hours per monthly cycle and can earn additional time through rewarded ads.
+- Free users can launch games without a time limit and see a small banner outside the launch path.
+- Premium removes all advertising.
 - A future container must reject apps declaring `REQUIRE_SECURE_ENV`.

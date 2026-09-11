@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileTarget
+import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
 import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -32,11 +33,13 @@ class GameLibraryTest {
             MaterialTheme {
                 gameLibrary(
                     sessions = emptyList(),
-                    remainingQuotaHours = 180,
+                    profileStatus = ProfileProvisioningStatus.alreadyCreated,
                     contentPadding = PaddingValues(),
                     onLaunch = {},
                     onAdd = { addRequested = true },
                     onDeleteGame = {},
+                    onCreateProfile = {},
+                    onOpenAndroidSettings = {},
                     onSettings = {},
                 )
             }
@@ -61,19 +64,21 @@ class GameLibraryTest {
             MaterialTheme {
                 gameLibrary(
                     sessions = sessions,
-                    remainingQuotaHours = 120,
+                    profileStatus = ProfileProvisioningStatus.alreadyCreated,
                     contentPadding = PaddingValues(),
                     onLaunch = launchedSessionIds::add,
                     onAdd = {},
                     onDeleteGame = {},
+                    onCreateProfile = {},
+                    onOpenAndroidSettings = {},
                     onSettings = {},
                 )
             }
         }
 
         composeRule.onNodeWithText(gameName).assertIsDisplayed()
-        composeRule.onNodeWithText(context.getString(R.string.original_copy)).performClick()
-        composeRule.onNodeWithText(context.getString(R.string.copy_one)).performClick()
+        composeRule.onNodeWithText("personal").performClick()
+        composeRule.onNodeWithText("managed").performClick()
 
         assertEquals(listOf("personal", "managed"), launchedSessionIds)
     }

@@ -9,6 +9,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.LocalActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.duplicateapp.gamespace.features.onboarding.presentation.onboardingDialog
+import com.duplicateapp.gamespace.BuildConfig
+import com.duplicateapp.gamespace.features.ads.presentation.bannerAd
 import com.duplicateapp.gamespace.features.workspace.domain.*
 import com.duplicateapp.gamespace.features.workspace.presentation.components.*
 
@@ -19,7 +21,6 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     val profileStatus by viewModel.profileProvisioningStatus.collectAsStateWithLifecycle()
     val installedGames by viewModel.installedGames.collectAsStateWithLifecycle()
     val isAddVisible by viewModel.isAddSessionVisible.collectAsStateWithLifecycle()
-    val remainingHours by viewModel.remainingQuotaHours.collectAsStateWithLifecycle()
     val isOnboardingVisible by viewModel.isOnboardingVisible.collectAsStateWithLifecycle()
     val isDeleteVisible by viewModel.isDeleteConfirmationVisible.collectAsStateWithLifecycle()
     val deleteConfirmationName by viewModel.deleteConfirmationName.collectAsStateWithLifecycle()
@@ -50,7 +51,6 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     if (isOnboardingVisible) onboardingDialog(viewModel::completeOnboarding)
     if (isSettingsVisible) {
         settingsDialog(
-            remainingQuotaHours = remainingHours,
             profileStatus = profileStatus,
             themeMode = themeMode,
             appLanguage = appLanguage,
@@ -67,7 +67,6 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             onSignOut = viewModel::signOut,
             onPurchasePremium = { activity?.let(viewModel::purchasePremium) },
             onRestorePremium = viewModel::restorePremium,
-            onWatchRewardedAd = { activity?.let(viewModel::watchRewardedAd) },
             onDismiss = { isSettingsVisible = false },
         )
     }
@@ -75,14 +74,21 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
         deleteGameDialog(deleteConfirmationName.orEmpty(), viewModel::deleteSelectedSession, viewModel::dismissDeleteConfirmation)
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbar) }) { padding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbar) },
+        bottomBar = {
+            if (premiumAccess.showsAds) bannerAd(BuildConfig.ADMOB_BANNER_AD_UNIT_ID)
+        },
+    ) { padding ->
         gameLibrary(
             sessions = sessions,
-            remainingQuotaHours = remainingHours,
+            profileStatus = profileStatus,
             contentPadding = padding,
             onLaunch = viewModel::launchSession,
             onAdd = { viewModel.showAddSession() },
             onDeleteGame = viewModel::requestDeleteGame,
+            onCreateProfile = viewModel::createProfile,
+            onOpenAndroidSettings = viewModel::openAndroidSettings,
             onSettings = { isSettingsVisible = true },
         )
     }

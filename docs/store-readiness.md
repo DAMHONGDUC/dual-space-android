@@ -22,14 +22,14 @@ The `qa` flavor is not a Google Play artifact. It still contains the broad permi
 
 Parallel Space advertises 100M+ installs, 24 languages, private/hidden apps, secure lock, quick switching, concurrent accounts, and a Pro tier. 2Accounts advertises 50M+ installs and monetizes unlimited clones plus Secret Zone and Security Lock. Both products reveal a mature market, but reviews repeatedly surface reliability, notification, login, pricing, and account-identification friction.
 
-The best position is not “another unlimited cloner.” Position Parallel_app as the trustworthy game-account switcher: clear account identity, compatibility status per game, honest device limitations, no ads in the game-launch path, and privacy controls users can understand.
+The best position is not “another unlimited cloner.” Position Parallel Game Space as the trustworthy game-account switcher: clear account identity, compatibility status per game, honest device limitations, no ads in the game-launch path, and privacy controls users can understand.
 
 ## Recommended paid roadmap
 
 ### Ship first
 
-- Free: two accounts per game, limited monthly usage, system/light/dark theme, local-only data, and a compatibility report.
-- Pro subscription: more profiles where the device/runtime supports them, unlimited usage, per-account custom icon/color/name, launch shortcuts, app lock, notification routing, and priority compatibility updates.
+- Free: two accounts per game, unrestricted launching, a small banner ad, system/light/dark theme, local-only data, and a compatibility report.
+- Pro subscription: no ads, plus future convenience features such as custom account identity, shortcuts, app lock, notification routing, and priority compatibility updates.
 - Lifetime purchase: offer this only for durable local features; recurring compatibility maintenance is better matched to a subscription.
 
 ### Highest-value differentiators
@@ -48,7 +48,7 @@ Avoid selling fake GPS, device-identity spoofing, root hiding, anti-cheat bypass
 - Test a monthly and annual Pro plan plus a clearly labeled lifetime purchase for local features.
 - Gate convenience and scale, not privacy or basic stability.
 - Show full billing amount, renewal cadence, trial conversion, and cancellation access in every supported locale.
-- Start pricing experiments only after retention and successful-launch metrics are trustworthy; a quota based only on local elapsed time is easy to reset and should not control paid entitlement.
+- Start pricing experiments only after retention and successful-launch metrics are trustworthy; Premium sells an ad-free experience rather than access to basic launching.
 
 ## Sources
 

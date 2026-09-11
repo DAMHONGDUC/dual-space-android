@@ -11,7 +11,7 @@ data class PremiumAccess(
     val userId: String? = null,
 ) {
     val removesAds: Boolean = status == PremiumStatus.active
-    val hasUnlimitedPlayTime: Boolean = status == PremiumStatus.active
+    val showsAds: Boolean = status == PremiumStatus.inactive
 }
 
 interface PremiumRepository {

@@ -15,7 +15,7 @@ fun configuredValue(name: String, fallback: String = ""): String =
 val revenueCatApiKey: String = configuredValue("REVENUECAT_GOOGLE_API_KEY")
 val revenueCatEntitlementId: String = configuredValue("REVENUECAT_ENTITLEMENT_ID", "premium")
 val firebaseWebClientId: String = configuredValue("FIREBASE_WEB_CLIENT_ID")
-val admobRewardedAdUnitId: String = configuredValue("ADMOB_REWARDED_AD_UNIT_ID")
+val admobBannerAdUnitId: String = configuredValue("ADMOB_BANNER_AD_UNIT_ID")
 val admobAppId: String = configuredValue("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
 
 fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
@@ -39,7 +39,7 @@ android {
         buildConfigField("String", "REVENUECAT_API_KEY", quotedBuildConfig(revenueCatApiKey))
         buildConfigField("String", "REVENUECAT_ENTITLEMENT_ID", quotedBuildConfig(revenueCatEntitlementId))
         buildConfigField("String", "FIREBASE_WEB_CLIENT_ID", quotedBuildConfig(firebaseWebClientId))
-        buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", quotedBuildConfig(admobRewardedAdUnitId))
+        buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(admobBannerAdUnitId))
         manifestPlaceholders["admobAppId"] = admobAppId
     }
 

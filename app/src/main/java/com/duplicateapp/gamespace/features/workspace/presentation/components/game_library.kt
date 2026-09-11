@@ -44,11 +44,13 @@ private data class GameRowModel(
 @Composable
 fun gameLibrary(
     sessions: List<GameSession>,
-    remainingQuotaHours: Int,
+    profileStatus: ProfileProvisioningStatus,
     contentPadding: PaddingValues,
     onLaunch: (String) -> Unit,
     onAdd: () -> Unit,
     onDeleteGame: (String) -> Unit,
+    onCreateProfile: () -> Unit,
+    onOpenAndroidSettings: () -> Unit,
     onSettings: () -> Unit,
 ) {
     val gameRows: List<GameRowModel> = remember(sessions) {
@@ -59,7 +61,10 @@ fun gameLibrary(
 
     Box(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            libraryTopBar(sessions.size, remainingQuotaHours, onSettings)
+            libraryTopBar(sessions.size, onSettings)
+            if (profileStatus != ProfileProvisioningStatus.alreadyCreated) {
+                profileHealthCard(profileStatus, onCreateProfile, onOpenAndroidSettings)
+            }
             if (gameRows.isEmpty()) {
                 emptyLibrary(onAdd, Modifier.weight(1f))
             } else {
@@ -84,9 +89,54 @@ fun gameLibrary(
     }
 }
 
+@Composable
+private fun profileHealthCard(
+    profileStatus: ProfileProvisioningStatus,
+    onCreateProfile: () -> Unit,
+    onOpenAndroidSettings: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = ParallelAppDimensions.space16),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(ParallelAppDimensions.space12),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.second_copy_check_title), fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(
+                        if (profileStatus == ProfileProvisioningStatus.available) {
+                            R.string.second_copy_setup_description
+                        } else {
+                            R.string.second_copy_unsupported
+                        },
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            TextButton(
+                onClick = if (profileStatus == ProfileProvisioningStatus.available) onCreateProfile else onOpenAndroidSettings,
+            ) {
+                Text(
+                    stringResource(
+                        if (profileStatus == ProfileProvisioningStatus.available) {
+                            R.string.enable_second_copy
+                        } else {
+                            R.string.android_settings
+                        },
+                    ),
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun libraryTopBar(sessionCount: Int, remainingQuotaHours: Int, onSettings: () -> Unit) {
+private fun libraryTopBar(sessionCount: Int, onSettings: () -> Unit) {
     TopAppBar(
         title = {
             Column {
@@ -99,11 +149,6 @@ private fun libraryTopBar(sessionCount: Int, remainingQuotaHours: Int, onSetting
             }
         },
         actions = {
-            Text(
-                stringResource(R.string.quota_hours_compact, remainingQuotaHours),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelLarge,
-            )
             IconButton(onClick = onSettings) {
                 Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings))
             }
@@ -123,10 +168,10 @@ private fun gameRow(game: GameRowModel, onLaunch: (String) -> Unit, onDeleteGame
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    game.packageName,
+                    game.gameName,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -140,16 +185,11 @@ private fun gameRow(game: GameRowModel, onLaunch: (String) -> Unit, onDeleteGame
                 horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
             ) {
                 gameIcon(game.packageName)
-                Text(
-                    game.gameName,
-                    modifier = Modifier.widthIn(min = ParallelAppDimensions.gameNameMinWidth),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
                 Spacer(modifier = Modifier.weight(1f))
-                Row(horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
+                ) {
                     game.sessions.forEach { session -> accountButton(session, onLaunch) }
                 }
             }
@@ -173,11 +213,15 @@ private fun accountButton(session: GameSession, onLaunch: (String) -> Unit) {
             Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(ParallelAppDimensions.iconSmall))
             Column(modifier = Modifier.padding(start = ParallelAppDimensions.space6)) {
                 Text(
-                    stringResource(if (session.profileTarget == ProfileTarget.personal) R.string.original_copy else R.string.copy_one),
+                    session.name,
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1,
                 )
-                Text(sessionStateLabel(session.state), style = MaterialTheme.typography.labelSmall, maxLines = 1)
+                Text(
+                    stringResource(if (session.profileTarget == ProfileTarget.personal) R.string.original_copy else R.string.copy_one),
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                )
             }
         }
     }
