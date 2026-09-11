@@ -7,6 +7,7 @@ val revenueCatApiKey: String = providers.gradleProperty("REVENUECAT_GOOGLE_API_K
 val revenueCatEntitlementId: String = providers.gradleProperty("REVENUECAT_ENTITLEMENT_ID").orElse("premium").get()
 val firebaseWebClientId: String = providers.gradleProperty("FIREBASE_WEB_CLIENT_ID").orElse("").get()
 val admobRewardedAdUnitId: String = providers.gradleProperty("ADMOB_REWARDED_AD_UNIT_ID").orElse("").get()
+val admobAppId: String = providers.gradleProperty("ADMOB_APP_ID").orElse("ca-app-pub-3940256099942544~3347511713").get()
 
 fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
@@ -30,6 +31,7 @@ android {
         buildConfigField("String", "REVENUECAT_ENTITLEMENT_ID", quotedBuildConfig(revenueCatEntitlementId))
         buildConfigField("String", "FIREBASE_WEB_CLIENT_ID", quotedBuildConfig(firebaseWebClientId))
         buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", quotedBuildConfig(admobRewardedAdUnitId))
+        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     flavorDimensions += "distribution"

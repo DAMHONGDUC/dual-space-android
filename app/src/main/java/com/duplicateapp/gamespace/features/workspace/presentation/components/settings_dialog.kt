@@ -29,6 +29,8 @@ import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
 import com.duplicateapp.gamespace.features.settings.domain.ThemeMode
 import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
+import com.duplicateapp.gamespace.features.auth.domain.AuthSession
+import com.duplicateapp.gamespace.features.premium.domain.PremiumAccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,9 +39,17 @@ fun settingsDialog(
     profileStatus: ProfileProvisioningStatus,
     themeMode: ThemeMode,
     appLanguage: AppLanguage,
+    authSession: AuthSession?,
+    premiumAccess: PremiumAccess,
+    isMonetizationBusy: Boolean,
     onThemeModeChange: (ThemeMode) -> Unit,
     onLanguageChange: (AppLanguage) -> Unit,
     onOpenAndroidSettings: () -> Unit,
+    onSignIn: () -> Unit,
+    onSignOut: () -> Unit,
+    onPurchasePremium: () -> Unit,
+    onRestorePremium: () -> Unit,
+    onWatchRewardedAd: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val profileLabel: String = stringResource(
@@ -56,6 +66,23 @@ fun settingsDialog(
             Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
                 Text(pluralStringResource(R.plurals.settings_quota, remainingQuotaHours, remainingQuotaHours))
                 Text(stringResource(R.string.settings_profile, profileLabel))
+                Text(
+                    stringResource(if (premiumAccess.hasUnlimitedPlayTime) R.string.premium_active else R.string.premium_free),
+                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                )
+                authSession?.let { session ->
+                    Text(stringResource(R.string.signed_in_as, session.email ?: session.displayName ?: session.userId))
+                }
+                if (authSession == null) {
+                    TextButton(onClick = onSignIn, enabled = !isMonetizationBusy) { Text(stringResource(R.string.sign_in_google)) }
+                } else {
+                    TextButton(onClick = onSignOut, enabled = !isMonetizationBusy) { Text(stringResource(R.string.sign_out)) }
+                }
+                if (!premiumAccess.hasUnlimitedPlayTime) {
+                    TextButton(onClick = onPurchasePremium, enabled = !isMonetizationBusy) { Text(stringResource(R.string.upgrade_premium)) }
+                    TextButton(onClick = onWatchRewardedAd, enabled = !isMonetizationBusy) { Text(stringResource(R.string.watch_ad_for_hour)) }
+                }
+                TextButton(onClick = onRestorePremium, enabled = !isMonetizationBusy) { Text(stringResource(R.string.restore_purchases)) }
                 Text(stringResource(R.string.theme), style = androidx.compose.material3.MaterialTheme.typography.labelLarge)
                 SingleChoiceSegmentedButtonRow {
                     ThemeMode.entries.forEachIndexed { index, mode ->

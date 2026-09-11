@@ -83,4 +83,19 @@
     <string name="choose_game_to_copy">Chọn game</string>
     <string name="empty_library_title">Thêm game đầu tiên</string>
     <string name="empty_library_description">Bấm Thêm, chọn game, sau đó chạm biểu tượng để chơi.</string>
+    <string name="premium_active">Premium đang hoạt động · chơi không giới hạn, không quảng cáo</string>
+    <string name="premium_free">Gói miễn phí · giới hạn thời gian chơi</string>
+    <string name="signed_in_as">Đã đăng nhập: %1$s</string>
+    <string name="sign_in_google">Đăng nhập bằng Google</string>
+    <string name="sign_out">Đăng xuất</string>
+    <string name="upgrade_premium">Nâng cấp Premium</string>
+    <string name="restore_purchases">Khôi phục giao dịch</string>
+    <string name="watch_ad_for_hour">Xem quảng cáo để thêm 1 giờ</string>
+    <string name="sign_in_failed">Không thể đăng nhập Google. Hãy kiểm tra cấu hình Firebase.</string>
+    <string name="premium_restored">Đã khôi phục Premium.</string>
+    <string name="premium_not_found">Không tìm thấy giao dịch Premium đang hoạt động.</string>
+    <string name="premium_activated">Đã kích hoạt Premium.</string>
+    <string name="premium_purchase_failed">Hiện chưa thể mua Premium. Vui lòng thử lại.</string>
+    <string name="reward_granted">Đã cộng thêm 1 giờ.</string>
+    <string name="reward_unavailable">Hiện chưa có quảng cáo thưởng. Vui lòng thử lại.</string>
 </resources>

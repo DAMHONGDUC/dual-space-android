@@ -3,6 +3,18 @@ package com.duplicateapp.gamespace.features.workspace.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import android.content.Context
+import android.app.Activity
+import com.duplicateapp.gamespace.BuildConfig
+import com.duplicateapp.gamespace.features.ads.data.RewardedAdManager
+import com.duplicateapp.gamespace.features.auth.data.FirebaseAuthRepository
+import com.duplicateapp.gamespace.features.auth.data.GoogleCredentialProvider
+import com.duplicateapp.gamespace.features.auth.domain.AuthRepository
+import com.duplicateapp.gamespace.features.auth.domain.AuthSession
+import com.duplicateapp.gamespace.features.premium.data.RevenueCatPremiumRepository
+import com.duplicateapp.gamespace.features.premium.data.RevenueCatPurchaseManager
+import com.duplicateapp.gamespace.features.premium.domain.PremiumAccess
+import com.duplicateapp.gamespace.features.premium.domain.PremiumRepository
+import com.duplicateapp.gamespace.features.premium.domain.PremiumStatus
 import com.duplicateapp.gamespace.features.workspace.data.AndroidProfileProvisioner
 import com.duplicateapp.gamespace.features.workspace.data.AndroidGameCatalog
 import com.duplicateapp.gamespace.features.workspace.data.GameLauncherProvider
@@ -47,6 +59,11 @@ class WorkspaceViewModel(
     private val settingsNavigator: SettingsNavigator,
     private val themeRepository: ThemeRepository,
     private val languageRepository: LanguageRepository,
+    private val authRepository: AuthRepository,
+    private val premiumRepository: PremiumRepository,
+    private val googleCredentialProvider: GoogleCredentialProvider,
+    private val purchaseManager: RevenueCatPurchaseManager,
+    private val rewardedAdManager: RewardedAdManager,
 ) : ViewModel() {
     private val mutableSelectedSessionId = MutableStateFlow(repository.selectedSessionId.value)
     private val mutableLaunchMessage = MutableStateFlow<Int?>(null)
@@ -60,6 +77,9 @@ class WorkspaceViewModel(
     private val mutableDeleteConfirmationName = MutableStateFlow<String?>(null)
     private val mutableThemeMode = MutableStateFlow(themeRepository.load())
     private val mutableAppLanguage = MutableStateFlow(languageRepository.load())
+    private val mutableAuthSession = MutableStateFlow(authRepository.currentSession())
+    private val mutablePremiumAccess = MutableStateFlow(PremiumAccess(PremiumStatus.unknown))
+    private val mutableIsMonetizationBusy = MutableStateFlow(false)
     private var catalogLoadJob: Job? = null
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
@@ -74,6 +94,13 @@ class WorkspaceViewModel(
     val deleteConfirmationName: StateFlow<String?> = mutableDeleteConfirmationName.asStateFlow()
     val themeMode: StateFlow<ThemeMode> = mutableThemeMode.asStateFlow()
     val appLanguage: StateFlow<AppLanguage> = mutableAppLanguage.asStateFlow()
+    val authSession: StateFlow<AuthSession?> = mutableAuthSession.asStateFlow()
+    val premiumAccess: StateFlow<PremiumAccess> = mutablePremiumAccess.asStateFlow()
+    val isMonetizationBusy: StateFlow<Boolean> = mutableIsMonetizationBusy.asStateFlow()
+
+    init {
+        refreshPremiumAccess()
+    }
 
     fun setThemeMode(themeMode: ThemeMode) {
         themeRepository.save(themeMode)
@@ -105,7 +132,7 @@ class WorkspaceViewModel(
     }
 
     private fun launch(session: GameSession) {
-        if (!quotaTracker.canLaunch()) {
+        if (!quotaTracker.canLaunch(mutablePremiumAccess.value)) {
             mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.quota_exhausted
             return
         }
@@ -241,6 +268,90 @@ class WorkspaceViewModel(
         }
     }
 
+    fun signIn(activity: Activity) {
+        if (mutableIsMonetizationBusy.value) return
+        mutableIsMonetizationBusy.value = true
+        viewModelScope.launch {
+            val token: String? = googleCredentialProvider.getIdToken(activity)
+            val session: AuthSession? = token?.let { authRepository.authenticateGoogleIdToken(it) }
+            mutableAuthSession.value = session
+            if (session == null) {
+                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.sign_in_failed
+            } else {
+                mutablePremiumAccess.value = premiumRepository.identify(session.userId)
+            }
+            mutableIsMonetizationBusy.value = false
+        }
+    }
+
+    fun signOut() {
+        if (mutableIsMonetizationBusy.value) return
+        mutableIsMonetizationBusy.value = true
+        viewModelScope.launch {
+            premiumRepository.logOut()
+            authRepository.signOut()
+            mutableAuthSession.value = null
+            mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
+            mutableIsMonetizationBusy.value = false
+        }
+    }
+
+    fun restorePremium() {
+        if (mutableIsMonetizationBusy.value) return
+        mutableIsMonetizationBusy.value = true
+        viewModelScope.launch {
+            mutablePremiumAccess.value = premiumRepository.restore()
+            mutableLaunchMessage.value = if (mutablePremiumAccess.value.hasUnlimitedPlayTime) {
+                com.duplicateapp.gamespace.R.string.premium_restored
+            } else {
+                com.duplicateapp.gamespace.R.string.premium_not_found
+            }
+            mutableIsMonetizationBusy.value = false
+        }
+    }
+
+    fun purchasePremium(activity: Activity) {
+        if (mutableIsMonetizationBusy.value) return
+        mutableIsMonetizationBusy.value = true
+        purchaseManager.purchase(
+            activity = activity,
+            onResult = { access ->
+                mutablePremiumAccess.value = access
+                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.premium_activated
+                mutableIsMonetizationBusy.value = false
+            },
+            onUnavailable = {
+                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.premium_purchase_failed
+                mutableIsMonetizationBusy.value = false
+            },
+        )
+    }
+
+    fun watchRewardedAd(activity: Activity) {
+        if (mutableIsMonetizationBusy.value || mutablePremiumAccess.value.removesAds) return
+        mutableIsMonetizationBusy.value = true
+        rewardedAdManager.show(
+            activity = activity,
+            onReward = { rewardId ->
+                quotaTracker.grantReward(rewardId)
+                mutableRemainingQuotaHours.value = quotaTracker.remainingHours()
+                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.reward_granted
+                mutableIsMonetizationBusy.value = false
+            },
+            onUnavailable = {
+                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.reward_unavailable
+                mutableIsMonetizationBusy.value = false
+            },
+        )
+    }
+
+    private fun refreshPremiumAccess() {
+        viewModelScope.launch {
+            mutablePremiumAccess.value = mutableAuthSession.value?.let { premiumRepository.identify(it.userId) }
+                ?: premiumRepository.refresh()
+        }
+    }
+
     class Factory(private val context: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -254,6 +365,11 @@ class WorkspaceViewModel(
                 AndroidSettingsNavigator(context),
                 LocalThemeRepository(context),
                 LocalLanguageRepository(context),
+                FirebaseAuthRepository(context),
+                RevenueCatPremiumRepository(context, BuildConfig.REVENUECAT_API_KEY, BuildConfig.REVENUECAT_ENTITLEMENT_ID),
+                GoogleCredentialProvider(BuildConfig.FIREBASE_WEB_CLIENT_ID),
+                RevenueCatPurchaseManager(BuildConfig.REVENUECAT_ENTITLEMENT_ID),
+                RewardedAdManager(BuildConfig.ADMOB_REWARDED_AD_UNIT_ID),
             ) as T
         }
     }

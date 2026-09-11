@@ -25,6 +25,9 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     val deleteConfirmationName by viewModel.deleteConfirmationName.collectAsStateWithLifecycle()
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val appLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
+    val authSession by viewModel.authSession.collectAsStateWithLifecycle()
+    val premiumAccess by viewModel.premiumAccess.collectAsStateWithLifecycle()
+    val isMonetizationBusy by viewModel.isMonetizationBusy.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
     val snackbar = remember { SnackbarHostState() }
     val launchMessage = launchMessageResId?.let { stringResource(it) }
@@ -51,12 +54,20 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             profileStatus = profileStatus,
             themeMode = themeMode,
             appLanguage = appLanguage,
+            authSession = authSession,
+            premiumAccess = premiumAccess,
+            isMonetizationBusy = isMonetizationBusy,
             onThemeModeChange = viewModel::setThemeMode,
             onLanguageChange = { language ->
                 viewModel.setAppLanguage(language)
                 activity?.recreate()
             },
             onOpenAndroidSettings = viewModel::openAndroidSettings,
+            onSignIn = { activity?.let(viewModel::signIn) },
+            onSignOut = viewModel::signOut,
+            onPurchasePremium = { activity?.let(viewModel::purchasePremium) },
+            onRestorePremium = viewModel::restorePremium,
+            onWatchRewardedAd = { activity?.let(viewModel::watchRewardedAd) },
             onDismiss = { isSettingsVisible = false },
         )
     }
