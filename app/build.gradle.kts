@@ -50,8 +50,8 @@ android {
         }
         create("qa") {
             dimension = "distribution"
-            applicationIdSuffix = ".qa"
-            versionNameSuffix = "-qa"
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
         }
     }
 

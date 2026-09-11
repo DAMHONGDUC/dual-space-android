@@ -4,7 +4,7 @@ import android.content.Context
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.virtualization.data.TheUniverseRuntimeBootstrap
 
-class QaParallelAppApplication : ParallelAppApplication() {
+class TestParallelAppApplication : ParallelAppApplication() {
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         try {

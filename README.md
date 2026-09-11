@@ -48,12 +48,12 @@ For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace
 1. Open the repository root, not the `app` directory.
 2. Run **File → Sync Project with Gradle Files**.
 3. Open **Build Variants** and select `qaDebug` for the `app` module.
-4. Select the shared **appDebug** run configuration.
+4. Select the shared **test** run configuration.
 5. Select an API 29+ device and press Run.
 
-The repository also provides **appRelease**, which runs `:app:bundleProdRelease` directly from Android Studio.
+The repository also provides **prod**, which runs `:app:bundleProdRelease` directly from Android Studio.
 
-Use `qaDebug` for local testing; it includes the container runtime and uses application ID `com.duplicateapp.gamespace.qa`. Use `prodDebug` for Google Play-safe verification.
+Use the **test** configuration for local testing; it builds `qaDebug`, includes the container runtime, and installs as `com.duplicateapp.gamespace.test`. Use **prod** for the Google Play-safe release.
 
 If Android Studio tries to execute `:app:assembleDebug` and cannot find `app-debug.apk`, sync Gradle again and reselect `qaDebug`; the actual APK is flavor-qualified.
 
@@ -140,7 +140,7 @@ Upload the AAB to an Internal testing track first, finish App content/Data safet
 | Flavor | Application ID | Purpose |
 | --- | --- | --- |
 | `prod` | `com.duplicateapp.gamespace` | Google Play-safe managed-profile build |
-| `qa` | `com.duplicateapp.gamespace.qa` | Local testing build with The Universe runtime |
+| `qa` (displayed as `test`) | `com.duplicateapp.gamespace.test` | Local testing build with The Universe runtime |
 
 Do not upload the `qa` flavor to Google Play.
 
