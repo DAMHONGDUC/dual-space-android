@@ -48,7 +48,10 @@ For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace
 1. Open the repository root, not the `app` directory.
 2. Run **File → Sync Project with Gradle Files**.
 3. Open **Build Variants** and select `playDebug` for the `app` module.
-4. Select an API 29+ device and run the `app` configuration.
+4. Select the shared **Play Debug** run configuration.
+5. Select an API 29+ device and press Run.
+
+The repository also provides **Build Play Release**, which runs `:app:bundlePlayRelease` directly from Android Studio.
 
 Use `playDebug` for normal development and Play Store verification. `directDebug` includes the separately distributed container runtime and uses application ID `com.duplicateapp.gamespace.direct`.
 
