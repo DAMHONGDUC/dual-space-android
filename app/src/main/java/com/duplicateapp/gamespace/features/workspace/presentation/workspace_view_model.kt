@@ -3,9 +3,9 @@ package com.duplicateapp.gamespace.features.workspace.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import android.content.Context
-import com.duplicateapp.gamespace.features.workspace.data.VirtualizedGameLauncher
 import com.duplicateapp.gamespace.features.workspace.data.AndroidProfileProvisioner
 import com.duplicateapp.gamespace.features.workspace.data.AndroidGameCatalog
+import com.duplicateapp.gamespace.features.workspace.data.GameLauncherProvider
 import com.duplicateapp.gamespace.features.workspace.domain.GameLaunchResult
 import com.duplicateapp.gamespace.features.workspace.domain.GameLauncher
 import com.duplicateapp.gamespace.features.workspace.domain.LaunchUnavailableReason
@@ -23,7 +23,6 @@ import com.duplicateapp.gamespace.features.workspace.domain.WorkspaceRepository
 import com.duplicateapp.gamespace.features.workspace.domain.SettingsNavigator
 import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
-import com.duplicateapp.gamespace.features.virtualization.data.TheUniverseVirtualGameRuntime
 import com.duplicateapp.gamespace.features.settings.data.LocalThemeRepository
 import com.duplicateapp.gamespace.features.settings.data.LocalLanguageRepository
 import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
@@ -231,7 +230,7 @@ class WorkspaceViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return WorkspaceViewModel(
                 PersistentWorkspaceRepository(context),
-                VirtualizedGameLauncher(TheUniverseVirtualGameRuntime()),
+                GameLauncherProvider.create(context),
                 AndroidProfileProvisioner(context),
                 AndroidGameCatalog(context),
                 LocalQuotaTracker(context),

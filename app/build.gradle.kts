@@ -17,6 +17,18 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("play") {
+            dimension = "distribution"
+        }
+        create("direct") {
+            dimension = "distribution"
+            applicationIdSuffix = ".direct"
+            versionNameSuffix = "-direct"
+        }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -50,7 +62,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":the-universe-core"))
+    "directImplementation"(project(":the-universe-core"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)

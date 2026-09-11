@@ -9,8 +9,11 @@ Version 0.5 companion MVP: adaptive phone/tablet workspace, persistent personal/
 ## Build
 
 ```sh
-./gradlew :app:assembleDebug
+./gradlew :app:assemblePlayDebug
+./gradlew :app:assembleDirectDebug
 ```
+
+The `play` flavor uses Android managed profiles and excludes the container runtime. The `direct` flavor retains The Universe for separately reviewed distribution and uses the `.direct` application ID suffix.
 
 Read [docs/store-readiness.md](docs/store-readiness.md) before producing a store artifact.
 

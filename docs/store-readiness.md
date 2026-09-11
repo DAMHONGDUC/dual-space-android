@@ -1,14 +1,15 @@
 # Store readiness review
 
-Reviewed on 2026-09-11. The current repository builds, but the full runtime artifact is not ready for Google Play submission.
+Reviewed on 2026-09-11. Only the `play` flavor is intended for Google Play; the `direct` flavor retains the full runtime for separate distribution.
 
 ## Release blockers
 
-1. The merged The Universe manifest contributes hundreds of permission declarations, including `QUERY_ALL_PACKAGES`, `MANAGE_EXTERNAL_STORAGE`, SMS, call-log, background-location, microphone, camera, and package-install permissions. Google Play restricts several of these to narrow core use cases and declaration processes.
-2. The native runtime includes hooking, hidden-API, spoofing, and anti-detection code. Even if the product does not expose cheat features, shipping those capabilities creates a material Device and Network Abuse review risk. Google Play explicitly prohibits bypassing Android sandbox protections and affecting other apps without authorization.
-3. The Play artifact needs a separate flavor that excludes `packages/the_universe`. The Play version should use Android-managed-profile capabilities only; retain the full runtime for a separately distributed build after legal and security review.
-4. Privacy and Data safety declarations cannot be finalized until the Play flavor and its final merged manifest are fixed.
-5. Release signing, Play Console products, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.
+1. The `play` flavor excludes `packages/the_universe`; its merged manifest must be checked before every release to prevent restricted permissions from returning.
+2. Managed-profile provisioning makes the app a device policy controller. Store metadata, onboarding, and review notes must explain this core behavior accurately.
+3. Privacy and Data safety declarations must be finalized from the release AAB and actual runtime behavior.
+4. Release signing, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.
+
+The `direct` flavor is not a Google Play artifact. It still contains the broad permission manifest and native container runtime described below.
 
 ## Current strengths
 
