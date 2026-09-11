@@ -22,7 +22,7 @@ The `play` flavor uses Android managed profiles and excludes the container runti
 ./gradlew :app:connectedPlayDebugAndroidTest
 ```
 
-Read [docs/store-readiness.md](docs/store-readiness.md) before producing a store artifact.
+Read [docs/store-readiness.md](docs/store-readiness.md) and [docs/google-play-launch-plan.md](docs/google-play-launch-plan.md) before producing a store artifact.
 
 ## Product boundaries
 
