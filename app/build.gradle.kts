@@ -3,6 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val revenueCatApiKey: String = providers.gradleProperty("REVENUECAT_GOOGLE_API_KEY").orElse("").get()
+val revenueCatEntitlementId: String = providers.gradleProperty("REVENUECAT_ENTITLEMENT_ID").orElse("premium").get()
+val firebaseWebClientId: String = providers.gradleProperty("FIREBASE_WEB_CLIENT_ID").orElse("").get()
+val admobRewardedAdUnitId: String = providers.gradleProperty("ADMOB_REWARDED_AD_UNIT_ID").orElse("").get()
+
+fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
+
 if (file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
 }
@@ -19,8 +26,10 @@ android {
         versionName = "0.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "REVENUECAT_API_KEY", "\"\"")
-        buildConfigField("String", "REVENUECAT_ENTITLEMENT_ID", "\"premium\"")
+        buildConfigField("String", "REVENUECAT_API_KEY", quotedBuildConfig(revenueCatApiKey))
+        buildConfigField("String", "REVENUECAT_ENTITLEMENT_ID", quotedBuildConfig(revenueCatEntitlementId))
+        buildConfigField("String", "FIREBASE_WEB_CLIENT_ID", quotedBuildConfig(firebaseWebClientId))
+        buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", quotedBuildConfig(admobRewardedAdUnitId))
     }
 
     flavorDimensions += "distribution"
