@@ -6,6 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
+import androidx.activity.compose.LocalActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.duplicateapp.gamespace.features.onboarding.presentation.onboardingDialog
 import com.duplicateapp.gamespace.features.workspace.domain.*
@@ -14,7 +15,6 @@ import com.duplicateapp.gamespace.features.workspace.presentation.components.*
 @Composable
 fun workspaceScreen(viewModel: WorkspaceViewModel) {
     val sessions by viewModel.sessions.collectAsStateWithLifecycle()
-    val selectedSessionId by viewModel.selectedSessionId.collectAsStateWithLifecycle()
     val launchMessageResId by viewModel.launchMessage.collectAsStateWithLifecycle()
     val profileStatus by viewModel.profileProvisioningStatus.collectAsStateWithLifecycle()
     val installedGames by viewModel.installedGames.collectAsStateWithLifecycle()
@@ -22,7 +22,10 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     val remainingHours by viewModel.remainingQuotaHours.collectAsStateWithLifecycle()
     val isOnboardingVisible by viewModel.isOnboardingVisible.collectAsStateWithLifecycle()
     val isDeleteVisible by viewModel.isDeleteConfirmationVisible.collectAsStateWithLifecycle()
-    val selectedSession = sessions.firstOrNull { it.id == selectedSessionId }
+    val deleteConfirmationName by viewModel.deleteConfirmationName.collectAsStateWithLifecycle()
+    val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
+    val appLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
     val snackbar = remember { SnackbarHostState() }
     val launchMessage = launchMessageResId?.let { stringResource(it) }
     var isSettingsVisible by rememberSaveable { mutableStateOf(false) }
@@ -35,9 +38,23 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     }
     if (isAddVisible) addSessionDialog(installedGames, viewModel::dismissAddSession, viewModel::addSession)
     if (isOnboardingVisible) onboardingDialog(viewModel::completeOnboarding)
-    if (isSettingsVisible) settingsDialog(remainingHours, profileStatus, viewModel::openAndroidSettings) { isSettingsVisible = false }
-    if (isDeleteVisible && selectedSession != null) {
-        deleteSessionDialog(selectedSession.name, viewModel::deleteSelectedSession, viewModel::dismissDeleteConfirmation)
+    if (isSettingsVisible) {
+        settingsDialog(
+            remainingQuotaHours = remainingHours,
+            profileStatus = profileStatus,
+            themeMode = themeMode,
+            appLanguage = appLanguage,
+            onThemeModeChange = viewModel::setThemeMode,
+            onLanguageChange = { language ->
+                viewModel.setAppLanguage(language)
+                activity?.recreate()
+            },
+            onOpenAndroidSettings = viewModel::openAndroidSettings,
+            onDismiss = { isSettingsVisible = false },
+        )
+    }
+    if (isDeleteVisible && deleteConfirmationName != null) {
+        deleteGameDialog(deleteConfirmationName.orEmpty(), viewModel::deleteSelectedSession, viewModel::dismissDeleteConfirmation)
     }
 
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }) { padding ->
@@ -47,7 +64,7 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             contentPadding = padding,
             onLaunch = viewModel::launchSession,
             onAdd = { viewModel.showAddSession() },
-            onDelete = viewModel::requestDeleteSession,
+            onDeleteGame = viewModel::requestDeleteGame,
             onSettings = { isSettingsVisible = true },
         )
     }

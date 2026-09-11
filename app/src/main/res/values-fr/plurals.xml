@@ -1,0 +1,1 @@
+<resources><plurals name="settings_quota"><item quantity="one">Quota gratuit restant : %1$d heure</item><item quantity="other">Quota gratuit restant : %1$d heures</item></plurals></resources>

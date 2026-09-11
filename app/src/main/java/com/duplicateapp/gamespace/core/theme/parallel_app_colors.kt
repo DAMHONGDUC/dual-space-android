@@ -3,14 +3,26 @@ package com.duplicateapp.gamespace.core.theme
 import androidx.compose.ui.graphics.Color
 
 object ParallelAppColors {
-    val background = Color(0xFF0F0F23)
-    val surface = Color(0xFF1E1C35)
-    val surfaceMuted = Color(0xFF27273B)
-    val primary = Color(0xFF7C3AED)
-    val primaryBright = Color(0xFFA78BFA)
-    val accent = Color(0xFFF43F5E)
-    val textPrimary = Color(0xFFE2E8F0)
-    val textMuted = Color(0xFFB0BCD0)
-    val success = Color(0xFF4ADE80)
-    val warning = Color(0xFFFBBF24)
+    val darkBackground = Color(0xFF0F0F17)
+    val darkSurface = Color(0xFF191822)
+    val darkSurfaceMuted = Color(0xFF24222F)
+    val darkPrimary = Color(0xFFC4B5FD)
+    val darkOnPrimary = Color(0xFF2E1065)
+    val darkSecondary = Color(0xFFFDA4AF)
+    val darkTextPrimary = Color(0xFFF8FAFC)
+    val darkTextMuted = Color(0xFFCBD5E1)
+
+    val lightBackground = Color(0xFFF8F7FC)
+    val lightSurface = Color(0xFFFFFFFF)
+    val lightSurfaceMuted = Color(0xFFEDEAF4)
+    val lightPrimary = Color(0xFF6D28D9)
+    val lightOnPrimary = Color(0xFFFFFFFF)
+    val lightSecondary = Color(0xFFBE123C)
+    val lightTextPrimary = Color(0xFF1E1B2E)
+    val lightTextMuted = Color(0xFF514B63)
+
+    val success = Color(0xFF16A34A)
+    val successDark = Color(0xFF86EFAC)
+    val warning = Color(0xFFB45309)
+    val warningDark = Color(0xFFFCD34D)
 }

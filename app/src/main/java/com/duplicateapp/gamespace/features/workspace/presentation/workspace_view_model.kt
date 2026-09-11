@@ -24,6 +24,12 @@ import com.duplicateapp.gamespace.features.workspace.domain.SettingsNavigator
 import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
 import com.duplicateapp.gamespace.features.virtualization.data.TheUniverseVirtualGameRuntime
+import com.duplicateapp.gamespace.features.settings.data.LocalThemeRepository
+import com.duplicateapp.gamespace.features.settings.data.LocalLanguageRepository
+import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
+import com.duplicateapp.gamespace.features.settings.domain.LanguageRepository
+import com.duplicateapp.gamespace.features.settings.domain.ThemeMode
+import com.duplicateapp.gamespace.features.settings.domain.ThemeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,6 +43,8 @@ class WorkspaceViewModel(
     private val quotaTracker: LocalQuotaTracker,
     private val onboardingStore: OnboardingStore,
     private val settingsNavigator: SettingsNavigator,
+    private val themeRepository: ThemeRepository,
+    private val languageRepository: LanguageRepository,
 ) : ViewModel() {
     private val mutableSelectedSessionId = MutableStateFlow(repository.selectedSessionId.value)
     private val mutableLaunchMessage = MutableStateFlow<Int?>(null)
@@ -46,6 +54,10 @@ class WorkspaceViewModel(
     private val mutableRemainingQuotaHours = MutableStateFlow(quotaTracker.remainingHours())
     private val mutableIsOnboardingVisible = MutableStateFlow(!onboardingStore.isComplete())
     private val mutableIsDeleteConfirmationVisible = MutableStateFlow(false)
+    private val mutablePendingDeleteSessionIds = MutableStateFlow<List<String>>(emptyList())
+    private val mutableDeleteConfirmationName = MutableStateFlow<String?>(null)
+    private val mutableThemeMode = MutableStateFlow(themeRepository.load())
+    private val mutableAppLanguage = MutableStateFlow(languageRepository.load())
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
     val selectedSessionId: StateFlow<String?> = mutableSelectedSessionId.asStateFlow()
@@ -56,6 +68,19 @@ class WorkspaceViewModel(
     val isAddSessionVisible: StateFlow<Boolean> = mutableIsAddSessionVisible.asStateFlow()
     val isOnboardingVisible: StateFlow<Boolean> = mutableIsOnboardingVisible.asStateFlow()
     val isDeleteConfirmationVisible: StateFlow<Boolean> = mutableIsDeleteConfirmationVisible.asStateFlow()
+    val deleteConfirmationName: StateFlow<String?> = mutableDeleteConfirmationName.asStateFlow()
+    val themeMode: StateFlow<ThemeMode> = mutableThemeMode.asStateFlow()
+    val appLanguage: StateFlow<AppLanguage> = mutableAppLanguage.asStateFlow()
+
+    fun setThemeMode(themeMode: ThemeMode) {
+        themeRepository.save(themeMode)
+        mutableThemeMode.value = themeMode
+    }
+
+    fun setAppLanguage(language: AppLanguage) {
+        languageRepository.save(language)
+        mutableAppLanguage.value = language
+    }
 
     fun selectSession(sessionId: String) {
         mutableSelectedSessionId.value = sessionId
@@ -115,10 +140,6 @@ class WorkspaceViewModel(
         quotaTracker.settleSession()
         mutableRemainingQuotaHours.value = quotaTracker.remainingHours()
         mutableProfileProvisioningStatus.value = profileProvisioner.status()
-        viewModelScope.launch {
-            sessions.value.filter { session -> session.state == SessionState.running }
-                .forEach { session -> repository.updateSessionState(session.id, SessionState.paused) }
-        }
     }
 
     fun completeOnboarding() {
@@ -146,9 +167,8 @@ class WorkspaceViewModel(
             return
         }
         val target: ProfileTarget = if (existingCopies.isEmpty()) ProfileTarget.personal else ProfileTarget.managed
-        val copyName: String = if (target == ProfileTarget.personal) name else "$name · Copy 1"
         viewModelScope.launch {
-            repository.addSession(copyName, game.label, game.packageName, target)
+            repository.addSession(name, game.label, game.packageName, target)
             val addedSessionId: String = repository.sessions.value.last().id
             mutableSelectedSessionId.value = addedSessionId
             repository.selectSession(addedSessionId)
@@ -157,26 +177,46 @@ class WorkspaceViewModel(
     }
 
     fun deleteSelectedSession() {
-        val sessionId: String = mutableSelectedSessionId.value ?: return
+        val sessionIds: List<String> = mutablePendingDeleteSessionIds.value.ifEmpty {
+            listOfNotNull(mutableSelectedSessionId.value)
+        }
+        if (sessionIds.isEmpty()) return
         viewModelScope.launch {
-            repository.deleteSession(sessionId)
+            sessionIds.forEach { sessionId -> repository.deleteSession(sessionId) }
             mutableSelectedSessionId.value = repository.sessions.value.firstOrNull()?.id
+            mutablePendingDeleteSessionIds.value = emptyList()
+            mutableDeleteConfirmationName.value = null
             mutableIsDeleteConfirmationVisible.value = false
         }
     }
 
     fun requestDeleteSelectedSession() {
-        if (sessions.value.isEmpty()) return
+        val session: GameSession = sessions.value.firstOrNull { it.id == mutableSelectedSessionId.value } ?: return
+        mutablePendingDeleteSessionIds.value = listOf(session.id)
+        mutableDeleteConfirmationName.value = session.gameName
         mutableIsDeleteConfirmationVisible.value = true
     }
 
     fun requestDeleteSession(sessionId: String) {
+        val session: GameSession = sessions.value.firstOrNull { it.id == sessionId } ?: return
         mutableSelectedSessionId.value = sessionId
+        mutablePendingDeleteSessionIds.value = listOf(sessionId)
+        mutableDeleteConfirmationName.value = session.gameName
         viewModelScope.launch { repository.selectSession(sessionId) }
         mutableIsDeleteConfirmationVisible.value = true
     }
 
+    fun requestDeleteGame(packageName: String) {
+        val gameSessions: List<GameSession> = sessions.value.filter { session -> session.packageName == packageName }
+        if (gameSessions.isEmpty()) return
+        mutablePendingDeleteSessionIds.value = gameSessions.map(GameSession::id)
+        mutableDeleteConfirmationName.value = gameSessions.first().gameName
+        mutableIsDeleteConfirmationVisible.value = true
+    }
+
     fun dismissDeleteConfirmation() {
+        mutablePendingDeleteSessionIds.value = emptyList()
+        mutableDeleteConfirmationName.value = null
         mutableIsDeleteConfirmationVisible.value = false
     }
 
@@ -197,6 +237,8 @@ class WorkspaceViewModel(
                 LocalQuotaTracker(context),
                 OnboardingStore(context),
                 AndroidSettingsNavigator(context),
+                LocalThemeRepository(context),
+                LocalLanguageRepository(context),
             ) as T
         }
     }

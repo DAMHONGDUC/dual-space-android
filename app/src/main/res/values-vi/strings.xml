@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">Parallel_app</string>
     <string name="settings">Cài đặt</string>
+    <string name="theme">Giao diện</string>
+    <string name="theme_system">Hệ thống</string>
+    <string name="theme_light">Sáng</string>
+    <string name="theme_dark">Tối</string>
     <string name="sessions">Phiên game</string>
     <string name="quota_remaining">Còn %1$d giờ</string>
     <string name="session_running">Đang chạy</string>
@@ -72,8 +76,10 @@
     <string name="metric_compact">%1$s %2$s</string>
     <string name="copy_count">%1$d tài khoản</string>
     <string name="quota_hours_compact">Còn %1$d giờ</string>
-    <string name="original_copy">Tài khoản 1</string>
-    <string name="copy_one">Tài khoản 2</string>
+    <string name="original_copy">Ứng dụng gốc</string>
+    <string name="copy_one">Bản sao độc lập</string>
+    <string name="delete_game">Xóa game khỏi danh sách</string>
+    <string name="delete_game_message">Xóa “%1$s” và mọi tài khoản của game khỏi Parallel_app? Ứng dụng đã cài và dữ liệu của nó sẽ không bị xóa.</string>
     <string name="choose_game_to_copy">Chọn game</string>
     <string name="empty_library_title">Thêm game đầu tiên</string>
     <string name="empty_library_description">Bấm Thêm, chọn game, sau đó chạm biểu tượng để chơi.</string>
