@@ -23,7 +23,6 @@ class AndroidGameCatalog(context: Context) : GameCatalog {
             launcherApps.getActivityList(null, profile)
                 .distinctBy { activity -> activity.applicationInfo.packageName }
                 .filterNot { activity -> activity.applicationInfo.packageName == hostPackageName }
-                .filter { activity -> activity.applicationInfo.category == ApplicationInfo.CATEGORY_GAME }
                 .sortedWith(
                     compareBy<LauncherActivityInfo>(
                         { activity -> activity.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0 },

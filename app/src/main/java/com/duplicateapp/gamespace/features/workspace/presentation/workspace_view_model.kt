@@ -152,21 +152,17 @@ class WorkspaceViewModel(
         mutableIsOnboardingVisible.value = false
     }
 
-    fun showAddSession(profileTarget: ProfileTarget = ProfileTarget.personal) {
+    fun showAddSession() {
         mutableIsAddSessionVisible.value = true
-        loadInstalledGames(profileTarget)
+        loadInstalledGames()
     }
 
-    fun changeCatalogProfile(profileTarget: ProfileTarget) {
-        loadInstalledGames(profileTarget)
-    }
-
-    private fun loadInstalledGames(profileTarget: ProfileTarget) {
+    private fun loadInstalledGames() {
         catalogLoadJob?.cancel()
         mutableInstalledGames.value = emptyList()
         catalogLoadJob = viewModelScope.launch {
             mutableInstalledGames.value = withContext(Dispatchers.IO) {
-                gameCatalog.listInstalledGames(profileTarget)
+                gameCatalog.listInstalledGames(ProfileTarget.personal)
             }
         }
     }
@@ -179,13 +175,13 @@ class WorkspaceViewModel(
 
     fun addSession(name: String, game: InstalledGame) {
         val existingCopies: List<GameSession> = sessions.value.filter { session -> session.packageName == game.packageName }
-        val profileAlreadyAdded: Boolean = existingCopies.any { session -> session.profileTarget == game.profileTarget }
+        val profileAlreadyAdded: Boolean = existingCopies.any { session -> session.profileTarget == ProfileTarget.managed }
         if (existingCopies.size >= maximumCopiesPerGame || profileAlreadyAdded) {
             mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.game_already_added
             return
         }
         viewModelScope.launch {
-            repository.addSession(name, game.label, game.packageName, game.profileTarget)
+            repository.addSession(name, game.label, game.packageName, ProfileTarget.managed)
             val addedSessionId: String = repository.sessions.value.last().id
             mutableSelectedSessionId.value = addedSessionId
             repository.selectSession(addedSessionId)

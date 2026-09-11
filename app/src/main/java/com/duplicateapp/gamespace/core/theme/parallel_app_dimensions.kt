@@ -9,8 +9,13 @@ object ParallelAppDimensions {
     val space8 = 8.dp
     val space12 = 12.dp
     val space16 = 16.dp
+    val space24 = 24.dp
     val touchTarget = 48.dp
     val iconSmall = 18.dp
+    val iconMedium = 24.dp
+    val dialogIconContainer = 48.dp
+    val dialogCornerRadius = 28.dp
+    val itemCornerRadius = 16.dp
     val stageIconCompact = 36.dp
     val stageIcon = 44.dp
     val statusDot = 6.dp

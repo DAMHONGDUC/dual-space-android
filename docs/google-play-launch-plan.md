@@ -28,7 +28,7 @@ Do not describe the Play build as an unlimited app cloner. The Play build opens 
 
 - Release gradually after the closed-test requirements and policy review are complete.
 - Start with device exclusions for models where managed-profile creation or cross-profile launching fails.
-- Keep the `qa` flavor and The Universe runtime outside every Play track.
+- Keep the `dev` flavor and The Universe runtime outside every Play track.
 
 ## Release blockers
 

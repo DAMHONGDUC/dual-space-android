@@ -40,7 +40,7 @@
     <string name="choose_game">Choose a game</string>
     <string name="main_profile">Original</string>
     <string name="work_profile">Second copy</string>
-    <string name="no_apps_in_profile">No apps found in this space</string>
+    <string name="no_apps_in_profile">No games found on this device</string>
     <string name="enable_second_copy">Enable second copy</string>
     <string name="second_copy_setup_description">Set up a separate Android space first. Apps and sign-ins in it stay independent from the original.</string>
     <string name="second_copy_unsupported">This device cannot create a second app space.</string>
@@ -48,7 +48,7 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="onboarding_title">Welcome to Parallel Game Space</string>
-    <string name="onboarding_profiles">Tap Add game for the original app. Choose Second copy only when you need another independent sign-in.</string>
+    <string name="onboarding_profiles">Tap Add game to create an independent copy. The original app remains available outside Parallel Game Space.</string>
     <string name="onboarding_monetization">Free includes a small banner ad. Premium removes all ads.</string>
     <string name="onboarding_privacy">Profile creation always uses Android’s consent screen. Parallel Game Space does not modify games.</string>
     <string name="continue_label">Continue</string>

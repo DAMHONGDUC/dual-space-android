@@ -44,7 +44,6 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
         addSessionDialog(
             games = installedGames,
             onDismiss = viewModel::dismissAddSession,
-            onProfileChange = viewModel::changeCatalogProfile,
             onAdd = viewModel::addSession,
         )
     }

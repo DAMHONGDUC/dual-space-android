@@ -48,10 +48,10 @@ android {
         create("prod") {
             dimension = "distribution"
         }
-        create("qa") {
+        create("dev") {
             dimension = "distribution"
-            applicationIdSuffix = ".test"
-            versionNameSuffix = "-test"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
         }
     }
 
@@ -88,7 +88,7 @@ kotlin {
 }
 
 dependencies {
-    "qaImplementation"(project(":the-universe-core"))
+    "devImplementation"(project(":the-universe-core"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)

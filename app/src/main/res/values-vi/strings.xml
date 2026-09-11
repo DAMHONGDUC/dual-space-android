@@ -40,14 +40,14 @@
     <string name="choose_game">Chọn game</string>
     <string name="main_profile">Bản gốc</string>
     <string name="work_profile">Bản sao thứ hai</string>
-    <string name="no_apps_in_profile">Không tìm thấy ứng dụng trong không gian này</string>
+    <string name="no_apps_in_profile">Không tìm thấy game đã cài trên thiết bị</string>
     <string name="enable_second_copy">Bật bản sao thứ hai</string>
     <string name="second_copy_setup_description">Trước tiên hãy tạo một không gian Android riêng. Ứng dụng và tài khoản đăng nhập trong đó độc lập với bản gốc.</string>
     <string name="second_copy_unsupported">Thiết bị này không thể tạo không gian ứng dụng thứ hai.</string>
     <string name="add">Thêm</string>
     <string name="cancel">Hủy</string>
     <string name="onboarding_title">Chào mừng đến Parallel Game Space</string>
-    <string name="onboarding_profiles">Bấm Thêm game để dùng bản gốc. Chỉ chọn Bản sao thứ hai khi cần thêm một tài khoản độc lập.</string>
+    <string name="onboarding_profiles">Bấm Thêm game để tạo một bản sao độc lập. Ứng dụng gốc vẫn có thể chạy bên ngoài Parallel Game Space.</string>
     <string name="onboarding_monetization">Free includes a small banner ad. Premium removes all ads.</string>
     <string name="onboarding_privacy">Việc tạo profile luôn dùng màn hình đồng ý của Android. Parallel Game Space không chỉnh sửa game.</string>
     <string name="continue_label">Tiếp tục</string>
