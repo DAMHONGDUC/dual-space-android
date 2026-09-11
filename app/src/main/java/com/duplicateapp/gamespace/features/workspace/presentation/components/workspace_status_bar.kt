@@ -14,8 +14,7 @@ import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
-import com.duplicateapp.gamespace.features.workspace.domain.SessionState
-
+import android.text.format.DateUtils
 @Composable
 fun workspaceStatusBar(session: GameSession) {
     Row(
@@ -24,14 +23,10 @@ fun workspaceStatusBar(session: GameSession) {
             .padding(ParallelAppDimensions.space8),
         horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
     ) {
-        statusPill(stateLabel(session.state))
-        metricPill(stringResource(R.string.metric_cpu), stringResource(R.string.metric_value_percent, session.cpuPercent))
-        metricPill(stringResource(R.string.metric_memory), stringResource(R.string.metric_value_memory, session.memoryGb))
-        metricPill(stringResource(R.string.metric_fps), stringResource(R.string.metric_value_fps, session.framesPerSecond))
-        metricPill(
-            stringResource(R.string.metric_temperature),
-            stringResource(R.string.metric_value_temperature, session.temperatureCelsius),
-        )
+        statusPill(stringResource(R.string.ready_to_open))
+        session.lastOpenedAtEpochMillis?.let { openedAt ->
+            statusPill(stringResource(R.string.last_opened, DateUtils.getRelativeTimeSpanString(openedAt)))
+        }
     }
 }
 
@@ -44,27 +39,4 @@ private fun statusPill(label: String) {
             style = MaterialTheme.typography.labelSmall,
         )
     }
-}
-
-@Composable
-private fun metricPill(label: String, value: String) {
-    Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.large) {
-        Text(
-            stringResource(R.string.metric_label_value, label, value),
-            modifier = Modifier.padding(horizontal = ParallelAppDimensions.space8, vertical = ParallelAppDimensions.space4),
-            style = MaterialTheme.typography.labelSmall,
-        )
-    }
-}
-
-@Composable
-private fun stateLabel(state: SessionState): String {
-    val resourceId: Int = when (state) {
-        SessionState.starting -> R.string.session_starting
-        SessionState.running -> R.string.session_running
-        SessionState.paused -> R.string.session_paused
-        SessionState.stopped -> R.string.session_stopped
-        SessionState.failed -> R.string.session_failed
-    }
-    return stringResource(resourceId)
 }

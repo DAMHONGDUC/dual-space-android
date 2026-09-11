@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
@@ -30,10 +32,12 @@ import androidx.core.graphics.drawable.toBitmap
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
+import com.duplicateapp.gamespace.core.theme.ParallelAppColors
 import com.duplicateapp.gamespace.features.workspace.domain.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import android.text.format.DateUtils
 
 private data class GameRowModel(
     val packageName: String,
@@ -45,6 +49,7 @@ private data class GameRowModel(
 fun gameLibrary(
     sessions: List<GameSession>,
     profileStatus: ProfileProvisioningStatus,
+    readinessBySessionId: Map<String, GameLaunchReadiness> = emptyMap(),
     contentPadding: PaddingValues,
     onLaunch: (String) -> Unit,
     onAdd: () -> Unit,
@@ -78,7 +83,9 @@ fun gameLibrary(
                     ),
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
                 ) {
-                    items(gameRows, key = GameRowModel::packageName) { game -> gameRow(game, onLaunch, onDeleteGame) }
+                    items(gameRows, key = GameRowModel::packageName) { game ->
+                        gameRow(game, readinessBySessionId, onLaunch, onDeleteGame)
+                    }
                 }
             }
         }
@@ -157,7 +164,12 @@ private fun libraryTopBar(sessionCount: Int, onSettings: () -> Unit) {
 }
 
 @Composable
-private fun gameRow(game: GameRowModel, onLaunch: (String) -> Unit, onDeleteGame: (String) -> Unit) {
+private fun gameRow(
+    game: GameRowModel,
+    readinessBySessionId: Map<String, GameLaunchReadiness>,
+    onLaunch: (String) -> Unit,
+    onDeleteGame: (String) -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
@@ -190,7 +202,7 @@ private fun gameRow(game: GameRowModel, onLaunch: (String) -> Unit, onDeleteGame
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
                 ) {
-                    game.sessions.forEach { session -> accountButton(session, onLaunch) }
+                    game.sessions.forEach { session -> accountButton(session, readinessBySessionId[session.id], onLaunch) }
                 }
             }
         }
@@ -198,7 +210,8 @@ private fun gameRow(game: GameRowModel, onLaunch: (String) -> Unit, onDeleteGame
 }
 
 @Composable
-private fun accountButton(session: GameSession, onLaunch: (String) -> Unit) {
+private fun accountButton(session: GameSession, readiness: GameLaunchReadiness?, onLaunch: (String) -> Unit) {
+    val isReady: Boolean = readiness == GameLaunchReadiness.Ready
     Surface(
         onClick = { onLaunch(session.id) },
         shape = MaterialTheme.shapes.medium,
@@ -210,7 +223,16 @@ private fun accountButton(session: GameSession, onLaunch: (String) -> Unit) {
                 .padding(horizontal = ParallelAppDimensions.space12, vertical = ParallelAppDimensions.space8),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(ParallelAppDimensions.iconSmall))
+            Surface(
+                modifier = Modifier.size(ParallelAppDimensions.iconSmall),
+                shape = CircleShape,
+                color = accountColor(session.accountColor),
+                contentColor = Color.White,
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(session.name.take(1).uppercase(), style = MaterialTheme.typography.labelSmall)
+                }
+            }
             Column(modifier = Modifier.padding(start = ParallelAppDimensions.space6)) {
                 Text(
                     session.name,
@@ -218,11 +240,22 @@ private fun accountButton(session: GameSession, onLaunch: (String) -> Unit) {
                     maxLines = 1,
                 )
                 Text(
-                    stringResource(if (session.profileTarget == ProfileTarget.personal) R.string.original_copy else R.string.copy_one),
+                    if (isReady) {
+                        session.lastOpenedAtEpochMillis?.let { value ->
+                            stringResource(R.string.last_opened, DateUtils.getRelativeTimeSpanString(value))
+                        } ?: stringResource(R.string.ready_to_open)
+                    } else {
+                        stringResource(R.string.needs_attention)
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
                 )
             }
+            Icon(
+                Icons.Filled.PlayArrow,
+                contentDescription = null,
+                modifier = Modifier.padding(start = ParallelAppDimensions.space8).size(ParallelAppDimensions.iconSmall),
+            )
         }
     }
 }
@@ -260,15 +293,12 @@ private fun gameIcon(packageName: String) {
 private const val gameIconBitmapSize: Int = 144
 
 @Composable
-private fun sessionStateLabel(state: SessionState): String = stringResource(
-    when (state) {
-        SessionState.starting -> R.string.session_starting
-        SessionState.running -> R.string.session_running
-        SessionState.paused -> R.string.session_paused
-        SessionState.stopped -> R.string.session_stopped
-        SessionState.failed -> R.string.session_failed
-    },
-)
+private fun accountColor(accountColor: AccountColor): Color = when (accountColor) {
+    AccountColor.blue -> ParallelAppColors.accountBlue
+    AccountColor.green -> ParallelAppColors.accountGreen
+    AccountColor.orange -> ParallelAppColors.accountOrange
+    AccountColor.purple -> ParallelAppColors.accountPurple
+}
 
 @Composable
 private fun emptyLibrary(onAdd: () -> Unit, modifier: Modifier = Modifier) {

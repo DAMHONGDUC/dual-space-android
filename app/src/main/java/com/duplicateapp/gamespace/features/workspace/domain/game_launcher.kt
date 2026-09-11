@@ -1,7 +1,13 @@
 package com.duplicateapp.gamespace.features.workspace.domain
 
 interface GameLauncher {
+    fun readiness(session: GameSession): GameLaunchReadiness
     fun launch(session: GameSession): GameLaunchResult
+}
+
+sealed interface GameLaunchReadiness {
+    data object Ready : GameLaunchReadiness
+    data class Unavailable(val reason: LaunchUnavailableReason) : GameLaunchReadiness
 }
 
 sealed interface GameLaunchResult {

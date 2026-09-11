@@ -11,17 +11,43 @@ import com.duplicateapp.gamespace.core.theme.parallelAppTheme
 import com.duplicateapp.gamespace.features.workspace.presentation.workspaceScreen
 import com.duplicateapp.gamespace.features.workspace.presentation.WorkspaceViewModel
 import com.duplicateapp.gamespace.features.workspace.presentation.WorkspaceViewModelFactory
+import com.duplicateapp.gamespace.features.update.presentation.forceUpdateDialog
+import com.duplicateapp.gamespace.features.privacy.presentation.privacyLockScreen
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
-fun parallelAppApp() {
+fun parallelAppApp(
+    canRequestAds: Boolean,
+    privacyOptionsRequired: Boolean,
+    isForceUpdateRequired: Boolean,
+    onOpenPrivacyOptions: () -> Unit,
+    onUpdate: () -> Unit,
+    onCloseForUpdate: () -> Unit,
+    isPrivacyLocked: Boolean,
+    shortcutSessionId: String?,
+    onShortcutConsumed: () -> Unit,
+    onUnlock: () -> Unit,
+) {
     val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(LocalContext.current))
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
 
+    LaunchedEffect(shortcutSessionId, isPrivacyLocked) {
+        if (!isPrivacyLocked) shortcutSessionId?.let { sessionId ->
+            viewModel.launchSession(sessionId)
+            onShortcutConsumed()
+        }
+    }
+
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.refreshProfileStatus()
+        viewModel.refreshEnvironment()
     }
 
     parallelAppTheme(themeMode) {
-        workspaceScreen(viewModel = viewModel)
+        if (isPrivacyLocked) {
+            privacyLockScreen(onUnlock)
+        } else {
+            workspaceScreen(viewModel, canRequestAds, privacyOptionsRequired, onOpenPrivacyOptions)
+            if (isForceUpdateRequired) forceUpdateDialog(onUpdate, onCloseForUpdate)
+        }
     }
 }

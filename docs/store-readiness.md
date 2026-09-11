@@ -1,6 +1,6 @@
 # Store readiness review
 
-Reviewed on 2026-09-11. Only the `prod` flavor is intended for Google Play; the `dev` flavor retains the full runtime for local testing.
+Reviewed on 2026-09-11. Only the `prod` flavor is intended for Google Play; `dev` mirrors its managed-profile behavior with a separate application ID.
 
 ## Release blockers
 
@@ -9,14 +9,15 @@ Reviewed on 2026-09-11. Only the `prod` flavor is intended for Google Play; the 
 3. Privacy and Data safety declarations must be finalized from the release AAB and actual runtime behavior.
 4. Release signing, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.
 
-The `dev` flavor is not a Google Play artifact. It still contains the broad permission manifest and native container runtime described below.
+The `dev` flavor is not a Google Play artifact. Neither app flavor includes the experimental native container runtime.
 
 ## Current strengths
 
 - Targets API 37, above the Google Play API 36 requirement effective 2026-08-31.
 - Uses a feature-first clean architecture for application code and keeps low-level runtime modules under `packages/`.
 - Has adaptive Compose grids, 48dp control targets, local-only workspace persistence, system/light/dark appearance, and 11 configured locales.
-- Does not currently include ads, analytics, remote accounts, or backend collection in application code.
+- Uses consent-gated AdMob banners, optional Firebase authentication, RevenueCat purchase validation, and Play immediate updates.
+- Checks profile/game readiness before launch, confirms account identity, publishes account shortcuts, exports redacted diagnostics, and offers an opt-in device-authentication lock.
 
 ## Market position
 

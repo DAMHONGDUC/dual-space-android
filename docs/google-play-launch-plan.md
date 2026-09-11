@@ -28,7 +28,7 @@ Do not describe the Play build as an unlimited app cloner. The Play build opens 
 
 - Release gradually after the closed-test requirements and policy review are complete.
 - Start with device exclusions for models where managed-profile creation or cross-profile launching fails.
-- Keep the `dev` flavor and The Universe runtime outside every Play track.
+- Use `dev` for local testing only; it mirrors `prod` behavior but has a separate application ID.
 
 ## Release blockers
 
@@ -58,19 +58,29 @@ The defensible wedge is trust and game-specific reliability rather than clone co
 - RevenueCat configuration must handle offerings, pending purchases, renewals, grace periods, account hold, cancellation, expiry, refunds, revocations, restore behavior, and anonymous-account merging.
 - RevenueCat webhooks are optional for the client experience but recommended when server-side sync, customer support automation, or independent audit history is needed.
 - Banner ads stay outside the launch action. Never insert an interstitial between tapping a game and opening it.
+- Ad requests start only after the UMP consent state permits them; expose privacy options whenever UMP requires an entry point.
+- Releases with Play update priority 4 or 5 trigger the blocking Immediate Update flow. Lower-priority releases never block startup.
 
 ### Before production
 
-1. Compatibility check: show whether managed users, profile provisioning, the selected game, and its launch activity are available before adding a session.
+1. Compatibility check: the catalog shows personal-profile games, marks whether each game is already available in the managed profile, and blocks dead sessions. Neither flavor claims an unavailable game is ready or imports it automatically.
 2. Setup guide: explain how to install the game in the second Android profile and how removal deletes that profile's apps and data.
-3. Diagnostic export: create a user-reviewed text report containing Android version, device model, profile status, and categorized failures without account names or game data.
+3. Diagnostic export: the user-reviewed report contains Android version, device model, profile status, and categorized failures without account names or game data.
 4. Recovery UX: detect interrupted provisioning, stale sessions, missing games, and process recreation, then present a specific recovery action.
-5. Account identity: let users assign a local label, color, and icon to each account and confirm the target profile before launch.
+5. Account identity: each account has a local label, stable color, last-opened timestamp, and confirmation before launch.
+
+## Release acceptance criteria
+
+- Setup completion: a new tester can create the second space, install a game there, rescan, add it, and launch it without developer help.
+- Reliability: at least 95% successful launches in the closed-test device matrix, with every failure mapped to a recovery action.
+- Quality: no reproducible crash or ANR in the core setup/add/launch/remove journey; lint and scoped tests pass for `prodRelease`.
+- Trust: every visible capability is real, the app never displays fabricated performance values, and profile removal consequences are explained before consent.
+- Policy: neither app flavor contains The Universe runtime or restricted permissions; Data safety matches Firebase, RevenueCat, and AdMob behavior.
 
 ### After stable launch
 
-1. Per-account launcher shortcuts.
-2. Biometric/PIN app lock and optional hiding of account labels in recents.
+1. Extend the current four per-account launcher shortcuts with pinning and user-selected ordering.
+2. Extend the current biometric/device-credential Privacy Lock with optional hiding of account labels in recents.
 3. Compatibility Center with tested device/game/Android combinations and known limitations.
 4. Local backup/export that never includes game credentials or game data.
 5. Paid convenience features only after successful-launch and retention metrics are trustworthy.

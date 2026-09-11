@@ -7,7 +7,7 @@ interface WorkspaceRepository {
     val selectedSessionId: StateFlow<String?>
 
     suspend fun selectSession(sessionId: String)
-    suspend fun updateSessionState(sessionId: String, state: SessionState)
+    suspend fun recordSessionOpened(sessionId: String, openedAtEpochMillis: Long)
     suspend fun addSession(name: String, gameName: String, packageName: String, profileTarget: ProfileTarget)
     suspend fun deleteSession(sessionId: String)
 }

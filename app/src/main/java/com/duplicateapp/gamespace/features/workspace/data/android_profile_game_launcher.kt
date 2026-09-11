@@ -8,6 +8,7 @@ import android.os.UserHandle
 import android.os.UserManager
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.workspace.domain.GameLaunchResult
+import com.duplicateapp.gamespace.features.workspace.domain.GameLaunchReadiness
 import com.duplicateapp.gamespace.features.workspace.domain.GameLauncher
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.LaunchUnavailableReason
@@ -17,8 +18,26 @@ class AndroidProfileGameLauncher(context: Context) : GameLauncher {
     private val launcherApps: LauncherApps = context.getSystemService(LauncherApps::class.java)
     private val userManager: UserManager = context.getSystemService(UserManager::class.java)
 
+    override fun readiness(session: GameSession): GameLaunchReadiness {
+        return try {
+            val profile: UserHandle = findProfile(session.profileTarget)
+                ?: return GameLaunchReadiness.Unavailable(LaunchUnavailableReason.missingManagedProfile)
+            val activity: LauncherActivityInfo? = launcherApps.getActivityList(session.packageName, profile).firstOrNull()
+            if (activity == null) {
+                GameLaunchReadiness.Unavailable(LaunchUnavailableReason.gameNotInstalled)
+            } else {
+                GameLaunchReadiness.Ready
+            }
+        } catch (error: Exception) {
+            AppLogger.error("check_game_readiness", error, mapOf("sessionId" to session.id))
+            GameLaunchReadiness.Unavailable(LaunchUnavailableReason.permissionDenied)
+        }
+    }
+
     override fun launch(session: GameSession): GameLaunchResult {
         AppLogger.action("launch_profile_game", mapOf("sessionId" to session.id, "profile" to session.profileTarget.name))
+        val readiness: GameLaunchReadiness = readiness(session)
+        if (readiness is GameLaunchReadiness.Unavailable) return unavailable(session, readiness.reason)
         val profile: UserHandle = findProfile(session.profileTarget)
             ?: return unavailable(session, LaunchUnavailableReason.missingManagedProfile)
         val activity: LauncherActivityInfo = launcherApps.getActivityList(session.packageName, profile).firstOrNull()

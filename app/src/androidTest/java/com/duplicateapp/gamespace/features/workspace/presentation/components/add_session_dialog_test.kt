@@ -2,6 +2,7 @@ package com.duplicateapp.gamespace.features.workspace.presentation.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -11,6 +12,7 @@ import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.features.workspace.domain.InstalledGame
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileTarget
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,7 +28,7 @@ class AddSessionDialogTest {
 
         composeRule.setContent {
             MaterialTheme {
-                addSessionDialog(games = emptyList(), onDismiss = {}, onAdd = { _, _ -> })
+                addSessionDialog(games = emptyList(), onDismiss = {}, onAdd = { _, _ -> }, onRefresh = {}, onOpenSettings = {})
             }
         }
 
@@ -48,6 +50,8 @@ class AddSessionDialogTest {
                         selectedName = name
                         selectedGame = installedGame
                     },
+                    onRefresh = {},
+                    onOpenSettings = {},
                 )
             }
         }
@@ -56,6 +60,33 @@ class AddSessionDialogTest {
 
         assertEquals(gameName, selectedName)
         assertEquals(game, selectedGame)
+    }
+
+    @Test
+    fun unavailableCopyCannotBeAdded() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val game = InstalledGame(gameName, packageName, ProfileTarget.personal, isCopyAvailable = false)
+        var refreshRequested = false
+        var settingsRequested = false
+
+        composeRule.setContent {
+            MaterialTheme {
+                addSessionDialog(
+                    games = listOf(game),
+                    onDismiss = {},
+                    onAdd = { _, _ -> },
+                    onRefresh = { refreshRequested = true },
+                    onOpenSettings = { settingsRequested = true },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(context.getString(R.string.copy_install_required)).assertIsDisplayed()
+        composeRule.onNodeWithText(gameName).assertIsNotEnabled()
+        composeRule.onNodeWithText(context.getString(R.string.rescan)).performClick()
+        composeRule.onNodeWithText(context.getString(R.string.android_settings)).performClick()
+        assertTrue(refreshRequested)
+        assertTrue(settingsRequested)
     }
 
     private companion object {

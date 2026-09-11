@@ -26,14 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.duplicateapp.gamespace.R
-import com.duplicateapp.gamespace.core.theme.ParallelAppColors
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
-import com.duplicateapp.gamespace.features.workspace.domain.SessionState
 
 @Composable
 fun emptyGamePane(onAddGame: () -> Unit, modifier: Modifier = Modifier) {
@@ -102,10 +99,8 @@ private fun sessionToolbar(session: GameSession, compact: Boolean, canDelete: Bo
     ) {
         Spacer(modifier = Modifier.weight(1f))
         if (!compact) {
-            metricText(stringResource(R.string.metric_cpu), stringResource(R.string.metric_value_percent, session.cpuPercent))
-            metricText(stringResource(R.string.metric_fps), stringResource(R.string.metric_value_fps, session.framesPerSecond))
+            Text(session.name, style = MaterialTheme.typography.labelMedium)
         }
-        stateBadge(session.state)
         IconButton(onClick = onDelete, enabled = canDelete, modifier = Modifier.size(ParallelAppDimensions.touchTarget)) {
             Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete_session))
         }
@@ -164,33 +159,5 @@ private fun controlDock(onLaunch: () -> Unit) {
             Icon(Icons.Filled.PlayArrow, contentDescription = null)
             Text(stringResource(R.string.open_game))
         }
-    }
-}
-
-@Composable
-private fun metricText(label: String, value: String) {
-    Text(
-        stringResource(R.string.metric_compact, label, value),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = MaterialTheme.typography.labelMedium,
-    )
-}
-
-@Composable
-private fun stateBadge(state: SessionState) {
-    val isDarkTheme: Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val (label, color) = when (state) {
-        SessionState.starting -> stringResource(R.string.session_starting) to if (isDarkTheme) ParallelAppColors.warningDark else ParallelAppColors.warning
-        SessionState.running -> stringResource(R.string.session_running) to if (isDarkTheme) ParallelAppColors.successDark else ParallelAppColors.success
-        SessionState.paused -> stringResource(R.string.session_paused) to MaterialTheme.colorScheme.primary
-        SessionState.stopped -> stringResource(R.string.session_stopped) to MaterialTheme.colorScheme.onSurfaceVariant
-        SessionState.failed -> stringResource(R.string.session_failed) to MaterialTheme.colorScheme.error
-    }
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(modifier = Modifier.size(ParallelAppDimensions.statusDot).clip(CircleShape).background(color))
-        Text(label, color = color, style = MaterialTheme.typography.labelMedium)
     }
 }

@@ -35,6 +35,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
@@ -53,6 +56,9 @@ fun settingsDialog(
     authSession: AuthSession?,
     premiumAccess: PremiumAccess,
     isMonetizationBusy: Boolean,
+    privacyOptionsRequired: Boolean,
+    privacyLockEnabled: Boolean,
+    privacyLockAvailable: Boolean,
     onThemeModeChange: (ThemeMode) -> Unit,
     onLanguageChange: (AppLanguage) -> Unit,
     onOpenAndroidSettings: () -> Unit,
@@ -60,6 +66,9 @@ fun settingsDialog(
     onSignOut: () -> Unit,
     onPurchasePremium: () -> Unit,
     onRestorePremium: () -> Unit,
+    onOpenPrivacyOptions: () -> Unit,
+    onPrivacyLockChange: (Boolean) -> Unit,
+    onShareDiagnosticReport: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val profileLabel: String = stringResource(
@@ -119,6 +128,12 @@ fun settingsDialog(
                         enabled = !isMonetizationBusy,
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text(stringResource(R.string.restore_purchases)) }
+                    if (privacyOptionsRequired) {
+                        TextButton(
+                            onClick = onOpenPrivacyOptions,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text(stringResource(R.string.privacy_options)) }
+                    }
                 }
                 settingsSection {
                     Text(stringResource(R.string.theme), style = MaterialTheme.typography.labelLarge)
@@ -135,11 +150,29 @@ fun settingsDialog(
                     languageSelector(appLanguage, onLanguageChange)
                 }
                 settingsSection {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.privacy_lock_title), style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                stringResource(R.string.privacy_lock_setting_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Switch(
+                            checked = privacyLockEnabled,
+                            onCheckedChange = onPrivacyLockChange,
+                            enabled = privacyLockAvailable || privacyLockEnabled,
+                        )
+                    }
                     Text(
                         stringResource(R.string.settings_privacy),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    OutlinedButton(onClick = onShareDiagnosticReport, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.share_diagnostic_report))
+                    }
                 }
             }
         },
@@ -262,7 +295,7 @@ private fun destructiveDialog(title: String, message: String, onConfirm: () -> U
 }
 
 @Composable
-private fun dialogIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
+fun dialogIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, isDestructive: Boolean = false) {
     val containerColor = if (isDestructive) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer
     val contentColor = if (isDestructive) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer
     Surface(color = containerColor, shape = RoundedCornerShape(ParallelAppDimensions.itemCornerRadius)) {

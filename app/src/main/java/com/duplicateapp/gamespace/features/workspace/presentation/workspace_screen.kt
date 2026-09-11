@@ -15,7 +15,12 @@ import com.duplicateapp.gamespace.features.workspace.domain.*
 import com.duplicateapp.gamespace.features.workspace.presentation.components.*
 
 @Composable
-fun workspaceScreen(viewModel: WorkspaceViewModel) {
+fun workspaceScreen(
+    viewModel: WorkspaceViewModel,
+    canRequestAds: Boolean,
+    privacyOptionsRequired: Boolean,
+    onOpenPrivacyOptions: () -> Unit,
+) {
     val sessions by viewModel.sessions.collectAsStateWithLifecycle()
     val launchMessageResId by viewModel.launchMessage.collectAsStateWithLifecycle()
     val profileStatus by viewModel.profileProvisioningStatus.collectAsStateWithLifecycle()
@@ -29,6 +34,10 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     val authSession by viewModel.authSession.collectAsStateWithLifecycle()
     val premiumAccess by viewModel.premiumAccess.collectAsStateWithLifecycle()
     val isMonetizationBusy by viewModel.isMonetizationBusy.collectAsStateWithLifecycle()
+    val readinessBySessionId by viewModel.readinessBySessionId.collectAsStateWithLifecycle()
+    val pendingLaunchSession by viewModel.pendingLaunchSession.collectAsStateWithLifecycle()
+    val privacyLockEnabled by viewModel.privacyLockEnabled.collectAsStateWithLifecycle()
+    val privacyLockAvailable by viewModel.privacyLockAvailable.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
     val snackbar = remember { SnackbarHostState() }
     val launchMessage = launchMessageResId?.let { stringResource(it) }
@@ -45,6 +54,20 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             games = installedGames,
             onDismiss = viewModel::dismissAddSession,
             onAdd = viewModel::addSession,
+            onRefresh = viewModel::refreshInstalledGames,
+            onOpenSettings = viewModel::openAndroidSettings,
+        )
+    }
+    pendingLaunchSession?.let { session ->
+        launchConfirmationDialog(
+            session = session,
+            readiness = readinessBySessionId[session.id],
+            onConfirm = viewModel::confirmLaunch,
+            onDismiss = viewModel::dismissLaunchConfirmation,
+            onOpenSettings = {
+                viewModel.dismissLaunchConfirmation()
+                viewModel.openAndroidSettings()
+            },
         )
     }
     if (isOnboardingVisible) onboardingDialog(viewModel::completeOnboarding)
@@ -56,6 +79,9 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             authSession = authSession,
             premiumAccess = premiumAccess,
             isMonetizationBusy = isMonetizationBusy,
+            privacyOptionsRequired = privacyOptionsRequired,
+            privacyLockEnabled = privacyLockEnabled,
+            privacyLockAvailable = privacyLockAvailable,
             onThemeModeChange = viewModel::setThemeMode,
             onLanguageChange = { language ->
                 viewModel.setAppLanguage(language)
@@ -66,6 +92,9 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
             onSignOut = viewModel::signOut,
             onPurchasePremium = { activity?.let(viewModel::purchasePremium) },
             onRestorePremium = viewModel::restorePremium,
+            onOpenPrivacyOptions = onOpenPrivacyOptions,
+            onPrivacyLockChange = viewModel::setPrivacyLockEnabled,
+            onShareDiagnosticReport = viewModel::shareDiagnosticReport,
             onDismiss = { isSettingsVisible = false },
         )
     }
@@ -76,12 +105,13 @@ fun workspaceScreen(viewModel: WorkspaceViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            if (premiumAccess.showsAds) bannerAd(BuildConfig.ADMOB_BANNER_AD_UNIT_ID)
+            if (premiumAccess.showsAds && canRequestAds) bannerAd(BuildConfig.ADMOB_BANNER_AD_UNIT_ID)
         },
     ) { padding ->
         gameLibrary(
             sessions = sessions,
             profileStatus = profileStatus,
+            readinessBySessionId = readinessBySessionId,
             contentPadding = padding,
             onLaunch = viewModel::launchSession,
             onAdd = { viewModel.showAddSession() },

@@ -16,6 +16,9 @@ import com.duplicateapp.gamespace.features.workspace.data.AndroidProfileProvisio
 import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
 import com.duplicateapp.gamespace.features.workspace.data.GameLauncherProvider
 import com.duplicateapp.gamespace.features.workspace.data.PersistentWorkspaceRepository
+import com.duplicateapp.gamespace.features.workspace.data.AndroidDiagnosticReporter
+import com.duplicateapp.gamespace.features.workspace.data.AndroidWorkspaceShortcutPublisher
+import com.duplicateapp.gamespace.features.privacy.data.LocalPrivacyLockRepository
 
 class WorkspaceViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -38,6 +41,9 @@ class WorkspaceViewModelFactory(private val context: Context) : ViewModelProvide
             ),
             googleCredentialProvider = GoogleCredentialProvider(BuildConfig.FIREBASE_WEB_CLIENT_ID),
             purchaseManager = RevenueCatPurchaseManager(BuildConfig.REVENUECAT_ENTITLEMENT_ID),
+            shortcutPublisher = AndroidWorkspaceShortcutPublisher(context),
+            diagnosticReporter = AndroidDiagnosticReporter(context),
+            privacyLockRepository = LocalPrivacyLockRepository(context),
         ) as T
     }
 }

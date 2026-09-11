@@ -60,6 +60,12 @@ android {
         buildConfig = true
     }
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -88,7 +94,6 @@ kotlin {
 }
 
 dependencies {
-    "devImplementation"(project(":the-universe-core"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
@@ -106,6 +111,10 @@ dependencies {
     implementation(libs.google.id)
     implementation(libs.google.play.services.ads)
     implementation(libs.revenuecat.purchases)
+    implementation(libs.play.app.update)
+    implementation(libs.google.ump)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.biometric)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

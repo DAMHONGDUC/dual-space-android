@@ -4,6 +4,7 @@ data class InstalledGame(
     val label: String,
     val packageName: String,
     val profileTarget: ProfileTarget,
+    val isCopyAvailable: Boolean = true,
 )
 
 interface GameCatalog {

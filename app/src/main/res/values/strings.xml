@@ -41,6 +41,14 @@
     <string name="main_profile">Original</string>
     <string name="work_profile">Second copy</string>
     <string name="no_apps_in_profile">No games found on this device</string>
+    <string name="copy_ready">Ready to add</string>
+    <string name="copy_install_required">Install this game in the second Android space first</string>
+    <string name="rescan">Scan again</string>
+    <string name="privacy_options">Privacy options</string>
+    <string name="update_required_title">Update required</string>
+    <string name="update_required_message">A critical update is required to continue using Parallel Game Space.</string>
+    <string name="update_now">Update now</string>
+    <string name="close_app">Close app</string>
     <string name="enable_second_copy">Enable second copy</string>
     <string name="second_copy_setup_description">Set up a separate Android space first. Apps and sign-ins in it stay independent from the original.</string>
     <string name="second_copy_unsupported">This device cannot create a second app space.</string>
@@ -93,4 +101,19 @@
     <string name="premium_not_found">No active Premium purchase was found.</string>
     <string name="premium_activated">Premium activated.</string>
     <string name="premium_purchase_failed">Premium purchase is unavailable. Please try again.</string>
+    <string name="ready_to_open">Ready to open</string>
+    <string name="needs_attention">Needs attention</string>
+    <string name="last_opened">Opened %1$s</string>
+    <string name="launch_confirmation_title">Open %1$s?</string>
+    <string name="launch_confirmation_message">You are opening “%1$s” with this account.</string>
+    <string name="shortcut_long_label">Open %1$s in %2$s</string>
+    <string name="diagnostic_report_title">Parallel Game Space diagnostic</string>
+    <string name="share_diagnostic_report">Share diagnostic report</string>
+    <string name="diagnostic_report_body">Parallel Game Space %1$s\nAndroid %2$d\nDevice: %3$s %4$s\nSpace: %5$s\nReadiness: %6$s\n\nNo account credentials or game data are included.</string>
+    <string name="privacy_lock_title">Privacy lock</string>
+    <string name="privacy_lock_prompt">Unlock your game accounts</string>
+    <string name="privacy_lock_description">Authenticate to view your game accounts.</string>
+    <string name="privacy_lock_setting_description">Require biometrics or device lock when returning to the app.</string>
+    <string name="unlock">Unlock</string>
+    <string name="privacy_lock_unavailable">Set a secure device lock before enabling Privacy lock.</string>
 </resources>

@@ -25,4 +25,8 @@ object ParallelAppColors {
     val successDark = Color(0xFF86EFAC)
     val warning = Color(0xFFB45309)
     val warningDark = Color(0xFFFCD34D)
+    val accountBlue = Color(0xFF1D4ED8)
+    val accountGreen = Color(0xFF15803D)
+    val accountOrange = Color(0xFFC2410C)
+    val accountPurple = Color(0xFF7E22CE)
 }

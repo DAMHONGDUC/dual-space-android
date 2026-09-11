@@ -22,7 +22,10 @@ import com.duplicateapp.gamespace.features.onboarding.data.OnboardingStore
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.WorkspaceRepository
 import com.duplicateapp.gamespace.features.workspace.domain.SettingsNavigator
-import com.duplicateapp.gamespace.features.workspace.domain.SessionState
+import com.duplicateapp.gamespace.features.workspace.domain.GameLaunchReadiness
+import com.duplicateapp.gamespace.features.workspace.domain.WorkspaceShortcutPublisher
+import com.duplicateapp.gamespace.features.workspace.domain.DiagnosticReporter
+import com.duplicateapp.gamespace.features.privacy.domain.PrivacyLockRepository
 import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
 import com.duplicateapp.gamespace.features.settings.domain.LanguageRepository
 import com.duplicateapp.gamespace.features.settings.domain.ThemeMode
@@ -48,6 +51,9 @@ class WorkspaceViewModel(
     private val premiumRepository: PremiumRepository,
     private val googleCredentialProvider: GoogleCredentialProvider,
     private val purchaseManager: RevenueCatPurchaseManager,
+    private val shortcutPublisher: WorkspaceShortcutPublisher,
+    private val diagnosticReporter: DiagnosticReporter,
+    private val privacyLockRepository: PrivacyLockRepository,
 ) : ViewModel() {
     private val mutableSelectedSessionId = MutableStateFlow(repository.selectedSessionId.value)
     private val mutableLaunchMessage = MutableStateFlow<Int?>(null)
@@ -63,6 +69,10 @@ class WorkspaceViewModel(
     private val mutableAuthSession = MutableStateFlow(authRepository.currentSession())
     private val mutablePremiumAccess = MutableStateFlow(PremiumAccess(PremiumStatus.unknown))
     private val mutableIsMonetizationBusy = MutableStateFlow(false)
+    private val mutableReadinessBySessionId = MutableStateFlow<Map<String, GameLaunchReadiness>>(emptyMap())
+    private val mutablePendingLaunchSession = MutableStateFlow<GameSession?>(null)
+    private val mutablePrivacyLockEnabled = MutableStateFlow(privacyLockRepository.isEnabled())
+    private val mutablePrivacyLockAvailable = MutableStateFlow(privacyLockRepository.isAvailable())
     private var catalogLoadJob: Job? = null
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
@@ -79,9 +89,15 @@ class WorkspaceViewModel(
     val authSession: StateFlow<AuthSession?> = mutableAuthSession.asStateFlow()
     val premiumAccess: StateFlow<PremiumAccess> = mutablePremiumAccess.asStateFlow()
     val isMonetizationBusy: StateFlow<Boolean> = mutableIsMonetizationBusy.asStateFlow()
+    val readinessBySessionId: StateFlow<Map<String, GameLaunchReadiness>> = mutableReadinessBySessionId.asStateFlow()
+    val pendingLaunchSession: StateFlow<GameSession?> = mutablePendingLaunchSession.asStateFlow()
+    val privacyLockEnabled: StateFlow<Boolean> = mutablePrivacyLockEnabled.asStateFlow()
+    val privacyLockAvailable: StateFlow<Boolean> = mutablePrivacyLockAvailable.asStateFlow()
 
     init {
         refreshPremiumAccess()
+        shortcutPublisher.publish(sessions.value)
+        refreshReadiness()
     }
 
     fun setThemeMode(themeMode: ThemeMode) {
@@ -103,26 +119,37 @@ class WorkspaceViewModel(
 
     fun toggleSelectedSession() {
         val session: GameSession = sessions.value.firstOrNull { item -> item.id == mutableSelectedSessionId.value } ?: return
-        launch(session)
+        launchSession(session.id)
     }
 
     fun launchSession(sessionId: String) {
         val session: GameSession = sessions.value.firstOrNull { item -> item.id == sessionId } ?: return
         mutableSelectedSessionId.value = sessionId
         viewModelScope.launch { repository.selectSession(sessionId) }
+        mutablePendingLaunchSession.value = session
+    }
+
+    fun confirmLaunch() {
+        val session: GameSession = mutablePendingLaunchSession.value ?: return
+        mutablePendingLaunchSession.value = null
         launch(session)
+    }
+
+    fun dismissLaunchConfirmation() {
+        mutablePendingLaunchSession.value = null
     }
 
     private fun launch(session: GameSession) {
         viewModelScope.launch {
-            repository.updateSessionState(session.id, SessionState.starting)
             mutableLaunchMessage.value = when (val result: GameLaunchResult = gameLauncher.launch(session)) {
                 is GameLaunchResult.Opened -> {
-                    repository.updateSessionState(session.id, SessionState.running)
+                    repository.recordSessionOpened(session.id, System.currentTimeMillis())
+                    shortcutPublisher.publish(repository.sessions.value)
                     com.duplicateapp.gamespace.R.string.game_opened
                 }
                 is GameLaunchResult.Unavailable -> {
-                    repository.updateSessionState(session.id, SessionState.failed)
+                    mutableReadinessBySessionId.value = mutableReadinessBySessionId.value +
+                        (session.id to GameLaunchReadiness.Unavailable(result.reason))
                     when (result.reason) {
                         LaunchUnavailableReason.missingManagedProfile -> com.duplicateapp.gamespace.R.string.missing_managed_profile
                         LaunchUnavailableReason.gameNotInstalled -> com.duplicateapp.gamespace.R.string.game_not_installed
@@ -143,8 +170,10 @@ class WorkspaceViewModel(
         }
     }
 
-    fun refreshProfileStatus() {
+    fun refreshEnvironment() {
         mutableProfileProvisioningStatus.value = profileProvisioner.status()
+        refreshReadiness()
+        if (mutableIsAddSessionVisible.value) loadInstalledGames()
     }
 
     fun completeOnboarding() {
@@ -154,6 +183,10 @@ class WorkspaceViewModel(
 
     fun showAddSession() {
         mutableIsAddSessionVisible.value = true
+        loadInstalledGames()
+    }
+
+    fun refreshInstalledGames() {
         loadInstalledGames()
     }
 
@@ -174,6 +207,10 @@ class WorkspaceViewModel(
     }
 
     fun addSession(name: String, game: InstalledGame) {
+        if (!game.isCopyAvailable) {
+            mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.copy_install_required
+            return
+        }
         val existingCopies: List<GameSession> = sessions.value.filter { session -> session.packageName == game.packageName }
         val profileAlreadyAdded: Boolean = existingCopies.any { session -> session.profileTarget == ProfileTarget.managed }
         if (existingCopies.size >= maximumCopiesPerGame || profileAlreadyAdded) {
@@ -185,6 +222,8 @@ class WorkspaceViewModel(
             val addedSessionId: String = repository.sessions.value.last().id
             mutableSelectedSessionId.value = addedSessionId
             repository.selectSession(addedSessionId)
+            shortcutPublisher.publish(repository.sessions.value)
+            refreshReadiness()
             mutableIsAddSessionVisible.value = false
         }
     }
@@ -196,6 +235,8 @@ class WorkspaceViewModel(
         if (sessionIds.isEmpty()) return
         viewModelScope.launch {
             sessionIds.forEach { sessionId -> repository.deleteSession(sessionId) }
+            shortcutPublisher.publish(repository.sessions.value)
+            refreshReadiness()
             mutableSelectedSessionId.value = repository.sessions.value.firstOrNull()?.id
             mutablePendingDeleteSessionIds.value = emptyList()
             mutableDeleteConfirmationName.value = null
@@ -237,6 +278,27 @@ class WorkspaceViewModel(
         if (!settingsNavigator.openAndroidSettings()) {
             mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.settings_open_failed
         }
+    }
+
+    fun setPrivacyLockEnabled(isEnabled: Boolean) {
+        if (isEnabled && !privacyLockRepository.isAvailable()) {
+            mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.privacy_lock_unavailable
+            return
+        }
+        privacyLockRepository.setEnabled(isEnabled)
+        mutablePrivacyLockEnabled.value = isEnabled
+    }
+
+    fun shareDiagnosticReport() {
+        val session: GameSession? = sessions.value.firstOrNull { item -> item.id == mutableSelectedSessionId.value }
+        diagnosticReporter.share(
+            profileTarget = session?.profileTarget ?: ProfileTarget.managed,
+            readiness = session?.let { item -> mutableReadinessBySessionId.value[item.id] },
+        )
+    }
+
+    private fun refreshReadiness() {
+        mutableReadinessBySessionId.value = sessions.value.associate { session -> session.id to gameLauncher.readiness(session) }
     }
 
     fun signIn(activity: Activity) {

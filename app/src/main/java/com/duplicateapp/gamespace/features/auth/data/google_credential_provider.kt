@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -30,6 +31,9 @@ class GoogleCredentialProvider(private val webClientId: String) {
                 AppLogger.error("request_google_credential", IllegalStateException("Unsupported credential type"), emptyMap())
                 null
             }
+        } catch (error: NoCredentialException) {
+            AppLogger.error("request_google_credential", error, mapOf("reason" to "no_credential"))
+            null
         } catch (error: Exception) {
             AppLogger.error("request_google_credential", error, emptyMap())
             null

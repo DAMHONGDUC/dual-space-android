@@ -22,6 +22,8 @@ fun addSessionDialog(
     games: List<InstalledGame>,
     onDismiss: () -> Unit,
     onAdd: (String, InstalledGame) -> Unit,
+    onRefresh: () -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -52,6 +54,7 @@ fun addSessionDialog(
                     items(games, key = InstalledGame::packageName) { game ->
                         Surface(
                             onClick = { onAdd(game.label, game) },
+                            enabled = game.isCopyAvailable,
                             color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(ParallelAppDimensions.itemCornerRadius),
                         ) {
@@ -78,6 +81,14 @@ fun addSessionDialog(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         style = MaterialTheme.typography.bodySmall,
                                         maxLines = 1,
+                                    )
+                                    Text(
+                                        text = stringResource(
+                                            if (game.isCopyAvailable) R.string.copy_ready else R.string.copy_install_required,
+                                        ),
+                                        color = if (game.isCopyAvailable) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.error,
+                                        style = MaterialTheme.typography.labelSmall,
                                     )
                                 }
                                 Icon(
@@ -111,7 +122,13 @@ fun addSessionDialog(
                     }
                 }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+        confirmButton = { TextButton(onClick = onRefresh) { Text(stringResource(R.string.rescan)) } },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.android_settings)) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+            }
+        },
         shape = RoundedCornerShape(ParallelAppDimensions.dialogCornerRadius),
     )
 }

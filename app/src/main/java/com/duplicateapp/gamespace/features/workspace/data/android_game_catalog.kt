@@ -19,7 +19,11 @@ class AndroidGameCatalog(context: Context) : GameCatalog {
 
     override fun listInstalledGames(profileTarget: ProfileTarget): List<InstalledGame> {
         val profile: UserHandle = resolveProfile(profileTarget) ?: return emptyList()
+        val managedProfile: UserHandle? = resolveProfile(ProfileTarget.managed)
         return try {
+            val managedPackages: Set<String> = managedProfile?.let { target ->
+                launcherApps.getActivityList(null, target).map { activity -> activity.applicationInfo.packageName }.toSet()
+            }.orEmpty()
             launcherApps.getActivityList(null, profile)
                 .distinctBy { activity -> activity.applicationInfo.packageName }
                 .filterNot { activity -> activity.applicationInfo.packageName == hostPackageName }
@@ -30,7 +34,13 @@ class AndroidGameCatalog(context: Context) : GameCatalog {
                     ),
                 )
                 .map { activity ->
-                    InstalledGame(activity.label.toString(), activity.applicationInfo.packageName, profileTarget)
+                    val packageName: String = activity.applicationInfo.packageName
+                    InstalledGame(
+                        label = activity.label.toString(),
+                        packageName = packageName,
+                        profileTarget = profileTarget,
+                        isCopyAvailable = packageName in managedPackages,
+                    )
                 }
                 .also { games -> AppLogger.success("list_installed_games", mapOf("profile" to profileTarget.name, "count" to games.size)) }
         } catch (error: Exception) {

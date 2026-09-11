@@ -41,6 +41,8 @@
     <string name="main_profile">Bản gốc</string>
     <string name="work_profile">Bản sao thứ hai</string>
     <string name="no_apps_in_profile">Không tìm thấy game đã cài trên thiết bị</string>
+    <string name="copy_ready">Sẵn sàng thêm</string>
+    <string name="copy_install_required">Hãy cài game này trong không gian Android thứ hai trước</string>
     <string name="enable_second_copy">Bật bản sao thứ hai</string>
     <string name="second_copy_setup_description">Trước tiên hãy tạo một không gian Android riêng. Ứng dụng và tài khoản đăng nhập trong đó độc lập với bản gốc.</string>
     <string name="second_copy_unsupported">Thiết bị này không thể tạo không gian ứng dụng thứ hai.</string>
@@ -93,4 +95,6 @@
     <string name="premium_activated">Đã kích hoạt Premium.</string>
     <string name="premium_purchase_failed">Hiện chưa thể mua Premium. Vui lòng thử lại.</string>
     <string name="second_copy_check_title">Second copy setup</string>
-</resources>
+    <string name="rescan">Quét lại</string><string name="privacy_options">Tùy chọn quyền riêng tư</string><string name="update_required_title">Cần cập nhật</string><string name="update_required_message">Bạn cần cài đặt bản cập nhật quan trọng để tiếp tục sử dụng Parallel Game Space.</string><string name="update_now">Cập nhật ngay</string><string name="close_app">Đóng ứng dụng</string>
+    <string name="ready_to_open">Sẵn sàng mở</string><string name="needs_attention">Cần xử lý</string><string name="last_opened">Đã mở %1$s</string><string name="launch_confirmation_title">Mở %1$s?</string><string name="launch_confirmation_message">Bạn đang mở “%1$s” bằng tài khoản này.</string><string name="shortcut_long_label">Mở %1$s trong %2$s</string><string name="diagnostic_report_title">Chẩn đoán Parallel Game Space</string><string name="share_diagnostic_report">Chia sẻ báo cáo chẩn đoán</string><string name="diagnostic_report_body">Parallel Game Space %1$s\nAndroid %2$d\nThiết bị: %3$s %4$s\nKhông gian: %5$s\nTrạng thái: %6$s\n\nKhông bao gồm thông tin đăng nhập hoặc dữ liệu game.</string><string name="privacy_lock_title">Khóa riêng tư</string><string name="privacy_lock_prompt">Mở khóa tài khoản game</string><string name="privacy_lock_description">Xác thực để xem các tài khoản game.</string><string name="privacy_lock_setting_description">Yêu cầu sinh trắc học hoặc khóa thiết bị khi quay lại ứng dụng.</string><string name="unlock">Mở khóa</string>
+    <string name="privacy_lock_unavailable">Hãy thiết lập khóa màn hình an toàn trước khi bật Khóa riêng tư.</string></resources>

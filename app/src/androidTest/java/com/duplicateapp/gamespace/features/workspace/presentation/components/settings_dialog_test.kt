@@ -39,6 +39,9 @@ class SettingsDialogTest {
                     authSession = null,
                     premiumAccess = PremiumAccess(PremiumStatus.inactive),
                     isMonetizationBusy = false,
+                    privacyOptionsRequired = false,
+                    privacyLockEnabled = false,
+                    privacyLockAvailable = true,
                     onThemeModeChange = {},
                     onLanguageChange = {},
                     onOpenAndroidSettings = {},
@@ -46,6 +49,9 @@ class SettingsDialogTest {
                     onSignOut = {},
                     onPurchasePremium = {},
                     onRestorePremium = {},
+                    onOpenPrivacyOptions = {},
+                    onPrivacyLockChange = {},
+                    onShareDiagnosticReport = {},
                     onDismiss = {},
                 )
             }
@@ -68,6 +74,9 @@ class SettingsDialogTest {
                     authSession = null,
                     premiumAccess = PremiumAccess(PremiumStatus.active),
                     isMonetizationBusy = false,
+                    privacyOptionsRequired = false,
+                    privacyLockEnabled = false,
+                    privacyLockAvailable = true,
                     onThemeModeChange = {},
                     onLanguageChange = {},
                     onOpenAndroidSettings = {},
@@ -75,6 +84,9 @@ class SettingsDialogTest {
                     onSignOut = {},
                     onPurchasePremium = {},
                     onRestorePremium = {},
+                    onOpenPrivacyOptions = {},
+                    onPrivacyLockChange = {},
+                    onShareDiagnosticReport = {},
                     onDismiss = {},
                 )
             }

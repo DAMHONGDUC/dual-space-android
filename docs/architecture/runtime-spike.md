@@ -66,11 +66,11 @@ Do not implement hidden-API task embedding, APK rewriting, runtime code injectio
 
 ## Current decision
 
-Continue with The Universe only in a clearly labeled personal/sideload flavor. Keep the Play-compatible companion build independent so the virtual runtime, broad package visibility, hidden-API hooks, and inherited permissions cannot leak into a Play artifact.
+Both `dev` and `prod` use the Play-compatible managed-profile launcher. The flavors share the same runtime behavior; `dev` differs only by its debug-oriented application ID and version suffix so it can be installed beside `prod`.
 
-The runtime is now exposed behind Parallel_app's `VirtualGameRuntime` boundary; Compose does not call The Universe APIs directly. The integrated APK was smoke-tested on Android 15: the existing Open game action imported `vn.tinhlinh.game2dhay` into virtual user 0 and launched it through Parallel_app's own proxy task.
+The Universe spike remains documented as research, but no app flavor links or bootstraps that runtime. Games must already be installed in the managed profile before Parallel_app can add or launch the copy.
 
-The remaining gate is the physical Android 16 tablet test, followed by migrating the temporary Original/Managed labels to explicit copy indexes and supporting more than two virtual users.
+The remaining gate is physical-device validation across the supported Android versions and documenting the managed-profile installation journey clearly for testers.
 
 ## Primary references
 

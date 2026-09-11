@@ -53,7 +53,7 @@ For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace
 
 The repository also provides **prod**, which runs `:app:bundleProdRelease` directly from Android Studio.
 
-Use the **dev** configuration for local testing; it builds `devDebug`, includes the container runtime, and installs as `com.duplicateapp.gamespace.dev`. Use **prod** for the Google Play-safe release.
+Use the **dev** configuration for local testing; it builds `devDebug`, mirrors the managed-profile behavior of `prod`, and installs as `com.duplicateapp.gamespace.dev`. Use **prod** for the Google Play release.
 
 If Android Studio tries to execute `:app:assembleDebug` and cannot find `app-debug.apk`, sync Gradle again and reselect `devDebug`; the actual APK is flavor-qualified.
 
@@ -140,14 +140,17 @@ Upload the AAB to an Internal testing track first, finish App content/Data safet
 | Flavor | Application ID | Purpose |
 | --- | --- | --- |
 | `prod` | `com.duplicateapp.gamespace` | Google Play-safe managed-profile build |
-| `dev` | `com.duplicateapp.gamespace.dev` | Local development build with The Universe runtime |
+| `dev` | `com.duplicateapp.gamespace.dev` | Local debug build with the same managed-profile behavior as `prod` |
 
 Do not upload the `dev` flavor to Google Play.
 
 ## Product and policy boundaries
 
 - No auto-click, gameplay macros, memory editing, fake GPS, anti-cheat bypass, or silent installation.
-- The `prod` flavor must remain independent from `packages/the_universe`.
+- Both app flavors are independent from `packages/the_universe`; that code remains research-only.
 - Free users can launch games without a time limit and see a small banner outside the launch path.
 - Premium removes all advertising.
+- Every saved account has a distinct local color, last-opened timestamp, launch confirmation, and launcher shortcut.
+- Launch readiness is checked before Android opens the managed-profile game; diagnostics never include credentials or game data.
+- Privacy Lock uses the device credential or strong biometrics and is opt-in.
 - A future container must reject apps declaring `REQUIRE_SECURE_ENV`.

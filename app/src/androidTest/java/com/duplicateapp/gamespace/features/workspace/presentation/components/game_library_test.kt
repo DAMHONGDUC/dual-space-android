@@ -12,7 +12,7 @@ import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileTarget
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
-import com.duplicateapp.gamespace.features.workspace.domain.SessionState
+import com.duplicateapp.gamespace.features.workspace.domain.AccountColor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -87,11 +87,8 @@ class GameLibraryTest {
         id = id,
         name = id,
         gameName = gameName,
-        state = SessionState.stopped,
-        cpuPercent = 0,
-        memoryGb = 0f,
-        temperatureCelsius = 0,
-        framesPerSecond = 0,
+        accountColor = AccountColor.blue,
+        lastOpenedAtEpochMillis = null,
         packageName = packageName,
         profileTarget = profileTarget,
     )
