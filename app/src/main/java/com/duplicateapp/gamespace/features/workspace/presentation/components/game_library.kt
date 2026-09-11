@@ -1,18 +1,17 @@
 package com.duplicateapp.gamespace.features.workspace.presentation.components
 
 import android.graphics.drawable.Drawable
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -33,7 +32,12 @@ import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+private data class GameRowModel(
+    val packageName: String,
+    val gameName: String,
+    val sessions: List<GameSession>,
+)
+
 @Composable
 fun gameLibrary(
     sessions: List<GameSession>,
@@ -41,38 +45,22 @@ fun gameLibrary(
     contentPadding: PaddingValues,
     onLaunch: (String) -> Unit,
     onAdd: () -> Unit,
-    onDelete: (String) -> Unit,
+    onDeleteGame: (String) -> Unit,
     onSettings: () -> Unit,
 ) {
+    val gameRows: List<GameRowModel> = remember(sessions) {
+        sessions.groupBy(GameSession::packageName).map { (packageName, gameSessions) ->
+            GameRowModel(packageName, gameSessions.first().gameName, gameSessions)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(stringResource(R.string.app_name), fontWeight = FontWeight.SemiBold)
-                        Text(
-                            stringResource(R.string.copy_count, sessions.size),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                actions = {
-                    Text(
-                        stringResource(R.string.quota_hours_compact, remainingQuotaHours),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    IconButton(onClick = onSettings) {
-                        Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings))
-                    }
-                },
-            )
-            if (sessions.isEmpty()) {
+            libraryTopBar(sessions.size, remainingQuotaHours, onSettings)
+            if (gameRows.isEmpty()) {
                 emptyLibrary(onAdd, Modifier.weight(1f))
             } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(ParallelAppDimensions.gameTileMinWidth),
+                LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
                         start = ParallelAppDimensions.space16,
@@ -80,10 +68,9 @@ fun gameLibrary(
                         end = ParallelAppDimensions.space16,
                         bottom = ParallelAppDimensions.fabClearance,
                     ),
-                    horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
                 ) {
-                    items(sessions, key = GameSession::id) { session -> gameTile(session, onLaunch, onDelete) }
+                    items(gameRows, key = GameRowModel::packageName) { game -> gameRow(game, onLaunch, onDeleteGame) }
                 }
             }
         }
@@ -94,40 +81,100 @@ fun gameLibrary(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun gameTile(session: GameSession, onLaunch: (String) -> Unit, onDelete: (String) -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().combinedClickable(
-            onClick = { onLaunch(session.id) },
-            onLongClick = { onDelete(session.id) },
-        ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(ParallelAppDimensions.space12),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
-        ) {
-            gameIcon(session.packageName)
-            Text(
-                session.gameName,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space4),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                sessionStatus(session.state)
+private fun libraryTopBar(sessionCount: Int, remainingQuotaHours: Int, onSettings: () -> Unit) {
+    TopAppBar(
+        title = {
+            Column {
+                Text(stringResource(R.string.app_name), fontWeight = FontWeight.SemiBold)
                 Text(
-                    stringResource(if (session.profileTarget == ProfileTarget.personal) R.string.original_copy else R.string.copy_one),
+                    stringResource(R.string.copy_count, sessionCount),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+            }
+        },
+        actions = {
+            Text(
+                stringResource(R.string.quota_hours_compact, remainingQuotaHours),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelLarge,
+            )
+            IconButton(onClick = onSettings) {
+                Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings))
+            }
+        },
+    )
+}
+
+@Composable
+private fun gameRow(game: GameRowModel, onLaunch: (String) -> Unit, onDeleteGame: (String) -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(ParallelAppDimensions.space16),
+            verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    game.packageName,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                IconButton(onClick = { onDeleteGame(game.packageName) }) {
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete_game))
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
+            ) {
+                gameIcon(game.packageName)
+                Text(
+                    game.gameName,
+                    modifier = Modifier.widthIn(min = ParallelAppDimensions.gameNameMinWidth),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
+                    game.sessions.forEach { session -> accountButton(session, onLaunch) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun accountButton(session: GameSession, onLaunch: (String) -> Unit) {
+    Surface(
+        onClick = { onLaunch(session.id) },
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.defaultMinSize(minHeight = ParallelAppDimensions.touchTarget)
+                .padding(horizontal = ParallelAppDimensions.space12, vertical = ParallelAppDimensions.space8),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(ParallelAppDimensions.iconSmall))
+            Column(modifier = Modifier.padding(start = ParallelAppDimensions.space6)) {
+                Text(
+                    stringResource(if (session.profileTarget == ProfileTarget.personal) R.string.original_copy else R.string.copy_one),
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1,
+                )
+                Text(sessionStateLabel(session.state), style = MaterialTheme.typography.labelSmall, maxLines = 1)
             }
         }
     }
@@ -158,18 +205,15 @@ private fun gameIcon(packageName: String) {
 }
 
 @Composable
-private fun sessionStatus(state: SessionState) {
-    val label = stringResource(
-        when (state) {
-            SessionState.starting -> R.string.session_starting
-            SessionState.running -> R.string.session_running
-            SessionState.paused -> R.string.session_paused
-            SessionState.stopped -> R.string.session_stopped
-            SessionState.failed -> R.string.session_failed
-        },
-    )
-    Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-}
+private fun sessionStateLabel(state: SessionState): String = stringResource(
+    when (state) {
+        SessionState.starting -> R.string.session_starting
+        SessionState.running -> R.string.session_running
+        SessionState.paused -> R.string.session_paused
+        SessionState.stopped -> R.string.session_stopped
+        SessionState.failed -> R.string.session_failed
+    },
+)
 
 @Composable
 private fun emptyLibrary(onAdd: () -> Unit, modifier: Modifier = Modifier) {
