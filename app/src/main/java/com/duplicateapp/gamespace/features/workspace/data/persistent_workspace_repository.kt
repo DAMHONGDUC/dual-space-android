@@ -24,10 +24,10 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
     override val selectedSessionId: StateFlow<String?> = mutableSelectedSessionId.asStateFlow()
 
     init {
-        if (!preferences.contains(sessionsKey) && preferences.contains(legacySessionsKey)) {
+        if (!preferences.contains(sessionsKey) && hasLegacySessions()) {
             update(mutableSessions.value)
             preferences.edit { putString(selectedSessionKey, mutableSelectedSessionId.value) }
-            AppLogger.success("migrate_workspace_sessions", mapOf("count" to mutableSessions.value.size, "version" to 5))
+            AppLogger.success("migrate_workspace_sessions", mapOf("count" to mutableSessions.value.size, "version" to 6))
         }
     }
 
@@ -63,8 +63,14 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
         AppLogger.success("update_session_identity", mapOf("sessionId" to sessionId, "color" to accountColor.name))
     }
 
-    override suspend fun addSession(name: String, gameName: String, packageName: String, profileTarget: ProfileTarget) {
-        AppLogger.action("add_session", mapOf("packageName" to packageName, "profile" to profileTarget.name))
+    override suspend fun addSession(
+        name: String,
+        gameName: String,
+        packageName: String,
+        profileTarget: ProfileTarget,
+        virtualUserId: Int,
+    ) {
+        AppLogger.action("add_session", mapOf("packageName" to packageName, "virtualUserId" to virtualUserId))
         val session = GameSession(
             id = UUID.randomUUID().toString(),
             name = name.trim(),
@@ -73,6 +79,7 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
             lastOpenedAtEpochMillis = null,
             packageName = packageName,
             profileTarget = profileTarget,
+            virtualUserId = virtualUserId,
         )
         update(mutableSessions.value + session)
         AppLogger.success("add_session", mapOf("sessionId" to session.id))
@@ -91,18 +98,25 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
 
     private fun loadSelectedSessionId(sessions: List<GameSession>): String? {
         val savedSessionId: String? = preferences.getString(selectedSessionKey, null)
-            ?: preferences.getString(legacySelectedSessionKey, null)
+            ?: preferences.getString(previousSelectedSessionKey, null)
+            ?: preferences.getString(oldestSelectedSessionKey, null)
         return sessions.firstOrNull { session -> session.id == savedSessionId }?.id ?: sessions.firstOrNull()?.id
     }
 
     private fun loadSessions(): List<GameSession> {
         val encoded: String = preferences.getString(sessionsKey, null)
-            ?: preferences.getString(legacySessionsKey, null)
+            ?: preferences.getString(previousSessionsKey, null)
+            ?: preferences.getString(oldestSessionsKey, null)
             ?: return emptyList()
         return try {
             val array = JSONArray(encoded)
+            val nextVirtualUserIdByPackage = mutableMapOf<String, Int>()
             List(array.length()) { index ->
                 val item: JSONObject = array.getJSONObject(index)
+                val packageName: String = item.getString("packageName")
+                val migratedVirtualUserId: Int = nextVirtualUserIdByPackage.getOrDefault(packageName, 1)
+                val virtualUserId: Int = item.optInt("virtualUserId", migratedVirtualUserId)
+                nextVirtualUserIdByPackage[packageName] = virtualUserId + 1
                 GameSession(
                     id = item.getString("id"),
                     name = item.getString("name"),
@@ -111,8 +125,9 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
                         ?.let { color -> runCatching { AccountColor.valueOf(color) }.getOrNull() }
                         ?: AccountColor.entries[index % AccountColor.entries.size],
                     lastOpenedAtEpochMillis = item.optLong("lastOpenedAtEpochMillis").takeIf { value -> value > 0L },
-                    packageName = item.getString("packageName"),
+                    packageName = packageName,
                     profileTarget = ProfileTarget.valueOf(item.getString("profileTarget")),
+                    virtualUserId = virtualUserId,
                 )
             }
         } catch (error: Exception) {
@@ -131,6 +146,7 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
                     put("gameName", session.gameName)
                     put("packageName", session.packageName)
                     put("profileTarget", session.profileTarget.name)
+                    put("virtualUserId", session.virtualUserId)
                     put("accountColor", session.accountColor.name)
                     session.lastOpenedAtEpochMillis?.let { value -> put("lastOpenedAtEpochMillis", value) }
                 })
@@ -139,11 +155,16 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
         preferences.edit { putString(sessionsKey, encoded) }
     }
 
+    private fun hasLegacySessions(): Boolean =
+        preferences.contains(previousSessionsKey) || preferences.contains(oldestSessionsKey)
+
     private companion object {
         const val preferencesName = "workspace"
-        const val sessionsKey = "sessions_v5"
-        const val legacySessionsKey = "sessions_v4"
-        const val selectedSessionKey = "selected_session_v5"
-        const val legacySelectedSessionKey = "selected_session_v4"
+        const val sessionsKey = "sessions_v6"
+        const val previousSessionsKey = "sessions_v5"
+        const val oldestSessionsKey = "sessions_v4"
+        const val selectedSessionKey = "selected_session_v6"
+        const val previousSelectedSessionKey = "selected_session_v5"
+        const val oldestSelectedSessionKey = "selected_session_v4"
     }
 }

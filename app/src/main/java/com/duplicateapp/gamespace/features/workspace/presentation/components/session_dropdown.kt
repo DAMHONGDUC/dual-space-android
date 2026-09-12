@@ -38,9 +38,7 @@ fun sessionDropdown(
 ) {
     var expanded: Boolean by remember { mutableStateOf(false) }
     val selectedSession: GameSession? = sessions.firstOrNull { session -> session.id == selectedSessionId }
-    val selectedSpace: String? = selectedSession?.let { session ->
-        stringResource(if (session.profileTarget == ProfileTarget.personal) R.string.main_profile else R.string.work_profile)
-    }
+    val selectedSpace: String? = selectedSession?.let { session -> sessionSpaceLabel(session) }
 
     Column(modifier = modifier) {
         Surface(
@@ -81,9 +79,7 @@ fun sessionDropdown(
         ) {
             sessions.forEach { session ->
                 val selected: Boolean = session.id == selectedSessionId
-                val space: String = stringResource(
-                    if (session.profileTarget == ProfileTarget.personal) R.string.main_profile else R.string.work_profile,
-                )
+                val space: String = sessionSpaceLabel(session)
                 DropdownMenuItem(
                     leadingIcon = { RadioButton(selected = selected, onClick = null) },
                     text = {
@@ -102,3 +98,11 @@ fun sessionDropdown(
         }
     }
 }
+
+@Composable
+private fun sessionSpaceLabel(session: GameSession): String =
+    if (session.profileTarget == ProfileTarget.personal) {
+        stringResource(R.string.main_profile)
+    } else {
+        stringResource(R.string.copy_number, session.virtualUserId)
+    }

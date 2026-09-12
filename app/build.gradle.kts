@@ -94,6 +94,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":the-universe-core"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)

@@ -28,6 +28,7 @@ import com.duplicateapp.gamespace.features.workspace.domain.GameSession
 fun accountIdentityDialog(
     session: GameSession,
     onSave: (String, AccountColor) -> Unit,
+    onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var name: String by remember(session.id) { mutableStateOf(session.name) }
@@ -65,7 +66,10 @@ fun accountIdentityDialog(
                 Text(stringResource(R.string.save))
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+        dismissButton = {
+            TextButton(onClick = onDelete) { Text(stringResource(R.string.delete)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+        },
     )
 }
 

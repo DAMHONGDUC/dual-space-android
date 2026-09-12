@@ -31,6 +31,7 @@ class AccountIdentityDialogTest {
                 accountIdentityDialog(
                     session = session,
                     onSave = { name, color -> savedName = name; savedColor = color },
+                    onDelete = {},
                     onDismiss = {},
                 )
             }
@@ -42,6 +43,26 @@ class AccountIdentityDialogTest {
 
         assertEquals("Gaming", savedName)
         assertEquals(AccountColor.green, savedColor)
+    }
+
+    @Test
+    fun deleteActionRequestsSessionDeletion() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        var deleteRequested = false
+        composeRule.setContent {
+            MaterialTheme {
+                accountIdentityDialog(
+                    session = session,
+                    onSave = { _, _ -> },
+                    onDelete = { deleteRequested = true },
+                    onDismiss = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(context.getString(R.string.delete)).performClick()
+
+        assertEquals(true, deleteRequested)
     }
 
     private val session = GameSession(

@@ -1,6 +1,7 @@
 package com.duplicateapp.gamespace.features.workspace.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import com.duplicateapp.gamespace.R
 import com.duplicateapp.gamespace.core.theme.ParallelAppDimensions
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
@@ -109,7 +111,15 @@ fun settingsDialog(
                             onClick = onSignIn,
                             enabled = !isMonetizationBusy,
                             modifier = Modifier.fillMaxWidth(),
-                        ) { Text(stringResource(R.string.sign_in_google)) }
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(painter = painterResource(R.drawable.ic_google_g), contentDescription = null)
+                                Text(stringResource(R.string.sign_in_google))
+                            }
+                        }
                     } else {
                         OutlinedButton(
                             onClick = onSignOut,

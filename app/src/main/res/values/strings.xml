@@ -15,10 +15,11 @@
     <string name="game_stage_waiting">Game runtime will appear here</string>
     <string name="open_game">Open game</string>
     <string name="game_opened">Game opened</string>
-    <string name="missing_managed_profile">Enable the second copy before opening this game</string>
-    <string name="game_not_installed">This game is not installed in the selected space</string>
-    <string name="game_already_added">This build currently supports two accounts per game</string>
-    <string name="profile_permission_denied">Android did not allow access to this app space</string>
+    <string name="missing_managed_profile">The copy is unavailable. Remove the game and add it again.</string>
+    <string name="game_not_installed">Could not create this game copy. Make sure the original game is installed.</string>
+    <string name="game_already_added">This game already has 2 copies. Open the original game outside Parallel Game Space.</string>
+    <string name="profile_permission_denied">Could not open this game copy. Please try again.</string>
+    <string name="copy_removal_failed">Could not remove this game copy. Please try again.</string>
     <string name="add_profile">Enable second copy</string>
     <string name="profile_count">Second copy ready</string>
     <string name="profile_unsupported">Second copy unavailable</string>
@@ -32,8 +33,8 @@
     <string name="select_game_description">Add an installed game to start using Parallel Game Space.</string>
     <string name="add_copy">Add copy</string>
     <string name="no_copies">No game copies yet</string>
-    <string name="no_copies_description">Set up the second Android space, then add a game installed there.</string>
-    <string name="choose_copied_game">Choose a game from the second space</string>
+    <string name="no_copies_description">Add an installed game to create one independent copy.</string>
+    <string name="choose_copied_game">Choose an installed game to copy</string>
     <string name="copy_summary">%1$s · Copy</string>
     <string name="session_name">Display name</string>
     <string name="choose_installed_app">Choose a game</string>
@@ -42,7 +43,7 @@
     <string name="work_profile">Second copy</string>
     <string name="no_apps_in_profile">No games found on this device</string>
     <string name="copy_ready">Ready to add</string>
-    <string name="copy_install_required">Install this game in the second Android space first</string>
+    <string name="copy_install_required">Install the original game on this device first</string>
     <string name="rescan">Scan again</string>
     <string name="privacy_options">Privacy options</string>
     <string name="update_required_title">Update required</string>
@@ -56,9 +57,9 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="onboarding_title">Welcome to Parallel Game Space</string>
-    <string name="onboarding_profiles">Tap Add game to create an independent copy. The original app remains available outside Parallel Game Space.</string>
+    <string name="onboarding_profiles">Each game supports up to 2 independent copies. Open the original game outside Parallel Game Space.</string>
     <string name="onboarding_monetization">Free includes a small banner ad. Premium removes all ads.</string>
-    <string name="onboarding_privacy">Profile creation always uses Android’s consent screen. Parallel Game Space does not modify games.</string>
+    <string name="onboarding_privacy">Each copy keeps its own app data inside Parallel Game Space. Your original game is not modified.</string>
     <string name="continue_label">Continue</string>
     <string name="profile_available">Not enabled</string>
     <string name="settings_profile">Second copy: %1$s</string>
@@ -67,7 +68,7 @@
     <string name="settings_open_failed">Could not open Android settings</string>
     <string name="close">Close</string>
     <string name="delete_session">Delete session</string>
-    <string name="delete_session_message">Delete “%1$s”? The installed game and its data are not removed.</string>
+    <string name="delete_session_message">Delete “%1$s”? This copy and its app data will be removed. The original game is not affected.</string>
     <string name="delete">Delete</string>
     <string name="choose_session">Choose session</string>
     <string name="session_summary">%1$s · %2$s</string>
@@ -81,11 +82,12 @@
     <string name="metric_value_fps">%1$d</string>
     <string name="metric_label_value">%1$s  %2$s</string>
     <string name="metric_compact">%1$s %2$s</string>
-    <string name="copy_count">%1$d accounts</string>
+    <string name="copy_count">Copies: %1$d</string>
     <string name="original_copy">Original app</string>
     <string name="copy_one">Independent copy</string>
+    <string name="copy_number">Copy %1$d</string>
     <string name="delete_game">Remove game</string>
-    <string name="delete_game_message">Remove “%1$s” and all of its accounts from Parallel Game Space? The installed app and its data will not be deleted.</string>
+    <string name="delete_game_message">Remove all “%1$s” copies from Parallel Game Space? Their app data will be removed. The original game is not affected.</string>
     <string name="choose_game_to_copy">Choose a game</string>
     <string name="empty_library_title">Add your first game</string>
     <string name="empty_library_description">Tap Add, choose a game, then tap its icon to play.</string>
@@ -105,7 +107,7 @@
     <string name="needs_attention">Needs attention</string>
     <string name="last_opened">Opened %1$s</string>
     <string name="launch_confirmation_title">Open %1$s?</string>
-    <string name="launch_confirmation_message">You are opening “%1$s” with this account.</string>
+    <string name="launch_confirmation_message">You are opening the independent copy “%1$s”.</string>
     <string name="shortcut_long_label">Open %1$s in %2$s</string>
     <string name="diagnostic_report_title">Parallel Game Space diagnostic</string>
     <string name="share_diagnostic_report">Share diagnostic report</string>
@@ -129,4 +131,12 @@
     <string name="compatibility_game_missing">Install required</string>
     <string name="compatibility_permission">Permission required</string>
     <string name="compatibility_checking">Checking</string>
+    <string name="about_and_help">About and help</string>
+    <string name="about_title">About Parallel Game Space</string>
+    <string name="about_description">Parallel Game Space supports up to 2 independent copies per game. Together with the original game outside this app, you can use 3 separate game instances.</string>
+    <string name="about_step_copy">1. Tap Add game and choose an installed game.</string>
+    <string name="about_step_add">2. Add the same game again to create a second independent copy.</string>
+    <string name="about_step_play">3. Tap the game in your library to open its copy.</string>
+    <string name="about_plan">Free includes ads. Premium removes all ads. Parallel Game Space does not read or modify your game data.</string>
+    <string name="got_it">Got it</string>
 </resources>

@@ -1,12 +1,14 @@
 package com.duplicateapp.gamespace.features.workspace.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SportsEsports
@@ -58,6 +60,7 @@ fun gameLibrary(
     onEditSession: (String) -> Unit = {},
     onCreateProfile: () -> Unit,
     onOpenAndroidSettings: () -> Unit,
+    onHelp: () -> Unit,
     onSettings: () -> Unit,
 ) {
     val gameRows: List<GameRowModel> = remember(sessions) {
@@ -68,7 +71,7 @@ fun gameLibrary(
 
     Box(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            libraryTopBar(sessions.size, onSettings)
+            libraryTopBar(sessions.size, onHelp, onSettings)
             if (profileStatus != ProfileProvisioningStatus.alreadyCreated) {
                 profileHealthCard(profileStatus, onCreateProfile, onOpenAndroidSettings)
             }
@@ -145,7 +148,7 @@ private fun profileHealthCard(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun libraryTopBar(sessionCount: Int, onSettings: () -> Unit) {
+private fun libraryTopBar(sessionCount: Int, onHelp: () -> Unit, onSettings: () -> Unit) {
     TopAppBar(
         title = {
             Column {
@@ -158,6 +161,9 @@ private fun libraryTopBar(sessionCount: Int, onSettings: () -> Unit) {
             }
         },
         actions = {
+            IconButton(onClick = onHelp) {
+                Icon(Icons.AutoMirrored.Outlined.HelpOutline, contentDescription = stringResource(R.string.about_and_help))
+            }
             IconButton(onClick = onSettings) {
                 Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings))
             }
@@ -244,11 +250,17 @@ private fun accountButton(session: GameSession, readiness: GameLaunchReadiness?,
                 }
             }
             Column(modifier = Modifier.padding(start = ParallelAppDimensions.space6)) {
-                Text(
-                    session.name,
-                    style = MaterialTheme.typography.labelLarge,
-                    maxLines = 1,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space6),
+                ) {
+                    Text(
+                        session.name,
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                    )
+                    copyTag(session.virtualUserId, session.accountColor)
+                }
                 Text(
                     if (isReady) {
                         session.lastOpenedAtEpochMillis?.let { value ->
@@ -267,6 +279,33 @@ private fun accountButton(session: GameSession, readiness: GameLaunchReadiness?,
                 modifier = Modifier.padding(start = ParallelAppDimensions.space8).size(ParallelAppDimensions.iconSmall),
             )
         }
+    }
+}
+
+@Composable
+private fun copyTag(virtualUserId: Int, copyAccountColor: AccountColor) {
+    val backgroundColor: Color = accountColor(copyAccountColor)
+    val textColor: Color = Color.White
+
+    Surface(
+        shape = RoundedCornerShape(ParallelAppDimensions.space12),
+        color = backgroundColor,
+        contentColor = textColor,
+        border = BorderStroke(
+            width = ParallelAppDimensions.borderThin,
+            color = textColor.copy(alpha = copyTagBorderAlpha),
+        ),
+        tonalElevation = ParallelAppDimensions.space2,
+    ) {
+        Text(
+            text = stringResource(R.string.copy_number, virtualUserId),
+            modifier = Modifier.padding(
+                horizontal = ParallelAppDimensions.space8,
+                vertical = ParallelAppDimensions.space4,
+            ),
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -301,6 +340,7 @@ private fun gameIcon(packageName: String) {
 }
 
 private const val gameIconBitmapSize: Int = 144
+private const val copyTagBorderAlpha: Float = 0.35f
 
 @Composable
 private fun accountColor(accountColor: AccountColor): Color = when (accountColor) {

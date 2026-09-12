@@ -31,6 +31,7 @@ class PersistentWorkspaceRepositoryTest {
 
         assertEquals(sessionId, repository.selectedSessionId.value)
         assertEquals("Work", repository.sessions.value.single().name)
+        assertEquals(1, repository.sessions.value.single().virtualUserId)
         assertTrue(preferences.contains(currentSessionsKey))
         preferences.edit().clear().commit()
     }
@@ -39,7 +40,7 @@ class PersistentWorkspaceRepositoryTest {
         const val preferencesName: String = "workspace"
         const val legacySessionsKey: String = "sessions_v4"
         const val legacySelectedKey: String = "selected_session_v4"
-        const val currentSessionsKey: String = "sessions_v5"
+        const val currentSessionsKey: String = "sessions_v6"
         const val sessionId: String = "legacy-session"
     }
 }

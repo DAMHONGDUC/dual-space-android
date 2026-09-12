@@ -3,6 +3,7 @@ package com.duplicateapp.gamespace.core.theme
 import androidx.compose.ui.unit.dp
 
 object ParallelAppDimensions {
+    val borderThin = 1.dp
     val space2 = 2.dp
     val space4 = 4.dp
     val space6 = 6.dp

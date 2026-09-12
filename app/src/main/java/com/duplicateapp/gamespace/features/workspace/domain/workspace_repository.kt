@@ -9,6 +9,12 @@ interface WorkspaceRepository {
     suspend fun selectSession(sessionId: String)
     suspend fun recordSessionOpened(sessionId: String, openedAtEpochMillis: Long)
     suspend fun updateSessionIdentity(sessionId: String, name: String, accountColor: AccountColor)
-    suspend fun addSession(name: String, gameName: String, packageName: String, profileTarget: ProfileTarget)
+    suspend fun addSession(
+        name: String,
+        gameName: String,
+        packageName: String,
+        profileTarget: ProfileTarget,
+        virtualUserId: Int,
+    )
     suspend fun deleteSession(sessionId: String)
 }

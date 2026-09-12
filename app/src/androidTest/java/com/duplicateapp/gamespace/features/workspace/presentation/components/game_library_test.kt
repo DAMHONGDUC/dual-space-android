@@ -40,6 +40,7 @@ class GameLibraryTest {
                     onDeleteGame = {},
                     onCreateProfile = {},
                     onOpenAndroidSettings = {},
+                    onHelp = {},
                     onSettings = {},
                 )
             }
@@ -52,12 +53,12 @@ class GameLibraryTest {
     }
 
     @Test
-    fun gameRowShowsAndLaunchesBothAccounts() {
+    fun gameRowShowsCopyTagsAndLaunchesBothCopies() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val launchedSessionIds = mutableListOf<String>()
         val sessions: List<GameSession> = listOf(
-            session(id = "personal", profileTarget = ProfileTarget.personal),
-            session(id = "managed", profileTarget = ProfileTarget.managed),
+            session(id = "copy-1", virtualUserId = 1),
+            session(id = "copy-2", virtualUserId = 2),
         )
 
         composeRule.setContent {
@@ -71,26 +72,30 @@ class GameLibraryTest {
                     onDeleteGame = {},
                     onCreateProfile = {},
                     onOpenAndroidSettings = {},
+                    onHelp = {},
                     onSettings = {},
                 )
             }
         }
 
         composeRule.onNodeWithText(gameName).assertIsDisplayed()
-        composeRule.onNodeWithText("personal").performClick()
-        composeRule.onNodeWithText("managed").performClick()
+        composeRule.onNodeWithText(context.getString(R.string.copy_number, 1)).assertIsDisplayed()
+        composeRule.onNodeWithText(context.getString(R.string.copy_number, 2)).assertIsDisplayed()
+        composeRule.onNodeWithText("copy-1").performClick()
+        composeRule.onNodeWithText("copy-2").performClick()
 
-        assertEquals(listOf("personal", "managed"), launchedSessionIds)
+        assertEquals(listOf("copy-1", "copy-2"), launchedSessionIds)
     }
 
-    private fun session(id: String, profileTarget: ProfileTarget): GameSession = GameSession(
+    private fun session(id: String, virtualUserId: Int): GameSession = GameSession(
         id = id,
         name = id,
         gameName = gameName,
         accountColor = AccountColor.blue,
         lastOpenedAtEpochMillis = null,
         packageName = packageName,
-        profileTarget = profileTarget,
+        profileTarget = ProfileTarget.managed,
+        virtualUserId = virtualUserId,
     )
 
     private companion object {

@@ -12,25 +12,26 @@ import com.duplicateapp.gamespace.features.premium.data.RevenueCatPurchaseManage
 import com.duplicateapp.gamespace.features.settings.data.LocalLanguageRepository
 import com.duplicateapp.gamespace.features.settings.data.LocalThemeRepository
 import com.duplicateapp.gamespace.features.workspace.data.AndroidGameCatalog
-import com.duplicateapp.gamespace.features.workspace.data.AndroidProfileProvisioner
 import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
-import com.duplicateapp.gamespace.features.workspace.data.GameLauncherProvider
 import com.duplicateapp.gamespace.features.workspace.data.PersistentWorkspaceRepository
-import com.duplicateapp.gamespace.features.workspace.data.AndroidManagedProfileResolver
 import com.duplicateapp.gamespace.features.workspace.data.AndroidDiagnosticReporter
 import com.duplicateapp.gamespace.features.workspace.data.AndroidWorkspaceShortcutPublisher
 import com.duplicateapp.gamespace.features.privacy.data.LocalPrivacyLockRepository
+import com.duplicateapp.gamespace.features.workspace.data.VirtualProfileProvisioner
+import com.duplicateapp.gamespace.features.workspace.data.VirtualizedGameLauncher
+import com.duplicateapp.gamespace.features.virtualization.data.TheUniverseVirtualGameRuntime
 
 class WorkspaceViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         require(modelClass.isAssignableFrom(WorkspaceViewModel::class.java))
-        val profileResolver = AndroidManagedProfileResolver(context)
+        val virtualizedGameLauncher = VirtualizedGameLauncher(TheUniverseVirtualGameRuntime())
         return WorkspaceViewModel(
             repository = PersistentWorkspaceRepository(context),
-            gameLauncher = GameLauncherProvider.create(context, profileResolver),
-            profileProvisioner = AndroidProfileProvisioner(context, profileResolver),
-            gameCatalog = AndroidGameCatalog(context, profileResolver),
+            gameLauncher = virtualizedGameLauncher,
+            gameCopyRemover = virtualizedGameLauncher,
+            profileProvisioner = VirtualProfileProvisioner(),
+            gameCatalog = AndroidGameCatalog(context),
             onboardingStore = OnboardingStore(context),
             settingsNavigator = AndroidSettingsNavigator(context),
             themeRepository = LocalThemeRepository(context),

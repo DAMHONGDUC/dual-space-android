@@ -29,6 +29,7 @@ fun workspaceScreen(
     val isOnboardingVisible by viewModel.isOnboardingVisible.collectAsStateWithLifecycle()
     val isDeleteVisible by viewModel.isDeleteConfirmationVisible.collectAsStateWithLifecycle()
     val deleteConfirmationName by viewModel.deleteConfirmationName.collectAsStateWithLifecycle()
+    val isDeletingWholeGame by viewModel.isDeletingWholeGame.collectAsStateWithLifecycle()
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val appLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
     val authSession by viewModel.authSession.collectAsStateWithLifecycle()
@@ -44,6 +45,7 @@ fun workspaceScreen(
     val snackbar = remember { SnackbarHostState() }
     val launchMessage = launchMessageResId?.let { stringResource(it) }
     var isSettingsVisible by rememberSaveable { mutableStateOf(false) }
+    var isAboutVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(launchMessage) {
         if (launchMessage != null) {
@@ -73,7 +75,15 @@ fun workspaceScreen(
         )
     }
     editingSession?.let { session ->
-        accountIdentityDialog(session, viewModel::saveSessionIdentity, viewModel::dismissSessionEditor)
+        accountIdentityDialog(
+            session = session,
+            onSave = viewModel::saveSessionIdentity,
+            onDelete = {
+                viewModel.dismissSessionEditor()
+                viewModel.requestDeleteSession(session.id)
+            },
+            onDismiss = viewModel::dismissSessionEditor,
+        )
     }
     if (isCompatibilityCenterVisible) {
         compatibilityCenterDialog(
@@ -85,6 +95,7 @@ fun workspaceScreen(
         )
     }
     if (isOnboardingVisible) onboardingDialog(viewModel::completeOnboarding)
+    if (isAboutVisible) aboutDialog(onDismiss = { isAboutVisible = false })
     if (isSettingsVisible) {
         settingsDialog(
             profileStatus = profileStatus,
@@ -114,7 +125,11 @@ fun workspaceScreen(
         )
     }
     if (isDeleteVisible && deleteConfirmationName != null) {
-        deleteGameDialog(deleteConfirmationName.orEmpty(), viewModel::deleteSelectedSession, viewModel::dismissDeleteConfirmation)
+        if (isDeletingWholeGame) {
+            deleteGameDialog(deleteConfirmationName.orEmpty(), viewModel::deleteSelectedSession, viewModel::dismissDeleteConfirmation)
+        } else {
+            deleteSessionDialog(deleteConfirmationName.orEmpty(), viewModel::deleteSelectedSession, viewModel::dismissDeleteConfirmation)
+        }
     }
 
     Scaffold(
@@ -134,6 +149,7 @@ fun workspaceScreen(
             onEditSession = viewModel::editSession,
             onCreateProfile = viewModel::createProfile,
             onOpenAndroidSettings = viewModel::openAndroidSettings,
+            onHelp = { isAboutVisible = true },
             onSettings = { isSettingsVisible = true },
         )
     }

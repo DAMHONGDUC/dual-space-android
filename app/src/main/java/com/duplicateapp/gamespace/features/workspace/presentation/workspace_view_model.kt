@@ -11,6 +11,8 @@ import com.duplicateapp.gamespace.features.premium.domain.PremiumRepository
 import com.duplicateapp.gamespace.features.premium.domain.PremiumStatus
 import com.duplicateapp.gamespace.features.workspace.domain.GameLaunchResult
 import com.duplicateapp.gamespace.features.workspace.domain.GameLauncher
+import com.duplicateapp.gamespace.features.workspace.domain.GameCopyRemover
+import com.duplicateapp.gamespace.features.workspace.domain.GameCopyLimits
 import com.duplicateapp.gamespace.features.workspace.domain.LaunchUnavailableReason
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioner
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
@@ -41,6 +43,7 @@ import kotlinx.coroutines.withContext
 class WorkspaceViewModel(
     private val repository: WorkspaceRepository,
     private val gameLauncher: GameLauncher,
+    private val gameCopyRemover: GameCopyRemover,
     private val profileProvisioner: ProfileProvisioner,
     private val gameCatalog: GameCatalog,
     private val onboardingStore: OnboardingStore,
@@ -64,6 +67,7 @@ class WorkspaceViewModel(
     private val mutableIsDeleteConfirmationVisible = MutableStateFlow(false)
     private val mutablePendingDeleteSessionIds = MutableStateFlow<List<String>>(emptyList())
     private val mutableDeleteConfirmationName = MutableStateFlow<String?>(null)
+    private val mutableIsDeletingWholeGame = MutableStateFlow(false)
     private val mutableThemeMode = MutableStateFlow(themeRepository.load())
     private val mutableAppLanguage = MutableStateFlow(languageRepository.load())
     private val mutableAuthSession = MutableStateFlow(authRepository.currentSession())
@@ -76,6 +80,7 @@ class WorkspaceViewModel(
     private val mutableEditingSession = MutableStateFlow<GameSession?>(null)
     private val mutableIsCompatibilityCenterVisible = MutableStateFlow(false)
     private var catalogLoadJob: Job? = null
+    private var isAddingSession: Boolean = false
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
     val selectedSessionId: StateFlow<String?> = mutableSelectedSessionId.asStateFlow()
@@ -86,6 +91,7 @@ class WorkspaceViewModel(
     val isOnboardingVisible: StateFlow<Boolean> = mutableIsOnboardingVisible.asStateFlow()
     val isDeleteConfirmationVisible: StateFlow<Boolean> = mutableIsDeleteConfirmationVisible.asStateFlow()
     val deleteConfirmationName: StateFlow<String?> = mutableDeleteConfirmationName.asStateFlow()
+    val isDeletingWholeGame: StateFlow<Boolean> = mutableIsDeletingWholeGame.asStateFlow()
     val themeMode: StateFlow<ThemeMode> = mutableThemeMode.asStateFlow()
     val appLanguage: StateFlow<AppLanguage> = mutableAppLanguage.asStateFlow()
     val authSession: StateFlow<AuthSession?> = mutableAuthSession.asStateFlow()
@@ -145,7 +151,8 @@ class WorkspaceViewModel(
 
     private fun launch(session: GameSession) {
         viewModelScope.launch {
-            mutableLaunchMessage.value = when (val result: GameLaunchResult = gameLauncher.launch(session)) {
+            val result: GameLaunchResult = withContext(Dispatchers.IO) { gameLauncher.launch(session) }
+            mutableLaunchMessage.value = when (result) {
                 is GameLaunchResult.Opened -> {
                     repository.recordSessionOpened(session.id, System.currentTimeMillis())
                     shortcutPublisher.publish(repository.sessions.value)
@@ -215,20 +222,27 @@ class WorkspaceViewModel(
             mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.copy_install_required
             return
         }
-        val existingCopies: List<GameSession> = sessions.value.filter { session -> session.packageName == game.packageName }
-        val profileAlreadyAdded: Boolean = existingCopies.any { session -> session.profileTarget == ProfileTarget.managed }
-        if (existingCopies.size >= maximumCopiesPerGame || profileAlreadyAdded) {
-            mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.game_already_added
-            return
-        }
+        if (isAddingSession) return
+        isAddingSession = true
         viewModelScope.launch {
-            repository.addSession(name, game.label, game.packageName, ProfileTarget.managed)
-            val addedSessionId: String = repository.sessions.value.last().id
-            mutableSelectedSessionId.value = addedSessionId
-            repository.selectSession(addedSessionId)
-            shortcutPublisher.publish(repository.sessions.value)
-            refreshReadiness()
-            mutableIsAddSessionVisible.value = false
+            try {
+                val existingCopies: List<GameSession> = sessions.value.filter { session -> session.packageName == game.packageName }
+                val virtualUserId: Int = GameCopyLimits.nextAvailableVirtualUserId(
+                    existingCopies.map(GameSession::virtualUserId).toSet(),
+                ) ?: run {
+                    mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.game_already_added
+                    return@launch
+                }
+                repository.addSession(name, game.label, game.packageName, ProfileTarget.managed, virtualUserId)
+                val addedSessionId: String = repository.sessions.value.last().id
+                mutableSelectedSessionId.value = addedSessionId
+                repository.selectSession(addedSessionId)
+                shortcutPublisher.publish(repository.sessions.value)
+                refreshReadiness()
+                mutableIsAddSessionVisible.value = false
+            } finally {
+                isAddingSession = false
+            }
         }
     }
 
@@ -238,12 +252,22 @@ class WorkspaceViewModel(
         }
         if (sessionIds.isEmpty()) return
         viewModelScope.launch {
-            sessionIds.forEach { sessionId -> repository.deleteSession(sessionId) }
+            val sessionsToDelete: List<GameSession> = sessions.value.filter { session -> session.id in sessionIds }
+            val removalResults: Map<GameSession, Boolean> = withContext(Dispatchers.IO) {
+                sessionsToDelete.associateWith(gameCopyRemover::remove)
+            }
+            removalResults.filterValues { removed -> removed }.keys.forEach { session ->
+                repository.deleteSession(session.id)
+            }
+            if (removalResults.any { (_, removed) -> !removed }) {
+                mutableLaunchMessage.value = com.duplicateapp.gamespace.R.string.copy_removal_failed
+            }
             shortcutPublisher.publish(repository.sessions.value)
             refreshReadiness()
             mutableSelectedSessionId.value = repository.sessions.value.firstOrNull()?.id
             mutablePendingDeleteSessionIds.value = emptyList()
             mutableDeleteConfirmationName.value = null
+            mutableIsDeletingWholeGame.value = false
             mutableIsDeleteConfirmationVisible.value = false
         }
     }
@@ -252,6 +276,7 @@ class WorkspaceViewModel(
         val session: GameSession = sessions.value.firstOrNull { it.id == mutableSelectedSessionId.value } ?: return
         mutablePendingDeleteSessionIds.value = listOf(session.id)
         mutableDeleteConfirmationName.value = session.gameName
+        mutableIsDeletingWholeGame.value = false
         mutableIsDeleteConfirmationVisible.value = true
     }
 
@@ -259,7 +284,8 @@ class WorkspaceViewModel(
         val session: GameSession = sessions.value.firstOrNull { it.id == sessionId } ?: return
         mutableSelectedSessionId.value = sessionId
         mutablePendingDeleteSessionIds.value = listOf(sessionId)
-        mutableDeleteConfirmationName.value = session.gameName
+        mutableDeleteConfirmationName.value = session.name
+        mutableIsDeletingWholeGame.value = false
         viewModelScope.launch { repository.selectSession(sessionId) }
         mutableIsDeleteConfirmationVisible.value = true
     }
@@ -269,12 +295,14 @@ class WorkspaceViewModel(
         if (gameSessions.isEmpty()) return
         mutablePendingDeleteSessionIds.value = gameSessions.map(GameSession::id)
         mutableDeleteConfirmationName.value = gameSessions.first().gameName
+        mutableIsDeletingWholeGame.value = true
         mutableIsDeleteConfirmationVisible.value = true
     }
 
     fun dismissDeleteConfirmation() {
         mutablePendingDeleteSessionIds.value = emptyList()
         mutableDeleteConfirmationName.value = null
+        mutableIsDeletingWholeGame.value = false
         mutableIsDeleteConfirmationVisible.value = false
     }
 
@@ -397,7 +425,4 @@ class WorkspaceViewModel(
         }
     }
 
-    private companion object {
-        const val maximumCopiesPerGame = 2
-    }
 }

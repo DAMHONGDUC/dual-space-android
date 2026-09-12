@@ -8,6 +8,7 @@ data class GameSession(
     val lastOpenedAtEpochMillis: Long?,
     val packageName: String,
     val profileTarget: ProfileTarget,
+    val virtualUserId: Int = 1,
 )
 
 enum class AccountColor {
