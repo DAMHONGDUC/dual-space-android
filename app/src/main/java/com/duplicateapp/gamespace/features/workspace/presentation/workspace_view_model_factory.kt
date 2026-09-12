@@ -16,6 +16,7 @@ import com.duplicateapp.gamespace.features.workspace.data.AndroidProfileProvisio
 import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
 import com.duplicateapp.gamespace.features.workspace.data.GameLauncherProvider
 import com.duplicateapp.gamespace.features.workspace.data.PersistentWorkspaceRepository
+import com.duplicateapp.gamespace.features.workspace.data.AndroidManagedProfileResolver
 import com.duplicateapp.gamespace.features.workspace.data.AndroidDiagnosticReporter
 import com.duplicateapp.gamespace.features.workspace.data.AndroidWorkspaceShortcutPublisher
 import com.duplicateapp.gamespace.features.privacy.data.LocalPrivacyLockRepository
@@ -24,11 +25,12 @@ class WorkspaceViewModelFactory(private val context: Context) : ViewModelProvide
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         require(modelClass.isAssignableFrom(WorkspaceViewModel::class.java))
+        val profileResolver = AndroidManagedProfileResolver(context)
         return WorkspaceViewModel(
             repository = PersistentWorkspaceRepository(context),
-            gameLauncher = GameLauncherProvider.create(context),
-            profileProvisioner = AndroidProfileProvisioner(context),
-            gameCatalog = AndroidGameCatalog(context),
+            gameLauncher = GameLauncherProvider.create(context, profileResolver),
+            profileProvisioner = AndroidProfileProvisioner(context, profileResolver),
+            gameCatalog = AndroidGameCatalog(context, profileResolver),
             onboardingStore = OnboardingStore(context),
             settingsNavigator = AndroidSettingsNavigator(context),
             themeRepository = LocalThemeRepository(context),

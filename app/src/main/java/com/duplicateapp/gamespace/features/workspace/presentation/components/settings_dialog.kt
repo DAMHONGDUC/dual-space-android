@@ -69,6 +69,7 @@ fun settingsDialog(
     onOpenPrivacyOptions: () -> Unit,
     onPrivacyLockChange: (Boolean) -> Unit,
     onShareDiagnosticReport: () -> Unit,
+    onOpenCompatibilityCenter: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val profileLabel: String = stringResource(
@@ -172,6 +173,9 @@ fun settingsDialog(
                     )
                     OutlinedButton(onClick = onShareDiagnosticReport, modifier = Modifier.fillMaxWidth()) {
                         Text(stringResource(R.string.share_diagnostic_report))
+                    }
+                    OutlinedButton(onClick = onOpenCompatibilityCenter, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.compatibility_center))
                     }
                 }
             }

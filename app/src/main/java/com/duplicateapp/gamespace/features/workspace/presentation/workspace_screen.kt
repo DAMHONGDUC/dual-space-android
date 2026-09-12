@@ -38,6 +38,8 @@ fun workspaceScreen(
     val pendingLaunchSession by viewModel.pendingLaunchSession.collectAsStateWithLifecycle()
     val privacyLockEnabled by viewModel.privacyLockEnabled.collectAsStateWithLifecycle()
     val privacyLockAvailable by viewModel.privacyLockAvailable.collectAsStateWithLifecycle()
+    val editingSession by viewModel.editingSession.collectAsStateWithLifecycle()
+    val isCompatibilityCenterVisible by viewModel.isCompatibilityCenterVisible.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
     val snackbar = remember { SnackbarHostState() }
     val launchMessage = launchMessageResId?.let { stringResource(it) }
@@ -70,6 +72,18 @@ fun workspaceScreen(
             },
         )
     }
+    editingSession?.let { session ->
+        accountIdentityDialog(session, viewModel::saveSessionIdentity, viewModel::dismissSessionEditor)
+    }
+    if (isCompatibilityCenterVisible) {
+        compatibilityCenterDialog(
+            sessions = sessions,
+            readinessBySessionId = readinessBySessionId,
+            onShareReport = viewModel::shareDiagnosticReport,
+            onOpenSettings = viewModel::openAndroidSettings,
+            onDismiss = viewModel::dismissCompatibilityCenter,
+        )
+    }
     if (isOnboardingVisible) onboardingDialog(viewModel::completeOnboarding)
     if (isSettingsVisible) {
         settingsDialog(
@@ -95,6 +109,7 @@ fun workspaceScreen(
             onOpenPrivacyOptions = onOpenPrivacyOptions,
             onPrivacyLockChange = viewModel::setPrivacyLockEnabled,
             onShareDiagnosticReport = viewModel::shareDiagnosticReport,
+            onOpenCompatibilityCenter = viewModel::showCompatibilityCenter,
             onDismiss = { isSettingsVisible = false },
         )
     }
@@ -116,6 +131,7 @@ fun workspaceScreen(
             onLaunch = viewModel::launchSession,
             onAdd = { viewModel.showAddSession() },
             onDeleteGame = viewModel::requestDeleteGame,
+            onEditSession = viewModel::editSession,
             onCreateProfile = viewModel::createProfile,
             onOpenAndroidSettings = viewModel::openAndroidSettings,
             onSettings = { isSettingsVisible = true },

@@ -116,4 +116,17 @@
     <string name="privacy_lock_setting_description">Require biometrics or device lock when returning to the app.</string>
     <string name="unlock">Unlock</string>
     <string name="privacy_lock_unavailable">Set a secure device lock before enabling Privacy lock.</string>
+    <string name="edit_account">Edit account</string>
+    <string name="account_color">Account color</string>
+    <string name="save">Save</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_green">Green</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_purple">Purple</string>
+    <string name="compatibility_center">Compatibility Center</string>
+    <string name="compatibility_empty">Add a game to run compatibility checks.</string>
+    <string name="compatibility_profile_missing">Profile missing</string>
+    <string name="compatibility_game_missing">Install required</string>
+    <string name="compatibility_permission">Permission required</string>
+    <string name="compatibility_checking">Checking</string>
 </resources>

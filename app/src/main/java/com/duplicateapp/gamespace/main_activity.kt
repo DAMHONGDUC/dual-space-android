@@ -17,6 +17,7 @@ import com.duplicateapp.gamespace.features.settings.data.LocalLanguageRepository
 import com.duplicateapp.gamespace.features.update.data.ForceUpdateCoordinator
 import androidx.fragment.app.FragmentActivity
 import android.content.Intent
+import android.view.WindowManager
 import com.duplicateapp.gamespace.features.privacy.data.BiometricPrivacyLockCoordinator
 import com.duplicateapp.gamespace.features.privacy.data.LocalPrivacyLockRepository
 
@@ -42,6 +43,7 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         adConsentManager = AdConsentManager(this)
         privacyLockRepository = LocalPrivacyLockRepository(this)
+        updateScreenCaptureProtection()
         privacyLockCoordinator = BiometricPrivacyLockCoordinator(this) { isPrivacyLocked = false }
         isPrivacyLocked = privacyLockRepository.isEnabled()
         shortcutSessionId = intent.getStringExtra(shortcutSessionIdExtra)
@@ -65,6 +67,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
+        updateScreenCaptureProtection()
         if (::forceUpdateCoordinator.isInitialized) forceUpdateCoordinator.check()
         if (::privacyLockRepository.isInitialized && privacyLockRepository.isEnabled() && isPrivacyLocked) {
             privacyLockCoordinator.authenticate()
@@ -86,6 +89,14 @@ class MainActivity : FragmentActivity() {
 
     private fun updateAdConsentState(state: AdConsentState) {
         adConsentState = state
+    }
+
+    private fun updateScreenCaptureProtection() {
+        if (privacyLockRepository.isEnabled()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     companion object {

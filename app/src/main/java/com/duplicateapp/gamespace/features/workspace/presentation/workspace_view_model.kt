@@ -73,6 +73,8 @@ class WorkspaceViewModel(
     private val mutablePendingLaunchSession = MutableStateFlow<GameSession?>(null)
     private val mutablePrivacyLockEnabled = MutableStateFlow(privacyLockRepository.isEnabled())
     private val mutablePrivacyLockAvailable = MutableStateFlow(privacyLockRepository.isAvailable())
+    private val mutableEditingSession = MutableStateFlow<GameSession?>(null)
+    private val mutableIsCompatibilityCenterVisible = MutableStateFlow(false)
     private var catalogLoadJob: Job? = null
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
@@ -93,6 +95,8 @@ class WorkspaceViewModel(
     val pendingLaunchSession: StateFlow<GameSession?> = mutablePendingLaunchSession.asStateFlow()
     val privacyLockEnabled: StateFlow<Boolean> = mutablePrivacyLockEnabled.asStateFlow()
     val privacyLockAvailable: StateFlow<Boolean> = mutablePrivacyLockAvailable.asStateFlow()
+    val editingSession: StateFlow<GameSession?> = mutableEditingSession.asStateFlow()
+    val isCompatibilityCenterVisible: StateFlow<Boolean> = mutableIsCompatibilityCenterVisible.asStateFlow()
 
     init {
         refreshPremiumAccess()
@@ -295,6 +299,32 @@ class WorkspaceViewModel(
             profileTarget = session?.profileTarget ?: ProfileTarget.managed,
             readiness = session?.let { item -> mutableReadinessBySessionId.value[item.id] },
         )
+    }
+
+    fun showCompatibilityCenter() {
+        refreshReadiness()
+        mutableIsCompatibilityCenterVisible.value = true
+    }
+
+    fun dismissCompatibilityCenter() {
+        mutableIsCompatibilityCenterVisible.value = false
+    }
+
+    fun editSession(sessionId: String) {
+        mutableEditingSession.value = sessions.value.firstOrNull { session -> session.id == sessionId }
+    }
+
+    fun dismissSessionEditor() {
+        mutableEditingSession.value = null
+    }
+
+    fun saveSessionIdentity(name: String, accountColor: com.duplicateapp.gamespace.features.workspace.domain.AccountColor) {
+        val session: GameSession = mutableEditingSession.value ?: return
+        viewModelScope.launch {
+            repository.updateSessionIdentity(session.id, name, accountColor)
+            shortcutPublisher.publish(repository.sessions.value)
+            mutableEditingSession.value = null
+        }
     }
 
     private fun refreshReadiness() {

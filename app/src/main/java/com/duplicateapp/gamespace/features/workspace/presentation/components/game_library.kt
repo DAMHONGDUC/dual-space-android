@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
@@ -54,6 +55,7 @@ fun gameLibrary(
     onLaunch: (String) -> Unit,
     onAdd: () -> Unit,
     onDeleteGame: (String) -> Unit,
+    onEditSession: (String) -> Unit = {},
     onCreateProfile: () -> Unit,
     onOpenAndroidSettings: () -> Unit,
     onSettings: () -> Unit,
@@ -84,7 +86,7 @@ fun gameLibrary(
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
                 ) {
                     items(gameRows, key = GameRowModel::packageName) { game ->
-                        gameRow(game, readinessBySessionId, onLaunch, onDeleteGame)
+                        gameRow(game, readinessBySessionId, onLaunch, onEditSession, onDeleteGame)
                     }
                 }
             }
@@ -168,6 +170,7 @@ private fun gameRow(
     game: GameRowModel,
     readinessBySessionId: Map<String, GameLaunchReadiness>,
     onLaunch: (String) -> Unit,
+    onEditSession: (String) -> Unit,
     onDeleteGame: (String) -> Unit,
 ) {
     Card(
@@ -202,7 +205,14 @@ private fun gameRow(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
                 ) {
-                    game.sessions.forEach { session -> accountButton(session, readinessBySessionId[session.id], onLaunch) }
+                    game.sessions.forEach { session ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            accountButton(session, readinessBySessionId[session.id], onLaunch)
+                            IconButton(onClick = { onEditSession(session.id) }) {
+                                Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit_account))
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -5,21 +5,22 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Process
-import android.os.UserManager
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioner
 import com.duplicateapp.gamespace.features.workspace.domain.ProfileProvisioningStatus
+import com.duplicateapp.gamespace.features.workspace.domain.ProfileTarget
 import com.duplicateapp.gamespace.profile.ParallelAppDeviceAdminReceiver
 
-class AndroidProfileProvisioner(private val context: Context) : ProfileProvisioner {
+class AndroidProfileProvisioner(
+    private val context: Context,
+    private val profileResolver: AndroidManagedProfileResolver = AndroidManagedProfileResolver(context),
+) : ProfileProvisioner {
     private val devicePolicyManager: DevicePolicyManager = context.getSystemService(DevicePolicyManager::class.java)
-    private val userManager: UserManager = context.getSystemService(UserManager::class.java)
 
     override fun status(): ProfileProvisioningStatus {
-        val hasAdditionalProfile: Boolean = userManager.userProfiles.any { profile -> profile != Process.myUserHandle() }
+        val hasManagedProfile: Boolean = profileResolver.resolve(ProfileTarget.managed) != null
         return when {
-            hasAdditionalProfile -> ProfileProvisioningStatus.alreadyCreated
+            hasManagedProfile -> ProfileProvisioningStatus.alreadyCreated
             devicePolicyManager.isProvisioningAllowed(DevicePolicyManager.ACTION_PROVISION_MANAGED_PROFILE) -> {
                 ProfileProvisioningStatus.available
             }

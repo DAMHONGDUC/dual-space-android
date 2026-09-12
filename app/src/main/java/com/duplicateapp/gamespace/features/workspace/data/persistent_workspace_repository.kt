@@ -50,6 +50,19 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
         AppLogger.success("record_session_opened", mapOf("sessionId" to sessionId))
     }
 
+    override suspend fun updateSessionIdentity(sessionId: String, name: String, accountColor: AccountColor) {
+        AppLogger.action("update_session_identity", mapOf("sessionId" to sessionId, "color" to accountColor.name))
+        val normalizedName: String = name.trim()
+        if (normalizedName.isEmpty()) {
+            AppLogger.error("update_session_identity", IllegalArgumentException("empty_name"), mapOf("sessionId" to sessionId))
+            return
+        }
+        update(mutableSessions.value.map { session ->
+            if (session.id == sessionId) session.copy(name = normalizedName, accountColor = accountColor) else session
+        })
+        AppLogger.success("update_session_identity", mapOf("sessionId" to sessionId, "color" to accountColor.name))
+    }
+
     override suspend fun addSession(name: String, gameName: String, packageName: String, profileTarget: ProfileTarget) {
         AppLogger.action("add_session", mapOf("packageName" to packageName, "profile" to profileTarget.name))
         val session = GameSession(

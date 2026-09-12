@@ -52,6 +52,7 @@ class SettingsDialogTest {
                     onOpenPrivacyOptions = {},
                     onPrivacyLockChange = {},
                     onShareDiagnosticReport = {},
+                    onOpenCompatibilityCenter = {},
                     onDismiss = {},
                 )
             }
@@ -87,6 +88,7 @@ class SettingsDialogTest {
                     onOpenPrivacyOptions = {},
                     onPrivacyLockChange = {},
                     onShareDiagnosticReport = {},
+                    onOpenCompatibilityCenter = {},
                     onDismiss = {},
                 )
             }
