@@ -18,6 +18,8 @@ import com.duplicateapp.gamespace.features.update.data.ForceUpdateCoordinator
 import androidx.fragment.app.FragmentActivity
 import android.content.Intent
 import android.view.WindowManager
+import android.os.SystemClock
+import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.privacy.data.BiometricPrivacyLockCoordinator
 import com.duplicateapp.gamespace.features.privacy.data.LocalPrivacyLockRepository
 
@@ -39,6 +41,7 @@ class MainActivity : FragmentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val startedAtMillis: Long = SystemClock.elapsedRealtime()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         adConsentManager = AdConsentManager(this)
@@ -62,13 +65,20 @@ class MainActivity : FragmentActivity() {
                 onUnlock = privacyLockCoordinator::authenticate,
             )
         }
-        adConsentManager.request(::updateAdConsentState)
+        window.decorView.post {
+            AppLogger.success(
+                "startup_first_frame_ready",
+                mapOf("durationMs" to SystemClock.elapsedRealtime() - startedAtMillis),
+            )
+            adConsentManager.request(::updateAdConsentState)
+            forceUpdateCoordinator.check()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         updateScreenCaptureProtection()
-        if (::forceUpdateCoordinator.isInitialized) forceUpdateCoordinator.check()
+        if (::forceUpdateCoordinator.isInitialized && window.decorView.isLaidOut) forceUpdateCoordinator.check()
         if (::privacyLockRepository.isInitialized && privacyLockRepository.isEnabled() && isPrivacyLocked) {
             privacyLockCoordinator.authenticate()
         }

@@ -14,7 +14,7 @@
   <string name="session_failed">Cần kiểm tra</string>
   <string name="game_stage_waiting">Game sẽ hiển thị tại đây</string>
   <string name="open_game">Mở game</string>
-  <string name="game_opened">Đã mở game</string>
+  <string name="game_opened">Đã mở game. Dùng Home hoặc Đa nhiệm để đổi acc mà không tải lại.</string>
   <string name="missing_managed_profile">Bản copy không khả dụng. Hãy xóa game rồi thêm lại.</string>
   <string name="game_not_installed">Không thể tạo bản copy. Hãy kiểm tra game gốc đã được cài trên thiết bị.</string>
   <string name="game_already_added">Game này đã có đủ 5 bản copy.</string>
