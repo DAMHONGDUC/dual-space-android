@@ -230,28 +230,28 @@ private fun gameRow(
                     Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete_game))
                 }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
+            ) {
                 gameIcon(game.packageName)
-                Text(
-                    stringResource(R.string.account_count, game.sessions.size),
-                    modifier = Modifier.padding(start = ParallelAppDimensions.space12),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
-                game.sessions.forEach { session ->
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.weight(1f)) {
+                Spacer(modifier = Modifier.weight(1f))
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
+                ) {
+                    game.sessions.forEach { session ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             accountButton(
                                 session = session,
                                 readiness = readinessBySessionId[session.id],
                                 isRunning = session.id in runningSessionIds,
                                 onLaunch = onLaunch,
                             )
-                        }
-                        IconButton(onClick = { onEditSession(session.id) }) {
-                            Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit_account))
+                            IconButton(onClick = { onEditSession(session.id) }) {
+                                Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit_account))
+                            }
                         }
                     }
                 }
@@ -269,7 +269,6 @@ private fun accountButton(
 ) {
     val isReady: Boolean = readiness == GameLaunchReadiness.Ready
     Surface(
-        modifier = Modifier.fillMaxWidth(),
         onClick = { onLaunch(session.id) },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primaryContainer,
