@@ -35,6 +35,15 @@ class VirtualizedGameLauncherTest {
     }
 
     @Test
+    fun `running state is scoped to the virtual user`() {
+        val runtime = FakeVirtualGameRuntime(isInstalled = true, runningVirtualUserId = 2)
+        val launcher = VirtualizedGameLauncher(runtime)
+
+        assertTrue(!launcher.isRunning(session.copy(virtualUserId = 1)))
+        assertTrue(launcher.isRunning(session.copy(virtualUserId = 2)))
+    }
+
+    @Test
     fun `second copy uses its own virtual user`() {
         val runtime = FakeVirtualGameRuntime(isInstalled = false)
         val launcher = VirtualizedGameLauncher(runtime)
@@ -69,6 +78,7 @@ class VirtualizedGameLauncherTest {
     private class FakeVirtualGameRuntime(
         private val isInstalled: Boolean,
         private val uninstallResult: VirtualRuntimeResult = VirtualRuntimeResult.Success,
+        private val runningVirtualUserId: Int? = null,
     ) : VirtualGameRuntime {
         val actions = mutableListOf<String>()
 
@@ -83,6 +93,9 @@ class VirtualizedGameLauncherTest {
             actions += "launch:$virtualUserId"
             return VirtualRuntimeResult.Success
         }
+
+        override fun isRunning(packageName: String, virtualUserId: Int): Boolean =
+            virtualUserId == runningVirtualUserId
 
         override fun uninstall(packageName: String, virtualUserId: Int): VirtualRuntimeResult {
             actions += "uninstall:$virtualUserId"

@@ -30,6 +30,7 @@ import com.duplicateapp.gamespace.features.workspace.domain.DiagnosticReporter
 import com.duplicateapp.gamespace.features.privacy.domain.PrivacyLockRepository
 import com.duplicateapp.gamespace.features.settings.domain.AppLanguage
 import com.duplicateapp.gamespace.features.settings.domain.LanguageRepository
+import com.duplicateapp.gamespace.features.settings.domain.LaunchPreferencesRepository
 import com.duplicateapp.gamespace.features.settings.domain.ThemeMode
 import com.duplicateapp.gamespace.features.settings.domain.ThemeRepository
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +51,7 @@ class WorkspaceViewModel(
     private val settingsNavigator: SettingsNavigator,
     private val themeRepository: ThemeRepository,
     private val languageRepository: LanguageRepository,
+    private val launchPreferencesRepository: LaunchPreferencesRepository,
     private val authRepository: AuthRepository,
     private val premiumRepository: PremiumRepository,
     private val googleCredentialProvider: GoogleCredentialProvider,
@@ -75,6 +77,8 @@ class WorkspaceViewModel(
     private val mutableIsMonetizationBusy = MutableStateFlow(false)
     private val mutableReadinessBySessionId = MutableStateFlow<Map<String, GameLaunchReadiness>>(emptyMap())
     private val mutablePendingLaunchSession = MutableStateFlow<GameSession?>(null)
+    private val mutableConfirmBeforeLaunch = MutableStateFlow(launchPreferencesRepository.confirmBeforeLaunch())
+    private val mutableRunningSessionIds = MutableStateFlow<Set<String>>(emptySet())
     private val mutablePrivacyLockEnabled = MutableStateFlow(privacyLockRepository.isEnabled())
     private val mutablePrivacyLockAvailable = MutableStateFlow(privacyLockRepository.isAvailable())
     private val mutableEditingSession = MutableStateFlow<GameSession?>(null)
@@ -99,15 +103,18 @@ class WorkspaceViewModel(
     val isMonetizationBusy: StateFlow<Boolean> = mutableIsMonetizationBusy.asStateFlow()
     val readinessBySessionId: StateFlow<Map<String, GameLaunchReadiness>> = mutableReadinessBySessionId.asStateFlow()
     val pendingLaunchSession: StateFlow<GameSession?> = mutablePendingLaunchSession.asStateFlow()
+    val confirmBeforeLaunch: StateFlow<Boolean> = mutableConfirmBeforeLaunch.asStateFlow()
+    val runningSessionIds: StateFlow<Set<String>> = mutableRunningSessionIds.asStateFlow()
     val privacyLockEnabled: StateFlow<Boolean> = mutablePrivacyLockEnabled.asStateFlow()
     val privacyLockAvailable: StateFlow<Boolean> = mutablePrivacyLockAvailable.asStateFlow()
     val editingSession: StateFlow<GameSession?> = mutableEditingSession.asStateFlow()
     val isCompatibilityCenterVisible: StateFlow<Boolean> = mutableIsCompatibilityCenterVisible.asStateFlow()
 
     init {
-        refreshPremiumAccess()
-        shortcutPublisher.publish(sessions.value)
-        refreshReadiness()
+        viewModelScope.launch {
+            refreshPremiumAccess()
+            withContext(Dispatchers.IO) { shortcutPublisher.publish(sessions.value) }
+        }
     }
 
     fun setThemeMode(themeMode: ThemeMode) {
@@ -136,7 +143,22 @@ class WorkspaceViewModel(
         val session: GameSession = sessions.value.firstOrNull { item -> item.id == sessionId } ?: return
         mutableSelectedSessionId.value = sessionId
         viewModelScope.launch { repository.selectSession(sessionId) }
-        mutablePendingLaunchSession.value = session
+        val readiness: GameLaunchReadiness = readinessFor(session)
+        if (readiness !is GameLaunchReadiness.Ready || mutableConfirmBeforeLaunch.value) {
+            mutablePendingLaunchSession.value = session
+        } else {
+            launch(session)
+        }
+    }
+
+    fun setConfirmBeforeLaunch(isEnabled: Boolean) {
+        launchPreferencesRepository.setConfirmBeforeLaunch(isEnabled)
+        mutableConfirmBeforeLaunch.value = isEnabled
+    }
+
+    fun onWorkspaceResumed() {
+        refreshReadiness()
+        refreshRunningSessions()
     }
 
     fun confirmLaunch() {
@@ -156,6 +178,7 @@ class WorkspaceViewModel(
                 is GameLaunchResult.Opened -> {
                     repository.recordSessionOpened(session.id, System.currentTimeMillis())
                     shortcutPublisher.publish(repository.sessions.value)
+                    mutableRunningSessionIds.value = mutableRunningSessionIds.value + session.id
                     com.duplicateapp.gamespace.R.string.game_opened
                 }
                 is GameLaunchResult.Unavailable -> {
@@ -355,8 +378,28 @@ class WorkspaceViewModel(
         }
     }
 
+    private fun readinessFor(session: GameSession): GameLaunchReadiness {
+        val cached: GameLaunchReadiness? = mutableReadinessBySessionId.value[session.id]
+        if (cached != null) return cached
+        return gameLauncher.readiness(session).also { readiness ->
+            mutableReadinessBySessionId.value = mutableReadinessBySessionId.value + (session.id to readiness)
+        }
+    }
+
     private fun refreshReadiness() {
-        mutableReadinessBySessionId.value = sessions.value.associate { session -> session.id to gameLauncher.readiness(session) }
+        viewModelScope.launch {
+            mutableReadinessBySessionId.value = withContext(Dispatchers.IO) {
+                sessions.value.associate { session -> session.id to gameLauncher.readiness(session) }
+            }
+        }
+    }
+
+    private fun refreshRunningSessions() {
+        viewModelScope.launch {
+            mutableRunningSessionIds.value = withContext(Dispatchers.IO) {
+                sessions.value.filter(gameLauncher::isRunning).map(GameSession::id).toSet()
+            }
+        }
     }
 
     fun signIn(activity: Activity) {

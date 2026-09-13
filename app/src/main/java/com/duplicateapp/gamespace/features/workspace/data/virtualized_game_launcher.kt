@@ -14,6 +14,9 @@ class VirtualizedGameLauncher(
 ) : GameLauncher, GameCopyRemover {
     override fun readiness(session: GameSession): GameLaunchReadiness = GameLaunchReadiness.Ready
 
+    override fun isRunning(session: GameSession): Boolean =
+        runtime.isRunning(session.packageName, session.virtualUserId)
+
     override fun launch(session: GameSession): GameLaunchResult {
         if (!runtime.isInstalled(session.packageName, session.virtualUserId)) {
             when (runtime.installFromDevice(session.packageName, session.virtualUserId)) {

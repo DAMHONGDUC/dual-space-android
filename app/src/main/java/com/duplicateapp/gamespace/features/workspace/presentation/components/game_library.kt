@@ -17,8 +17,11 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,11 +51,14 @@ private data class GameRowModel(
     val sessions: List<GameSession>,
 )
 
+private enum class AccountSortOrder { recent, alphabetical }
+
 @Composable
 fun gameLibrary(
     sessions: List<GameSession>,
     profileStatus: ProfileProvisioningStatus,
     readinessBySessionId: Map<String, GameLaunchReadiness> = emptyMap(),
+    runningSessionIds: Set<String> = emptySet(),
     contentPadding: PaddingValues,
     onLaunch: (String) -> Unit,
     onAdd: () -> Unit,
@@ -63,15 +69,38 @@ fun gameLibrary(
     onHelp: () -> Unit,
     onSettings: () -> Unit,
 ) {
-    val gameRows: List<GameRowModel> = remember(sessions) {
+    var sortOrder by remember { mutableStateOf(AccountSortOrder.recent) }
+    val gameRows: List<GameRowModel> = remember(sessions, sortOrder) {
         sessions.groupBy(GameSession::packageName).map { (packageName, gameSessions) ->
-            GameRowModel(packageName, gameSessions.first().gameName, gameSessions)
+            val orderedSessions = when (sortOrder) {
+                AccountSortOrder.recent -> gameSessions.sortedWith(
+                    compareByDescending<GameSession> { it.lastOpenedAtEpochMillis ?: Long.MIN_VALUE }.thenBy { it.name.lowercase() },
+                )
+                AccountSortOrder.alphabetical -> gameSessions.sortedBy { it.name.lowercase() }
+            }
+            GameRowModel(packageName, gameSessions.first().gameName, orderedSessions)
         }
     }
 
     Box(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
         Column(modifier = Modifier.fillMaxSize()) {
             libraryTopBar(sessions.size, onHelp, onSettings)
+            if (gameRows.isNotEmpty()) {
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.padding(horizontal = ParallelAppDimensions.space16),
+                ) {
+                    AccountSortOrder.entries.forEachIndexed { index, order ->
+                        SegmentedButton(
+                            selected = sortOrder == order,
+                            onClick = { sortOrder = order },
+                            shape = SegmentedButtonDefaults.itemShape(index, AccountSortOrder.entries.size),
+                            label = {
+                                Text(stringResource(if (order == AccountSortOrder.recent) R.string.sort_recent else R.string.sort_name))
+                            },
+                        )
+                    }
+                }
+            }
             if (profileStatus != ProfileProvisioningStatus.alreadyCreated) {
                 profileHealthCard(profileStatus, onCreateProfile, onOpenAndroidSettings)
             }
@@ -89,7 +118,7 @@ fun gameLibrary(
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
                 ) {
                     items(gameRows, key = GameRowModel::packageName) { game ->
-                        gameRow(game, readinessBySessionId, onLaunch, onEditSession, onDeleteGame)
+                        gameRow(game, readinessBySessionId, runningSessionIds, onLaunch, onEditSession, onDeleteGame)
                     }
                 }
             }
@@ -175,6 +204,7 @@ private fun libraryTopBar(sessionCount: Int, onHelp: () -> Unit, onSettings: () 
 private fun gameRow(
     game: GameRowModel,
     readinessBySessionId: Map<String, GameLaunchReadiness>,
+    runningSessionIds: Set<String>,
     onLaunch: (String) -> Unit,
     onEditSession: (String) -> Unit,
     onDeleteGame: (String) -> Unit,
@@ -200,23 +230,28 @@ private fun gameRow(
                     Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete_game))
                 }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 gameIcon(game.packageName)
-                Spacer(modifier = Modifier.weight(1f))
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
-                ) {
-                    game.sessions.forEach { session ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            accountButton(session, readinessBySessionId[session.id], onLaunch)
-                            IconButton(onClick = { onEditSession(session.id) }) {
-                                Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit_account))
-                            }
+                Text(
+                    stringResource(R.string.account_count, game.sessions.size),
+                    modifier = Modifier.padding(start = ParallelAppDimensions.space12),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8)) {
+                game.sessions.forEach { session ->
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            accountButton(
+                                session = session,
+                                readiness = readinessBySessionId[session.id],
+                                isRunning = session.id in runningSessionIds,
+                                onLaunch = onLaunch,
+                            )
+                        }
+                        IconButton(onClick = { onEditSession(session.id) }) {
+                            Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit_account))
                         }
                     }
                 }
@@ -226,9 +261,15 @@ private fun gameRow(
 }
 
 @Composable
-private fun accountButton(session: GameSession, readiness: GameLaunchReadiness?, onLaunch: (String) -> Unit) {
+private fun accountButton(
+    session: GameSession,
+    readiness: GameLaunchReadiness?,
+    isRunning: Boolean,
+    onLaunch: (String) -> Unit,
+) {
     val isReady: Boolean = readiness == GameLaunchReadiness.Ready
     Surface(
+        modifier = Modifier.fillMaxWidth(),
         onClick = { onLaunch(session.id) },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -262,7 +303,9 @@ private fun accountButton(session: GameSession, readiness: GameLaunchReadiness?,
                     copyTag(session.virtualUserId, session.accountColor)
                 }
                 Text(
-                    if (isReady) {
+                    if (isRunning) {
+                        stringResource(R.string.session_running)
+                    } else if (isReady) {
                         session.lastOpenedAtEpochMillis?.let { value ->
                             stringResource(R.string.last_opened, DateUtils.getRelativeTimeSpanString(value))
                         } ?: stringResource(R.string.ready_to_open)

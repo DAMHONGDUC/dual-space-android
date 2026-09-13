@@ -61,6 +61,7 @@ fun settingsDialog(
     privacyOptionsRequired: Boolean,
     privacyLockEnabled: Boolean,
     privacyLockAvailable: Boolean,
+    confirmBeforeLaunch: Boolean,
     onThemeModeChange: (ThemeMode) -> Unit,
     onLanguageChange: (AppLanguage) -> Unit,
     onOpenAndroidSettings: () -> Unit,
@@ -70,6 +71,7 @@ fun settingsDialog(
     onRestorePremium: () -> Unit,
     onOpenPrivacyOptions: () -> Unit,
     onPrivacyLockChange: (Boolean) -> Unit,
+    onConfirmBeforeLaunchChange: (Boolean) -> Unit,
     onShareDiagnosticReport: () -> Unit,
     onOpenCompatibilityCenter: () -> Unit,
     onDismiss: () -> Unit,
@@ -161,6 +163,17 @@ fun settingsDialog(
                     languageSelector(appLanguage, onLanguageChange)
                 }
                 settingsSection {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.confirm_before_launch), style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                stringResource(R.string.confirm_before_launch_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Switch(checked = confirmBeforeLaunch, onCheckedChange = onConfirmBeforeLaunchChange)
+                    }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(stringResource(R.string.privacy_lock_title), style = MaterialTheme.typography.labelLarge)

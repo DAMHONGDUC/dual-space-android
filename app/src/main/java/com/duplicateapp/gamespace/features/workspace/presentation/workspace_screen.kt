@@ -8,6 +8,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.LocalActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.duplicateapp.gamespace.features.onboarding.presentation.onboardingDialog
 import com.duplicateapp.gamespace.BuildConfig
 import com.duplicateapp.gamespace.features.ads.presentation.bannerAd
@@ -37,6 +39,8 @@ fun workspaceScreen(
     val isMonetizationBusy by viewModel.isMonetizationBusy.collectAsStateWithLifecycle()
     val readinessBySessionId by viewModel.readinessBySessionId.collectAsStateWithLifecycle()
     val pendingLaunchSession by viewModel.pendingLaunchSession.collectAsStateWithLifecycle()
+    val confirmBeforeLaunch by viewModel.confirmBeforeLaunch.collectAsStateWithLifecycle()
+    val runningSessionIds by viewModel.runningSessionIds.collectAsStateWithLifecycle()
     val privacyLockEnabled by viewModel.privacyLockEnabled.collectAsStateWithLifecycle()
     val privacyLockAvailable by viewModel.privacyLockAvailable.collectAsStateWithLifecycle()
     val editingSession by viewModel.editingSession.collectAsStateWithLifecycle()
@@ -46,6 +50,8 @@ fun workspaceScreen(
     val launchMessage = launchMessageResId?.let { stringResource(it) }
     var isSettingsVisible by rememberSaveable { mutableStateOf(false) }
     var isAboutVisible by rememberSaveable { mutableStateOf(false) }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.onWorkspaceResumed() }
 
     LaunchedEffect(launchMessage) {
         if (launchMessage != null) {
@@ -107,6 +113,7 @@ fun workspaceScreen(
             privacyOptionsRequired = privacyOptionsRequired,
             privacyLockEnabled = privacyLockEnabled,
             privacyLockAvailable = privacyLockAvailable,
+            confirmBeforeLaunch = confirmBeforeLaunch,
             onThemeModeChange = viewModel::setThemeMode,
             onLanguageChange = { language ->
                 viewModel.setAppLanguage(language)
@@ -119,6 +126,7 @@ fun workspaceScreen(
             onRestorePremium = viewModel::restorePremium,
             onOpenPrivacyOptions = onOpenPrivacyOptions,
             onPrivacyLockChange = viewModel::setPrivacyLockEnabled,
+            onConfirmBeforeLaunchChange = viewModel::setConfirmBeforeLaunch,
             onShareDiagnosticReport = viewModel::shareDiagnosticReport,
             onOpenCompatibilityCenter = viewModel::showCompatibilityCenter,
             onDismiss = { isSettingsVisible = false },
@@ -142,6 +150,7 @@ fun workspaceScreen(
             sessions = sessions,
             profileStatus = profileStatus,
             readinessBySessionId = readinessBySessionId,
+            runningSessionIds = runningSessionIds,
             contentPadding = padding,
             onLaunch = viewModel::launchSession,
             onAdd = { viewModel.showAddSession() },

@@ -10,6 +10,7 @@ import com.duplicateapp.gamespace.features.onboarding.data.OnboardingStore
 import com.duplicateapp.gamespace.features.premium.data.RevenueCatPremiumRepository
 import com.duplicateapp.gamespace.features.premium.data.RevenueCatPurchaseManager
 import com.duplicateapp.gamespace.features.settings.data.LocalLanguageRepository
+import com.duplicateapp.gamespace.features.settings.data.LocalLaunchPreferencesRepository
 import com.duplicateapp.gamespace.features.settings.data.LocalThemeRepository
 import com.duplicateapp.gamespace.features.workspace.data.AndroidGameCatalog
 import com.duplicateapp.gamespace.features.workspace.data.AndroidSettingsNavigator
@@ -36,6 +37,7 @@ class WorkspaceViewModelFactory(private val context: Context) : ViewModelProvide
             settingsNavigator = AndroidSettingsNavigator(context),
             themeRepository = LocalThemeRepository(context),
             languageRepository = LocalLanguageRepository(context),
+            launchPreferencesRepository = LocalLaunchPreferencesRepository(context),
             authRepository = FirebaseAuthRepository(context),
             premiumRepository = RevenueCatPremiumRepository(
                 context,

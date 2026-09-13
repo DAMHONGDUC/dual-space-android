@@ -3,6 +3,7 @@ package com.duplicateapp.gamespace.features.workspace.domain
 interface GameLauncher {
     fun readiness(session: GameSession): GameLaunchReadiness
     fun launch(session: GameSession): GameLaunchResult
+    fun isRunning(session: GameSession): Boolean = false
 }
 
 sealed interface GameLaunchReadiness {

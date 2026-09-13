@@ -17,7 +17,7 @@
   <string name="game_opened">Đã mở game</string>
   <string name="missing_managed_profile">Bản copy không khả dụng. Hãy xóa game rồi thêm lại.</string>
   <string name="game_not_installed">Không thể tạo bản copy. Hãy kiểm tra game gốc đã được cài trên thiết bị.</string>
-  <string name="game_already_added">Game này đã có đủ 2 bản copy. Hãy mở game gốc ở bên ngoài Parallel Game Space.</string>
+  <string name="game_already_added">Game này đã có đủ 5 bản copy.</string>
   <string name="profile_permission_denied">Không thể mở bản copy của game. Vui lòng thử lại.</string>
   <string name="copy_removal_failed">Không thể xóa bản copy của game. Vui lòng thử lại.</string>
   <string name="add_profile">Bật bản sao thứ hai</string>
@@ -108,6 +108,11 @@
   <string name="last_opened">Đã mở %1$s</string>
   <string name="launch_confirmation_title">Mở %1$s?</string>
   <string name="launch_confirmation_message">Bạn đang mở bản copy độc lập “%1$s”.</string>
+  <string name="confirm_before_launch">Xác nhận trước khi mở</string>
+  <string name="confirm_before_launch_description">Tắt để mở tài khoản bằng một lần chạm.</string>
+  <string name="sort_recent">Gần đây</string>
+  <string name="sort_name">Tên</string>
+  <string name="account_count">%1$d tài khoản</string>
   <string name="shortcut_long_label">Mở %1$s trong %2$s</string>
   <string name="diagnostic_report_title">Chẩn đoán Parallel Game Space</string>
   <string name="share_diagnostic_report">Chia sẻ báo cáo chẩn đoán</string>

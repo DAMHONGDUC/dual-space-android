@@ -53,6 +53,13 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
         }
     }
 
+    override fun isRunning(packageName: String, virtualUserId: Int): Boolean = try {
+        TheUniverseCore.isRunningApplication(packageName, virtualUserId)
+    } catch (error: Exception) {
+        AppLogger.error("virtual_game_is_running", error, metadata(packageName, virtualUserId))
+        false
+    }
+
     override fun uninstall(packageName: String, virtualUserId: Int): VirtualRuntimeResult {
         val metadata: Map<String, Any> = metadata(packageName, virtualUserId)
 

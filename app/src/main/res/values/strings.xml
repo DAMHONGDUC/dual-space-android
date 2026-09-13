@@ -17,7 +17,7 @@
     <string name="game_opened">Game opened</string>
     <string name="missing_managed_profile">The copy is unavailable. Remove the game and add it again.</string>
     <string name="game_not_installed">Could not create this game copy. Make sure the original game is installed.</string>
-    <string name="game_already_added">This game already has 2 copies. Open the original game outside Parallel Game Space.</string>
+    <string name="game_already_added">This game already has 5 copies.</string>
     <string name="profile_permission_denied">Could not open this game copy. Please try again.</string>
     <string name="copy_removal_failed">Could not remove this game copy. Please try again.</string>
     <string name="add_profile">Enable second copy</string>
@@ -108,6 +108,11 @@
     <string name="last_opened">Opened %1$s</string>
     <string name="launch_confirmation_title">Open %1$s?</string>
     <string name="launch_confirmation_message">You are opening the independent copy “%1$s”.</string>
+    <string name="confirm_before_launch">Confirm before opening</string>
+    <string name="confirm_before_launch_description">Turn off to open an account with one tap.</string>
+    <string name="sort_recent">Recent</string>
+    <string name="sort_name">Name</string>
+    <string name="account_count">%1$d accounts</string>
     <string name="shortcut_long_label">Open %1$s in %2$s</string>
     <string name="diagnostic_report_title">Parallel Game Space diagnostic</string>
     <string name="share_diagnostic_report">Share diagnostic report</string>

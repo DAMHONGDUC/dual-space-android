@@ -87,6 +87,30 @@ class GameLibraryTest {
         assertEquals(listOf("copy-1", "copy-2"), launchedSessionIds)
     }
 
+    @Test
+    fun runningAccountShowsSemanticStatus() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        composeRule.setContent {
+            MaterialTheme {
+                gameLibrary(
+                    sessions = listOf(session(id = "farm-main", virtualUserId = 1)),
+                    profileStatus = ProfileProvisioningStatus.alreadyCreated,
+                    runningSessionIds = setOf("farm-main"),
+                    contentPadding = PaddingValues(),
+                    onLaunch = {},
+                    onAdd = {},
+                    onDeleteGame = {},
+                    onCreateProfile = {},
+                    onOpenAndroidSettings = {},
+                    onHelp = {},
+                    onSettings = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(context.getString(R.string.session_running)).assertIsDisplayed()
+    }
+
     private fun session(id: String, virtualUserId: Int): GameSession = GameSession(
         id = id,
         name = id,
