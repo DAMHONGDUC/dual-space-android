@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.LocalActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +53,10 @@ fun workspaceScreen(
     var isAboutVisible by rememberSaveable { mutableStateOf(false) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.onWorkspaceResumed() }
+    LaunchedEffect(Unit) {
+        withFrameNanos { }
+        viewModel.onWorkspaceReady()
+    }
 
     LaunchedEffect(launchMessage) {
         if (launchMessage != null) {

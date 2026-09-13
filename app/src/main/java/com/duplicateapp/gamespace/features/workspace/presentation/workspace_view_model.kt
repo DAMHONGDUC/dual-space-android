@@ -85,6 +85,7 @@ class WorkspaceViewModel(
     private val mutableIsCompatibilityCenterVisible = MutableStateFlow(false)
     private var catalogLoadJob: Job? = null
     private var isAddingSession: Boolean = false
+    private var isWorkspaceReady: Boolean = false
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
     val selectedSessionId: StateFlow<String?> = mutableSelectedSessionId.asStateFlow()
@@ -109,13 +110,6 @@ class WorkspaceViewModel(
     val privacyLockAvailable: StateFlow<Boolean> = mutablePrivacyLockAvailable.asStateFlow()
     val editingSession: StateFlow<GameSession?> = mutableEditingSession.asStateFlow()
     val isCompatibilityCenterVisible: StateFlow<Boolean> = mutableIsCompatibilityCenterVisible.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            refreshPremiumAccess()
-            withContext(Dispatchers.IO) { shortcutPublisher.publish(sessions.value) }
-        }
-    }
 
     fun setThemeMode(themeMode: ThemeMode) {
         themeRepository.save(themeMode)
@@ -157,8 +151,18 @@ class WorkspaceViewModel(
     }
 
     fun onWorkspaceResumed() {
+        if (!isWorkspaceReady) return
         refreshReadiness()
         refreshRunningSessions()
+    }
+
+    fun onWorkspaceReady() {
+        if (isWorkspaceReady) return
+        isWorkspaceReady = true
+        refreshReadiness()
+        refreshRunningSessions()
+        refreshPremiumAccess()
+        viewModelScope.launch(Dispatchers.IO) { shortcutPublisher.publish(sessions.value) }
     }
 
     fun confirmLaunch() {
