@@ -28,6 +28,7 @@ object ParallelAppDimensions {
     val compactBreakpoint = 600.dp
     val gameTileMinWidth = 144.dp
     val gameNameMinWidth = 160.dp
+    val accountButtonWidth = 200.dp
     val gameIcon = 72.dp
     val emptyIcon = 64.dp
     val iconCornerRadius = 16.dp

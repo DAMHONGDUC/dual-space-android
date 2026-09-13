@@ -269,6 +269,7 @@ private fun accountButton(
 ) {
     val isReady: Boolean = readiness == GameLaunchReadiness.Ready
     Surface(
+        modifier = Modifier.width(ParallelAppDimensions.accountButtonWidth),
         onClick = { onLaunch(session.id) },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primaryContainer,
