@@ -238,16 +238,18 @@ private fun gameRow(
                 gameIcon(game.packageName)
                 Spacer(modifier = Modifier.weight(1f))
                 Column(
+                    modifier = Modifier.fillMaxWidth(accountAreaWidthFraction),
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
                 ) {
                     game.sessions.forEach { session ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             accountButton(
                                 session = session,
                                 readiness = readinessBySessionId[session.id],
                                 isRunning = session.id in runningSessionIds,
                                 onLaunch = onLaunch,
+                                modifier = Modifier.weight(1f),
                             )
                             IconButton(onClick = { onEditSession(session.id) }) {
                                 Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit_account))
@@ -266,10 +268,11 @@ private fun accountButton(
     readiness: GameLaunchReadiness?,
     isRunning: Boolean,
     onLaunch: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isReady: Boolean = readiness == GameLaunchReadiness.Ready
     Surface(
-        modifier = Modifier.width(ParallelAppDimensions.accountButtonWidth),
+        modifier = modifier,
         onClick = { onLaunch(session.id) },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -384,6 +387,7 @@ private fun gameIcon(packageName: String) {
 
 private const val gameIconBitmapSize: Int = 144
 private const val copyTagBorderAlpha: Float = 0.35f
+private const val accountAreaWidthFraction: Float = 0.4f
 
 @Composable
 private fun accountColor(accountColor: AccountColor): Color = when (accountColor) {
