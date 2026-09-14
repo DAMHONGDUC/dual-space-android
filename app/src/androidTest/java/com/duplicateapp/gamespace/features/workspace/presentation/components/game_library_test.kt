@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -111,6 +112,33 @@ class GameLibraryTest {
         composeRule.onNodeWithText(context.getString(R.string.session_running)).assertIsDisplayed()
     }
 
+    @Test
+    fun accountAreaOccupiesTwoFifthsOfParentRow() {
+        composeRule.setContent {
+            MaterialTheme {
+                gameLibrary(
+                    sessions = listOf(session(id = "copy-1", virtualUserId = 1)),
+                    profileStatus = ProfileProvisioningStatus.alreadyCreated,
+                    contentPadding = PaddingValues(),
+                    onLaunch = {},
+                    onAdd = {},
+                    onDeleteGame = {},
+                    onCreateProfile = {},
+                    onOpenAndroidSettings = {},
+                    onHelp = {},
+                    onSettings = {},
+                )
+            }
+        }
+
+        val parentWidth: Float = composeRule.onNodeWithTag(gameRowContentTestTag)
+            .fetchSemanticsNode().boundsInRoot.width
+        val accountAreaWidth: Float = composeRule.onNodeWithTag(accountAreaTestTag)
+            .fetchSemanticsNode().boundsInRoot.width
+
+        assertEquals(parentWidth * accountAreaWidthFraction, accountAreaWidth, widthTolerancePixels)
+    }
+
     private fun session(id: String, virtualUserId: Int): GameSession = GameSession(
         id = id,
         name = id,
@@ -125,5 +153,6 @@ class GameLibraryTest {
     private companion object {
         const val gameName = "Test Game"
         const val packageName = "com.example.testgame"
+        const val widthTolerancePixels = 1f
     }
 }

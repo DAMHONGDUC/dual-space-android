@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -231,14 +232,14 @@ private fun gameRow(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(gameRowContentTestTag),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
             ) {
-                gameIcon(game.packageName)
-                Spacer(modifier = Modifier.weight(1f))
+                Box(modifier = Modifier.weight(parentContentWeight)) {
+                    gameIcon(game.packageName)
+                }
                 Column(
-                    modifier = Modifier.fillMaxWidth(accountAreaWidthFraction),
+                    modifier = Modifier.weight(accountAreaWeight).testTag(accountAreaTestTag),
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
                 ) {
@@ -387,7 +388,11 @@ private fun gameIcon(packageName: String) {
 
 private const val gameIconBitmapSize: Int = 144
 private const val copyTagBorderAlpha: Float = 0.35f
-private const val accountAreaWidthFraction: Float = 0.4f
+internal const val accountAreaWidthFraction: Float = 0.4f
+private const val parentContentWeight: Float = 3f
+private const val accountAreaWeight: Float = 2f
+internal const val gameRowContentTestTag: String = "game-row-content"
+internal const val accountAreaTestTag: String = "account-area"
 
 @Composable
 private fun accountColor(accountColor: AccountColor): Color = when (accountColor) {
