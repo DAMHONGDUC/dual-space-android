@@ -1,0 +1,8 @@
+{
+  "app_name": "Parallel Game Space",
+  "package_name": "com.duplicateapp.gamespace",
+  "campaign_days": 14,
+  "run_interval_minutes": 360,
+  "launch_wait_seconds": 8,
+  "monkey_events": 40
+}

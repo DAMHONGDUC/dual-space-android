@@ -10,3 +10,4 @@ captures/
 externalNativeBuild/
 .cxx/
 gradle/gradle-daemon-jvm.properties
+tools/play_test_companion/data/
