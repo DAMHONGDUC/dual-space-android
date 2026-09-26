@@ -20,8 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.duplicateapp.theuniverse.** {*; }
--keep class top.niunaijun.jnihook.** {*; }
+-keep class com.dd.the.universe.** {*; }
 -keep class mirror.** {*; }
 -keep class android.** {*; }
 -keep class com.android.** {*; }

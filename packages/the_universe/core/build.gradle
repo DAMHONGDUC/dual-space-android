@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.duplicateapp.theuniverse'
+    namespace 'com.dd.the.universe'
 
     compileSdk 37
 
@@ -75,13 +75,13 @@ tasks.withType(Javadoc) {
 
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
-  implementation 'com.google.android.material:material:1.3.0'
     implementation(project(":the-universe-reflection"))
     annotationProcessor(project(":the-universe-compiler"))
-    implementation 'androidx.appcompat:appcompat:1.2.0'
 
-    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+    // Engine chỉ cần annotation (@Keep/@NonNull/@RequiresApi). Trước đây các lớp
+    // androidx đến gián tiếp qua appcompat — một thư viện UI engine không dùng;
+    // các shim còn lại đã được thay bằng API nền tảng vì minSdk là 29.
+    implementation 'androidx.annotation:annotation:1.8.0'
 
     implementation 'com.github.tiann:FreeReflection:3.2.2'
 
