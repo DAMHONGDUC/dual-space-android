@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -6,11 +6,11 @@ import android.os.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.location.IBLocationManagerService;
-import com.duplicateapp.theuniverse.entity.location.BCell;
-import com.duplicateapp.theuniverse.entity.location.BLocation;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.location.IBLocationManagerService;
+import com.dd.the.universe.entity.location.BCell;
+import com.dd.the.universe.entity.location.BLocation;
 
 
 public class BLocationManager extends TheUniverseManager<IBLocationManagerService> {

@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -12,10 +12,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.fake.hook.HookManager;
-import com.duplicateapp.theuniverse.fake.hook.IInjectHook;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
+import com.dd.the.universe.fake.hook.HookManager;
+import com.dd.the.universe.fake.hook.IInjectHook;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
 
 
 public class BResourcesManager implements IInjectHook {
@@ -168,7 +168,7 @@ public class BResourcesManager implements IInjectHook {
     
     private static Object getPackageManager() {
         try {
-            Class<?> blackUniverseNativeCoreClass = Class.forName("com.duplicateapp.theuniverse.TheUniverseCore");
+            Class<?> blackUniverseNativeCoreClass = Class.forName("com.dd.the.universe.TheUniverseCore");
             Method getPackageManagerMethod = blackUniverseNativeCoreClass.getMethod("getPackageManager");
             return getPackageManagerMethod.invoke(null);
         } catch (Exception e) {

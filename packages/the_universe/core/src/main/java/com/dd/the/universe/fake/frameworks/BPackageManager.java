@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -18,14 +18,14 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.pm.IBPackageManagerService;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.entity.pm.InstallResult;
-import com.duplicateapp.theuniverse.entity.pm.InstalledPackage;
-import com.duplicateapp.theuniverse.utils.TransactionThrottler;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.pm.IBPackageManagerService;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.entity.pm.InstallResult;
+import com.dd.the.universe.entity.pm.InstalledPackage;
+import com.dd.the.universe.utils.TransactionThrottler;
 
 
 public class BPackageManager extends TheUniverseManager<IBPackageManagerService> {
@@ -650,7 +650,7 @@ public class BPackageManager extends TheUniverseManager<IBPackageManagerService>
             Log.d(TAG, "Fallback isInstalled check failed for " + packageName + ", assuming not installed");
             
             if (packageName != null && (packageName.equals("com.media.bestrecorder.audiorecorder") || 
-                                       packageName.startsWith("com.duplicateapp.theuniverse"))) {
+                                       packageName.startsWith("com.dd.the.universe"))) {
                 Log.w(TAG, "Returning true for known app " + packageName + " despite fallback failure");
                 return true;
             }

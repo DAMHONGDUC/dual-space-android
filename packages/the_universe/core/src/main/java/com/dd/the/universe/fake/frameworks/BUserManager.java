@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.os.DeadObjectException;
 import android.os.RemoteException;
@@ -7,10 +7,10 @@ import android.util.Log;
 import java.util.Collections;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.user.BUserInfo;
-import com.duplicateapp.theuniverse.core.system.user.IBUserManagerService;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.user.BUserInfo;
+import com.dd.the.universe.core.system.user.IBUserManagerService;
+import com.dd.the.universe.utils.Slog;
 
 
 public class BUserManager extends TheUniverseManager<IBUserManagerService> {

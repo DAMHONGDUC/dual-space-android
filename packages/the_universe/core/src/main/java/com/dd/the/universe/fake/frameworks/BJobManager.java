@@ -1,12 +1,12 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.app.job.JobInfo;
 import android.os.RemoteException;
 
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.am.IBJobManagerService;
-import com.duplicateapp.theuniverse.entity.JobRecord;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.am.IBJobManagerService;
+import com.dd.the.universe.entity.JobRecord;
 
 
 public class BJobManager extends TheUniverseManager<IBJobManagerService> {

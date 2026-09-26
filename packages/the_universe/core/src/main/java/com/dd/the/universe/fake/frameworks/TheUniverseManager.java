@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.os.IBinder;
 import android.os.IInterface;
@@ -8,8 +8,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.utils.Reflector;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.utils.Reflector;
 
 
 public abstract class TheUniverseManager<Service extends IInterface> {

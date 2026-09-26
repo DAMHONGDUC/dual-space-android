@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -9,15 +9,15 @@ import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.am.IBActivityManagerService;
-import com.duplicateapp.theuniverse.entity.AppConfig;
-import com.duplicateapp.theuniverse.entity.UnbindRecord;
-import com.duplicateapp.theuniverse.entity.am.PendingResultData;
-import com.duplicateapp.theuniverse.entity.am.RunningAppProcessInfo;
-import com.duplicateapp.theuniverse.entity.am.RunningServiceInfo;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.am.IBActivityManagerService;
+import com.dd.the.universe.entity.AppConfig;
+import com.dd.the.universe.entity.UnbindRecord;
+import com.dd.the.universe.entity.am.PendingResultData;
+import com.dd.the.universe.entity.am.RunningAppProcessInfo;
+import com.dd.the.universe.entity.am.RunningServiceInfo;
+import com.dd.the.universe.utils.Slog;
 
 
 public class BActivityManager extends TheUniverseManager<IBActivityManagerService> {

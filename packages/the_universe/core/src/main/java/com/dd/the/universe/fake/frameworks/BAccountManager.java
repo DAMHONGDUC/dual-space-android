@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.accounts.Account;
 import android.accounts.AuthenticatorDescription;
@@ -8,9 +8,9 @@ import android.os.RemoteException;
 
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.accounts.IBAccountManagerService;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.accounts.IBAccountManagerService;
 
 
 public class BAccountManager extends TheUniverseManager<IBAccountManagerService> {

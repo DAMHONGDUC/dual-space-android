@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -8,9 +8,9 @@ import android.os.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.notification.IBNotificationManagerService;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.notification.IBNotificationManagerService;
 
 
 public class BNotificationManager extends TheUniverseManager<IBNotificationManagerService> {

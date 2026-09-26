@@ -1,11 +1,11 @@
-package com.duplicateapp.theuniverse.fake.frameworks;
+package com.dd.the.universe.fake.frameworks;
 
 import android.net.Uri;
 import android.os.RemoteException;
 import android.os.storage.StorageVolume;
 
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.os.IBStorageManagerService;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.os.IBStorageManagerService;
 
 
 public class BStorageManager extends TheUniverseManager<IBStorageManagerService> {
