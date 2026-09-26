@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,14 +7,14 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.fake.hook.HookManager;
-import com.duplicateapp.theuniverse.fake.service.HCallbackProxy;
-import com.duplicateapp.theuniverse.proxy.record.ProxyActivityRecord;
-import com.duplicateapp.theuniverse.utils.IntentSanitizer;
-import com.duplicateapp.theuniverse.proxy.record.ProxyPendingRecord;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.hook.HookManager;
+import com.dd.the.universe.fake.service.HCallbackProxy;
+import com.dd.the.universe.proxy.record.ProxyActivityRecord;
+import com.dd.the.universe.utils.IntentSanitizer;
+import com.dd.the.universe.proxy.record.ProxyPendingRecord;
+import com.dd.the.universe.utils.Slog;
 
 
 public class ProxyActivity extends Activity {

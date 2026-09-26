@@ -1,13 +1,13 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.entity.am.PendingResultData;
-import com.duplicateapp.theuniverse.proxy.record.ProxyBroadcastRecord;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.entity.am.PendingResultData;
+import com.dd.the.universe.proxy.record.ProxyBroadcastRecord;
 
 
 public class ProxyBroadcastReceiver extends BroadcastReceiver {

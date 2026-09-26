@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.proxy.record;
+package com.dd.the.universe.proxy.record;
 
 import android.content.Intent;
 

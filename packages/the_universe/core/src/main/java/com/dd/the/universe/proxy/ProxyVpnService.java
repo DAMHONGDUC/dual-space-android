@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,7 +9,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.utils.Slog;
 
 
 public class ProxyVpnService extends VpnService {

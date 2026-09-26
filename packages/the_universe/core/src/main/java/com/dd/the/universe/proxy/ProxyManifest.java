@@ -1,8 +1,8 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import java.util.Locale;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
+import com.dd.the.universe.TheUniverseCore;
 
 
 public class ProxyManifest {
@@ -21,23 +21,23 @@ public class ProxyManifest {
     }
 
     public static String getProxyPendingActivity(int index) {
-        return String.format(Locale.CHINA, "com.duplicateapp.theuniverse.proxy.ProxyPendingActivity$P%d", index);
+        return String.format(Locale.CHINA, "com.dd.the.universe.proxy.ProxyPendingActivity$P%d", index);
     }
 
     public static String getProxyActivity(int index) {
-        return String.format(Locale.CHINA, "com.duplicateapp.theuniverse.proxy.ProxyActivity$P%d", index);
+        return String.format(Locale.CHINA, "com.dd.the.universe.proxy.ProxyActivity$P%d", index);
     }
 
     public static String TransparentProxyActivity(int index) {
-        return String.format(Locale.CHINA, "com.duplicateapp.theuniverse.proxy.TransparentProxyActivity$P%d", index);
+        return String.format(Locale.CHINA, "com.dd.the.universe.proxy.TransparentProxyActivity$P%d", index);
     }
 
     public static String getProxyService(int index) {
-        return String.format(Locale.CHINA, "com.duplicateapp.theuniverse.proxy.ProxyService$P%d", index);
+        return String.format(Locale.CHINA, "com.dd.the.universe.proxy.ProxyService$P%d", index);
     }
 
     public static String getProxyJobService(int index) {
-        return String.format(Locale.CHINA, "com.duplicateapp.theuniverse.proxy.ProxyJobService$P%d", index);
+        return String.format(Locale.CHINA, "com.dd.the.universe.proxy.ProxyJobService$P%d", index);
     }
 
     public static String getProxyFileProvider() {

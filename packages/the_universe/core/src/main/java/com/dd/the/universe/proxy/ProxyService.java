@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import android.app.Service;
 import android.content.Intent;
@@ -6,11 +6,11 @@ import android.content.res.Configuration;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
+import android.app.Notification;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.dispatcher.AppServiceDispatcher;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.dispatcher.AppServiceDispatcher;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 public class ProxyService extends Service {
@@ -59,8 +59,8 @@ public class ProxyService extends Service {
     }
 
     private void showNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), getPackageName() + ".theuniverse_proxy")
-                .setPriority(NotificationCompat.PRIORITY_MAX);
+        Notification.Builder builder = new Notification.Builder(getApplicationContext(), getPackageName() + ".theuniverse_proxy")
+                .setPriority(Notification.PRIORITY_MAX);
         if (BuildCompat.isOreo()) {
             startForeground(TheUniverseCore.getHostPkg().hashCode(), builder.build());
         }

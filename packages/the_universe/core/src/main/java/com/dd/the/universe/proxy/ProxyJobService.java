@@ -1,11 +1,11 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Intent;
 import android.content.res.Configuration;
 
-import com.duplicateapp.theuniverse.app.dispatcher.AppJobServiceDispatcher;
+import com.dd.the.universe.app.dispatcher.AppJobServiceDispatcher;
 
 
 public class ProxyJobService extends JobService {

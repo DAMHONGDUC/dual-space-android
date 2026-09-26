@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -9,10 +9,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.entity.AppConfig;
-import com.duplicateapp.theuniverse.utils.compat.BundleCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.entity.AppConfig;
+import com.dd.the.universe.utils.compat.BundleCompat;
 
 
 public class ProxyContentProvider extends ContentProvider {

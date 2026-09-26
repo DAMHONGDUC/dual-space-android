@@ -1,10 +1,10 @@
-package com.duplicateapp.theuniverse.proxy.record;
+package com.dd.the.universe.proxy.record;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.IBinder;
 
-import com.duplicateapp.theuniverse.utils.compat.BundleCompat;
+import com.dd.the.universe.utils.compat.BundleCompat;
 
 
 public class ProxyActivityRecord {

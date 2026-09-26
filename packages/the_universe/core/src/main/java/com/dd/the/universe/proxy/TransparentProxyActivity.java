@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.proxy;
+package com.dd.the.universe.proxy;
 
 
 public class TransparentProxyActivity extends ProxyActivity {
