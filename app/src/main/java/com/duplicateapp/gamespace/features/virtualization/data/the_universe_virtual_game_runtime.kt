@@ -3,8 +3,8 @@ package com.duplicateapp.gamespace.features.virtualization.data
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.virtualization.domain.VirtualGameRuntime
 import com.duplicateapp.gamespace.features.virtualization.domain.VirtualRuntimeResult
-import com.duplicateapp.theuniverse.TheUniverseCore
-import com.duplicateapp.theuniverse.entity.pm.InstallResult
+import com.dd.the.universe.TheUniverseCore
+import com.dd.the.universe.entity.pm.InstallResult
 
 class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
     override fun installFromDevice(packageName: String, virtualUserId: Int): VirtualRuntimeResult {

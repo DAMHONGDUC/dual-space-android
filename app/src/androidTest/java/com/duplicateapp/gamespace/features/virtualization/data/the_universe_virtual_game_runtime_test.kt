@@ -3,7 +3,7 @@ package com.duplicateapp.gamespace.features.virtualization.data
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.duplicateapp.gamespace.features.virtualization.domain.VirtualRuntimeResult
-import com.duplicateapp.theuniverse.core.env.BEnvironment
+import com.dd.the.universe.core.env.BEnvironment
 import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

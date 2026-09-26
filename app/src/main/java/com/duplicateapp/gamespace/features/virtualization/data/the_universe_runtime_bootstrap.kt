@@ -1,8 +1,8 @@
 package com.duplicateapp.gamespace.features.virtualization.data
 
 import android.content.Context
-import com.duplicateapp.theuniverse.TheUniverseCore
-import com.duplicateapp.theuniverse.app.configuration.ClientConfiguration
+import com.dd.the.universe.TheUniverseCore
+import com.dd.the.universe.app.configuration.ClientConfiguration
 import java.io.File
 
 object TheUniverseRuntimeBootstrap {
@@ -22,10 +22,7 @@ object TheUniverseRuntimeBootstrap {
         override fun getHostPackageName(): String = packageName
         override fun isHideRoot(): Boolean = false
         override fun isEnableDaemonService(): Boolean = false
-        override fun isEnableLauncherActivity(): Boolean = false
-        override fun isUseVpnNetwork(): Boolean = false
         override fun isDisableFlagSecure(): Boolean = false
         override fun requestInstallPackage(file: File?, userId: Int): Boolean = false
-        override fun getLogSenderChatId(): String = ""
     }
 }
