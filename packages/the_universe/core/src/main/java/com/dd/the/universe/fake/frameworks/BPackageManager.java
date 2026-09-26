@@ -96,8 +96,8 @@ public class BPackageManager extends TheUniverseManager<IBPackageManagerService>
     public Intent getLaunchIntentForPackage(String packageName, int userId) {
         
         if (shouldUseFallbackMode()) {
-            Log.w(TAG, "Using fallback launch intent for " + packageName + " due to service failures");
-            return createFallbackLaunchIntent(packageName);
+            Log.w(TAG, "Virtual package service unavailable; refusing host launch fallback");
+            return null;
         }
         
         Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
@@ -600,8 +600,7 @@ public class BPackageManager extends TheUniverseManager<IBPackageManagerService>
     public boolean isInstalled(String packageName, int userId) {
         
         if (shouldUseFallbackMode()) {
-            Log.w(TAG, "Using fallback isInstalled check for " + packageName + " due to service failures");
-            return isInstalledFallback(packageName);
+            throw new IllegalStateException("Virtual package service unavailable");
         }
         
         try {
@@ -637,10 +636,9 @@ public class BPackageManager extends TheUniverseManager<IBPackageManagerService>
             Log.e(TAG, "Unexpected error in isInstalled check", e);
             transactionThrottler.recordFailure();
         }
-        return false;
+        throw new IllegalStateException("Unable to query virtual package installation");
     }
-    
-    
+
     private boolean isInstalledFallback(String packageName) {
         try {
             

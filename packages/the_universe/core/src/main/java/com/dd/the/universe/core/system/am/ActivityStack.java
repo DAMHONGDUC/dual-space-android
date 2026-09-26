@@ -52,6 +52,7 @@ public class ActivityStack {
     private final ActivityManager mAms;
     private final Map<Integer, TaskRecord> mTasks = new LinkedHashMap<>();
     private final Set<ActivityRecord> mLaunchingActivities = new HashSet<>();
+    private final Map<String, Long> mResumeSequences = new LinkedHashMap<>();
 
     public static final int LAUNCH_TIME_OUT = 0;
     private final Handler mHandler = new Handler(Looper.getMainLooper()) {
@@ -101,7 +102,7 @@ public class ActivityStack {
 
         ResolveInfo resolveInfo = BPackageManagerService.get().resolveActivity(intent, GET_ACTIVITIES, resolvedType, userId);
         if (resolveInfo == null || resolveInfo.activityInfo == null) {
-            return 0;
+            return -1;
         }
         Log.d(TAG, "startActivityLocked : " + resolveInfo.activityInfo);
         ActivityInfo activityInfo = resolveInfo.activityInfo;
@@ -496,6 +497,14 @@ public class ActivityStack {
             Log.d(TAG, "onActivityResumed : " + activityRecord.component.toString());
             activityRecord.task.removeActivity(activityRecord);
             activityRecord.task.addTopActivity(activityRecord);
+            String packageName = activityRecord.info.packageName;
+            mResumeSequences.put(packageName, mResumeSequences.getOrDefault(packageName, 0L) + 1L);
+        }
+    }
+
+    public long getActivityResumeSequence(String packageName) {
+        synchronized (mTasks) {
+            return mResumeSequences.getOrDefault(packageName, 0L);
         }
     }
 

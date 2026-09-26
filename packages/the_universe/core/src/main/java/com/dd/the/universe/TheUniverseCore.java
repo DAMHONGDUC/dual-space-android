@@ -1115,8 +1115,9 @@ public class TheUniverseCore extends ClientConfiguration {
         if (launchIntentForPackage == null) {
             return false;
         }
-        startActivity(launchIntentForPackage, userId);
-        return true;
+        // A successful dispatch is not a guest-resume acknowledgement.
+        return getBActivityManager().startActivityAms(userId, launchIntentForPackage,
+                null, null, null, -1, 0, null) >= 0;
     }
     public boolean isInstalled(String packageName, int userId) {
         return getBPackageManager().isInstalled(packageName, userId);

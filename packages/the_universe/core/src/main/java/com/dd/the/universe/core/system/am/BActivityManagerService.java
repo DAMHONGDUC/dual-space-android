@@ -42,6 +42,11 @@ public class BActivityManagerService extends IBActivityManagerService.Stub imple
         return sService;
     }
 
+    @Override
+    public long getActivityResumeSequence(String packageName, int userId) {
+        return getOrCreateSpaceLocked(userId).mStack.getActivityResumeSequence(packageName);
+    }
+
     public BActivityManagerService() {
         mBroadcastManager = BroadcastManager.startSystem(this, mPms);
     }

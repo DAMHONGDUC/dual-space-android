@@ -1,5 +1,6 @@
 package com.duplicateapp.gamespace.features.virtualization.data
 
+import android.os.SystemClock
 import com.duplicateapp.gamespace.core.logging.AppLogger
 import com.duplicateapp.gamespace.features.virtualization.domain.VirtualGameRuntime
 import com.duplicateapp.gamespace.features.virtualization.domain.VirtualRuntimeResult
@@ -39,7 +40,17 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
 
         AppLogger.action("virtual_game_launch", metadata)
         return try {
-            if (TheUniverseCore.get().launchApk(packageName, virtualUserId)) {
+            val service = TheUniverseCore.getBActivityManager().service
+                ?: return VirtualRuntimeResult.Failure("Virtual activity service unavailable")
+            val previousSequence: Long = service.getActivityResumeSequence(packageName, virtualUserId)
+            val dispatched: Boolean = TheUniverseCore.get().launchApk(packageName, virtualUserId)
+            val confirmed: Boolean = dispatched && LaunchConfirmation(
+                nowMillis = SystemClock::elapsedRealtime,
+                pause = Thread::sleep,
+            ).await(launchTimeoutMillis) {
+                service.getActivityResumeSequence(packageName, virtualUserId) > previousSequence
+            }
+            if (confirmed) {
                 AppLogger.success("virtual_game_launch", metadata)
                 VirtualRuntimeResult.Success
             } else {
@@ -47,6 +58,10 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
                 AppLogger.error("virtual_game_launch", error, metadata)
                 VirtualRuntimeResult.Failure(error.message)
             }
+        } catch (error: InterruptedException) {
+            Thread.currentThread().interrupt()
+            AppLogger.error("virtual_game_launch_interrupted", error, metadata)
+            VirtualRuntimeResult.Failure("Launch interrupted")
         } catch (error: Exception) {
             AppLogger.error("virtual_game_launch", error, metadata)
             VirtualRuntimeResult.Failure(error.message)
@@ -85,4 +100,8 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
         "packageName" to packageName,
         "virtualUserId" to virtualUserId,
     )
+
+    private companion object {
+        const val launchTimeoutMillis: Long = 10_000L
+    }
 }
