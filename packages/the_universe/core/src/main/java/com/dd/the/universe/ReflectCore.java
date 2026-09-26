@@ -1,9 +1,9 @@
-package top.niunaijun.jnihook;
+package com.dd.the.universe;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import top.niunaijun.jnihook.jni.JniHook;
+import com.dd.the.universe.jni.JniHook;
 
 
 public class ReflectCore {

@@ -1,4 +1,4 @@
-package top.niunaijun.jnihook.jni;
+package com.dd.the.universe.jni;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -7,7 +7,7 @@
 
 #include <jni.h>
 
-#define VMCORE_CLASS "com/duplicateapp/theuniverse/core/NativeCore"
+#define VMCORE_CLASS "com/dd/the/universe/core/NativeCore"
 
 class UniverseNativeCore {
 public:
