@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.delegate;
+package com.dd.the.universe.fake.delegate;
 
 import android.net.Uri;
 import android.os.Build;
@@ -20,12 +20,12 @@ import universeproxy.android.providers.BRSettingsNameValueCache;
 import universeproxy.android.providers.BRSettingsNameValueCacheOreo;
 import universeproxy.android.providers.BRSettingsSecure;
 import universeproxy.android.providers.BRSettingsSystem;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.fake.service.context.providers.ContentProviderStub;
-import com.duplicateapp.theuniverse.fake.service.context.providers.SystemProviderStub;
-import com.duplicateapp.theuniverse.fake.service.context.providers.VirtualMediaProviderStub;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.service.context.providers.ContentProviderStub;
+import com.dd.the.universe.fake.service.context.providers.SystemProviderStub;
+import com.dd.the.universe.fake.service.context.providers.VirtualMediaProviderStub;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 public class ContentProviderDelegate {

@@ -1,8 +1,8 @@
-package com.duplicateapp.theuniverse.fake.hook;
+package com.dd.the.universe.fake.hook;
 
 import java.lang.reflect.Method;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
+import com.dd.the.universe.TheUniverseCore;
 
 
 public abstract class MethodHook {

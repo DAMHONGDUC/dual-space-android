@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.delegate;
+package com.dd.the.universe.fake.delegate;
 
 import android.app.IServiceConnection;
 import android.content.ComponentName;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import universeproxy.android.app.BRIServiceConnectionO;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 public class ServiceConnectionDelegate extends IServiceConnection.Stub {

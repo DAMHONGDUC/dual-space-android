@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.hook;
+package com.dd.the.universe.fake.hook;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

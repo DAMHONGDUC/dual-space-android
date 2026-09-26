@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.delegate;
+package com.dd.the.universe.fake.delegate;
 
 import android.app.Activity;
 import android.app.Application;
@@ -26,17 +26,17 @@ import universeproxy.android.app.BRActivity;
 import universeproxy.android.app.BRActivityThread;
 import universeproxy.android.app.BRContextImpl;
 import universeproxy.android.app.BRContextImplKitkat;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.fake.hook.HookManager;
-import com.duplicateapp.theuniverse.fake.hook.IInjectHook;
-import com.duplicateapp.theuniverse.fake.service.HCallbackProxy;
-import com.duplicateapp.theuniverse.fake.service.IActivityClientProxy;
-import com.duplicateapp.theuniverse.fake.view.SafeResources;
-import com.duplicateapp.theuniverse.utils.HackAppUtils;
-import com.duplicateapp.theuniverse.utils.compat.ActivityCompat;
-import com.duplicateapp.theuniverse.utils.compat.ActivityManagerCompat;
-import com.duplicateapp.theuniverse.utils.compat.ContextCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.hook.HookManager;
+import com.dd.the.universe.fake.hook.IInjectHook;
+import com.dd.the.universe.fake.service.HCallbackProxy;
+import com.dd.the.universe.fake.service.IActivityClientProxy;
+import com.dd.the.universe.fake.view.SafeResources;
+import com.dd.the.universe.utils.HackAppUtils;
+import com.dd.the.universe.utils.compat.ActivityCompat;
+import com.dd.the.universe.utils.compat.ActivityManagerCompat;
+import com.dd.the.universe.utils.compat.ContextCompat;
 
 public final class AppInstrumentation extends BaseInstrumentationDelegate implements IInjectHook {
 

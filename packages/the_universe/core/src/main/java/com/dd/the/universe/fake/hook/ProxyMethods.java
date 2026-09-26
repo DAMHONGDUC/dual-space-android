@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.hook;
+package com.dd.the.universe.fake.hook;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ScanClass {
-    Class<?>[] value() default {};
+public @interface ProxyMethods {
+    String[] value() default {};
 }

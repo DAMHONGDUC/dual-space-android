@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.delegate;
+package com.dd.the.universe.fake.delegate;
 
 
 import android.annotation.TargetApi;
@@ -22,10 +22,10 @@ import android.os.UserHandle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.app.configuration.AppLifecycleCallback;
-import com.duplicateapp.theuniverse.utils.Reflector;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.app.configuration.AppLifecycleCallback;
+import com.dd.the.universe.utils.Reflector;
 
 public class BaseInstrumentationDelegate extends Instrumentation {
 
@@ -85,7 +85,7 @@ public class BaseInstrumentationDelegate extends Instrumentation {
     private void storeResultsForOlderVersions(Bundle results) {
         try {
             
-            Class<?> resultsStorageClass = Class.forName("com.duplicateapp.theuniverse.utils.ResultsStorage");
+            Class<?> resultsStorageClass = Class.forName("com.dd.the.universe.utils.ResultsStorage");
             java.lang.reflect.Method storeMethod = resultsStorageClass.getMethod("storeResults", String.class, Bundle.class);
             
             

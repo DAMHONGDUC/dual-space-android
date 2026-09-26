@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.delegate;
+package com.dd.the.universe.fake.delegate;
 
 import android.content.IIntentReceiver;
 import android.content.Intent;
@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import universeproxy.android.content.BRIIntentReceiver;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.proxy.record.ProxyBroadcastRecord;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.proxy.record.ProxyBroadcastRecord;
 
 
 public class InnerReceiverDelegate extends IIntentReceiver.Stub {

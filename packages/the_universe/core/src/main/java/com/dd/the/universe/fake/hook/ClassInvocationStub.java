@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.hook;
+package com.dd.the.universe.fake.hook;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,7 +9,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.utils.MethodParameterUtils;
+import com.dd.the.universe.utils.MethodParameterUtils;
 
 
 public abstract class ClassInvocationStub implements InvocationHandler, IInjectHook {

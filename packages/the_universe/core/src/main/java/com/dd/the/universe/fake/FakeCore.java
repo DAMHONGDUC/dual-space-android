@@ -1,6 +1,6 @@
-package com.duplicateapp.theuniverse.fake;
+package com.dd.the.universe.fake;
 
-import top.niunaijun.jnihook.ReflectCore;
+import com.dd.the.universe.ReflectCore;
 
 
 public class FakeCore {

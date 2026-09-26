@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.hook;
+package com.dd.the.universe.fake.hook;
 
 import android.os.IBinder;
 import android.os.IInterface;
