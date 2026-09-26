@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection.proxy;
+package com.dd.the.universe.reflection.proxy;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -19,16 +19,16 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
-import com.duplicateapp.theuniverse.reflection.TheUniverseReflectionInterfaceInfo;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructorNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BFieldCheckNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BFieldNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BFieldSetNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethodCheckNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClass;
-import com.duplicateapp.theuniverse.reflection.annotation.BClassNameNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClassName;
+import com.dd.the.universe.reflection.TheUniverseReflectionInterfaceInfo;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BConstructorNotProcess;
+import com.dd.the.universe.reflection.annotation.BFieldCheckNotProcess;
+import com.dd.the.universe.reflection.annotation.BFieldNotProcess;
+import com.dd.the.universe.reflection.annotation.BFieldSetNotProcess;
+import com.dd.the.universe.reflection.annotation.BMethodCheckNotProcess;
+import com.dd.the.universe.reflection.annotation.BParamClass;
+import com.dd.the.universe.reflection.annotation.BClassNameNotProcess;
+import com.dd.the.universe.reflection.annotation.BParamClassName;
 
 
 public class TheUniverseReflectionInterfaceProxy {

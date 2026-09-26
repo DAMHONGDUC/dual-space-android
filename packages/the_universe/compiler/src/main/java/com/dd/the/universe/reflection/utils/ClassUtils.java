@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection.utils;
+package com.dd.the.universe.reflection.utils;
 
 
 

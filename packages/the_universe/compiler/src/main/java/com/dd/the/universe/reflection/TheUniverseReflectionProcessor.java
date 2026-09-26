@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection;
+package com.dd.the.universe.reflection;
 
 import com.google.auto.service.AutoService;
 
@@ -24,15 +24,15 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClass;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticField;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.proxy.TheUniverseReflectionInterfaceProxy;
-import com.duplicateapp.theuniverse.reflection.proxy.TheUniverseReflectionProxy;
+import com.dd.the.universe.reflection.annotation.BClass;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BStaticField;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.proxy.TheUniverseReflectionInterfaceProxy;
+import com.dd.the.universe.reflection.proxy.TheUniverseReflectionProxy;
 
 
 @AutoService(Processor.class)

@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection;
+package com.dd.the.universe.reflection;
 
 
 public class TheUniverseReflectionInfo {

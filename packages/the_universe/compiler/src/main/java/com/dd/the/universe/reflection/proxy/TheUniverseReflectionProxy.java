@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection.proxy;
+package com.dd.the.universe.reflection.proxy;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -7,13 +7,13 @@ import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
 
-import com.duplicateapp.theuniverse.reflection.TheUniverseReflectionInfo;
-import com.duplicateapp.theuniverse.reflection.utils.ClassUtils;
+import com.dd.the.universe.reflection.TheUniverseReflectionInfo;
+import com.dd.the.universe.reflection.utils.ClassUtils;
 
 
 public class TheUniverseReflectionProxy {
 
-    private static final ClassName BR = ClassName.get("com.duplicateapp.theuniverse.reflection", "TheUniverseReflection");
+    private static final ClassName BR = ClassName.get("com.dd.the.universe.reflection", "TheUniverseReflection");
     private final TheUniverseReflectionInfo mReflection;
 
     private final ClassName mContextInterface;
@@ -81,7 +81,7 @@ public class TheUniverseReflectionProxy {
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(ClassName.get(Class.class));
 
-        String statement = "return com.duplicateapp.theuniverse.reflection.utils.ClassUtil.classReady($T.class)";
+        String statement = "return com.dd.the.universe.reflection.utils.ClassUtil.classReady($T.class)";
         builder.addStatement(statement,
                 mContextInterface
         );
