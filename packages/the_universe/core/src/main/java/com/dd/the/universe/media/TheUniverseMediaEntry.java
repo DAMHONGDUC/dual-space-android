@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.media;
+package com.dd.the.universe.media;
 
 import android.net.Uri;
 import android.provider.MediaStore;

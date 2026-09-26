@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.media;
+package com.dd.the.universe.media;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

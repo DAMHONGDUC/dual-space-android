@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.media;
+package com.dd.the.universe.media;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.Slog;
 
 public final class TheUniverseMediaStore {
     private static final String TAG = "TheUniverseMediaStore";

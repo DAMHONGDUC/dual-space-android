@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.media;
+package com.dd.the.universe.media;
 
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -7,7 +7,7 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
+import com.dd.the.universe.TheUniverseCore;
 
 public final class TheUniverseMediaContract {
     public static final String PUBLIC_AUTHORITY = "media";
