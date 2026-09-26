@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
@@ -10,9 +10,9 @@ import universeproxy.android.net.wifi.BRIWifiManagerStub;
 import universeproxy.android.net.wifi.BRWifiInfo;
 import universeproxy.android.net.wifi.BRWifiSsid;
 import universeproxy.android.os.BRServiceManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
 
 
 public class IWifiManagerProxy extends BinderInvocationStub {

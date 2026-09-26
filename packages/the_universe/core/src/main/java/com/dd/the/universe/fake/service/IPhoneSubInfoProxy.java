@@ -1,58 +1,49 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
-import android.os.IBinder;
-import android.os.Bundle;
-import android.text.TextUtils;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.List;
 
-import universeproxy.android.os.BRServiceManager;
-import universeproxy.com.android.internal.telephony.BRIPhoneSubInfoStub;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.utils.Slog;
+import android.os.Bundle;
+import android.text.TextUtils;
 
-/**
- * Binder-level hook for the "iphonesubinfo" service.
- *
- * On newer Android versions, TelephonyManager may not use (or expose) the static
- * cached interface fields we previously hooked, so we also hook the ServiceManager
- * entry directly.
- */
-public class IPhoneSubInfoServiceProxy extends BinderInvocationStub {
-    public static final String TAG = "IPhoneSubInfoSvcProxy";
-    private static final String SERVICE_NAME = "iphonesubinfo";
+import universeproxy.android.telephony.BRTelephonyManager;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.hook.ClassInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.utils.MethodParameterUtils;
+import com.dd.the.universe.utils.Slog;
 
-    public IPhoneSubInfoServiceProxy() {
-        super(BRServiceManager.get().getService(SERVICE_NAME));
+
+public class IPhoneSubInfoProxy extends ClassInvocationStub {
+    public static final String TAG = "IPhoneSubInfoProxy";
+
+    public IPhoneSubInfoProxy() {
+        if (BRTelephonyManager.get()._check_sServiceHandleCacheEnabled() != null) {
+            BRTelephonyManager.get()._set_sServiceHandleCacheEnabled(true);
+        }
+        if (BRTelephonyManager.get()._check_getSubscriberInfoService() != null) {
+            BRTelephonyManager.get().getSubscriberInfoService();
+        }
     }
 
     @Override
     protected Object getWho() {
-        IBinder binder = BRServiceManager.get().getService(SERVICE_NAME);
-        if (binder == null) {
-            return null;
-        }
-        return BRIPhoneSubInfoStub.get().asInterface(binder);
+        return BRTelephonyManager.get().sIPhoneSubInfo();
     }
 
     @Override
     protected void inject(Object baseInvocation, Object proxyInvocation) {
-        replaceSystemService(SERVICE_NAME);
-    }
-
-    @Override
-    public boolean isBadEnv() {
-        return false;
+        BRTelephonyManager.get()._set_sIPhoneSubInfo(proxyInvocation);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
+            MethodParameterUtils.replaceFirstAppPkg(args);
             rewriteCallingPackage(args);
             return super.invoke(proxy, method, args);
         } catch (Throwable e) {
@@ -63,7 +54,7 @@ public class IPhoneSubInfoServiceProxy extends BinderInvocationStub {
                         || msg.contains("callingPackage")
                         || msg.contains("Calling uid")
                         || msg.contains("Uid "))) {
-                    Slog.w(TAG, "UID/package enforcement in iphonesubinfo call " + method.getName() + ", returning safe default: " + msg);
+                    Slog.w(TAG, "UID/package enforcement in IPhoneSubInfo call " + method.getName() + ", returning safe default: " + msg);
                     return safeReturnValue(method);
                 }
             }
@@ -128,5 +119,19 @@ public class IPhoneSubInfoServiceProxy extends BinderInvocationStub {
             return Array.newInstance(rt.getComponentType(), 0);
         }
         return null;
+    }
+
+    @Override
+    public boolean isBadEnv() {
+        return false;
+    }
+
+
+    @ProxyMethod("getLine1NumberForSubscriber")
+    public static class getLine1NumberForSubscriber extends MethodHook {
+        @Override
+        protected Object hook(Object who, Method method, Object[] args) throws Throwable {
+            return null;
+        }
     }
 }

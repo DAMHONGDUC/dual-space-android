@@ -1,16 +1,16 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
 import universeproxy.com.android.internal.net.BRVpnConfig;
 import universeproxy.com.android.internal.net.VpnConfigContext;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.proxy.ProxyVpnService;
-import com.duplicateapp.theuniverse.utils.MethodParameterUtils;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.proxy.ProxyVpnService;
+import com.dd.the.universe.utils.MethodParameterUtils;
 
 
 public class VpnCommonProxy {

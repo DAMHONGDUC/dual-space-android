@@ -1,9 +1,9 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import universeproxy.android.net.BRIVpnManagerStub;
 import universeproxy.android.os.BRServiceManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.ScanClass;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.ScanClass;
 
 
 @ScanClass(VpnCommonProxy.class)

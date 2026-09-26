@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.content.Context;
 import android.os.IBinder;
@@ -15,15 +15,15 @@ import java.util.List;
 
 import universeproxy.android.os.BRServiceManager;
 import universeproxy.com.android.internal.telephony.BRITelephonyStub;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.entity.location.BCell;
-import com.duplicateapp.theuniverse.fake.frameworks.BLocationManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.utils.Md5Utils;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.entity.location.BCell;
+import com.dd.the.universe.fake.frameworks.BLocationManager;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.utils.Md5Utils;
+import com.dd.the.universe.utils.Slog;
 
 
 public class ITelephonyManagerProxy extends BinderInvocationStub {

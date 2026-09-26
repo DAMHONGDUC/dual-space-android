@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,15 +16,15 @@ import java.util.Objects;
 import universeproxy.android.location.BRILocationManagerStub;
 import universeproxy.android.location.provider.BRProviderProperties;
 import universeproxy.android.os.BRServiceManager;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.entity.location.BLocation;
-import com.duplicateapp.theuniverse.fake.location.FakeLocationPendingIntentDispatcher;
-import com.duplicateapp.theuniverse.fake.frameworks.BLocationManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.utils.MethodParameterUtils;
-import com.duplicateapp.theuniverse.utils.compat.ParceledListSliceCompat;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.entity.location.BLocation;
+import com.dd.the.universe.fake.location.FakeLocationPendingIntentDispatcher;
+import com.dd.the.universe.fake.frameworks.BLocationManager;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.utils.MethodParameterUtils;
+import com.dd.the.universe.utils.compat.ParceledListSliceCompat;
 
 
 public class ILocationManagerProxy extends BinderInvocationStub {

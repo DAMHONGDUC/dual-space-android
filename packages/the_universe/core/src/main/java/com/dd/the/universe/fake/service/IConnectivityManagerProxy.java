@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -15,12 +15,12 @@ import java.util.List;
 
 import universeproxy.android.net.BRIConnectivityManagerStub;
 import universeproxy.android.os.BRServiceManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.ScanClass;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.utils.MethodParameterUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.ScanClass;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.utils.MethodParameterUtils;
+import com.dd.the.universe.utils.Slog;
 
 
 @ScanClass(VpnCommonProxy.class)

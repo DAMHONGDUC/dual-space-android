@@ -1,11 +1,11 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.content.Context;
 import android.os.IBinder;
 
 import universeproxy.android.net.wifi.BRIWifiManagerStub;
 import universeproxy.android.os.BRServiceManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
 
 
 public class IWifiScannerProxy extends BinderInvocationStub {

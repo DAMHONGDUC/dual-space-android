@@ -1,17 +1,17 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
-import static com.duplicateapp.theuniverse.app.BActivityThread.getUid;
+import static com.dd.the.universe.app.BActivityThread.getUid;
 
 import java.lang.reflect.Method;
 
 import universeproxy.android.os.BRINetworkManagementServiceStub;
 import universeproxy.android.os.BRServiceManager;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.fake.service.base.UidMethodProxy;
-import com.duplicateapp.theuniverse.utils.MethodParameterUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.fake.service.base.UidMethodProxy;
+import com.dd.the.universe.utils.MethodParameterUtils;
+import com.dd.the.universe.utils.Slog;
 
 
 public class INetworkManagementServiceProxy extends BinderInvocationStub {
