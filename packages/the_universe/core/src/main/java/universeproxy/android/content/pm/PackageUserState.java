@@ -1,8 +1,8 @@
 package universeproxy.android.content.pm;
 
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
 
 @BClassName("android.content.pm.PackageUserState")
 public interface PackageUserState {

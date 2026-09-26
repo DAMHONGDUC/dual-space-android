@@ -4,10 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.app.ContextImpl")
 public interface ContextImpl {

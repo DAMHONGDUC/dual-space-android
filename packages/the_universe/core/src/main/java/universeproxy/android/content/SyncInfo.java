@@ -2,8 +2,8 @@ package universeproxy.android.content;
 
 import android.accounts.Account;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
 
 @BClassName("android.content.SyncInfo")
 public interface SyncInfo {

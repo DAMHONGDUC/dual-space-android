@@ -2,10 +2,10 @@ package universeproxy.com.android.internal.content;
 
 import java.io.File;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BParamClassName;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("com.android.internal.content.NativeLibraryHelper")
 public interface NativeLibraryHelper {

@@ -1,9 +1,9 @@
 package universeproxy.android.os;
 
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticField;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BStaticField;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.os.StrictMode")
 public interface StrictMode {

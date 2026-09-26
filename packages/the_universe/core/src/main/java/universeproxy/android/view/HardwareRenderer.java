@@ -2,8 +2,8 @@ package universeproxy.android.view;
 
 import java.io.File;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.view.HardwareRenderer")
 public interface HardwareRenderer {

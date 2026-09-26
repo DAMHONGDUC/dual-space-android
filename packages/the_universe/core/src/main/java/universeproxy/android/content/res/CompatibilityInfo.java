@@ -2,9 +2,9 @@ package universeproxy.android.content.res;
 
 import android.content.pm.ApplicationInfo;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticField;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BStaticField;
 
 @BClassName("android.content.res.CompatibilityInfo")
 public interface CompatibilityInfo {

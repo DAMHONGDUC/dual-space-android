@@ -3,9 +3,9 @@ package universeproxy.android.net;
 import android.net.NetworkInfo.DetailedState;
 import android.net.NetworkInfo.State;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BField;
 
 @BClassName("android.net.NetworkInfo")
 public interface NetworkInfo {

@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BMethod;
 
 @BClassName("android.app.Instrumentation")
 public interface Instrumentation {

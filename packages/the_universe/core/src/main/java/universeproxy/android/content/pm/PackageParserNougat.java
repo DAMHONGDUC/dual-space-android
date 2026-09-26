@@ -3,8 +3,8 @@ package universeproxy.android.content.pm;
 
 import android.content.pm.PackageParser;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.content.pm.PackageParser")
 public interface PackageParserNougat {

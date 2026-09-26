@@ -2,8 +2,8 @@ package universeproxy.android.app;
 
 import java.io.File;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
 
 @BClassName("android.app.SharedPreferencesImpl")
 public interface SharedPreferencesImpl {

@@ -3,8 +3,8 @@ package universeproxy.android.app;
 import android.app.PendingIntent;
 import android.content.Context;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BMethod;
 
 @BClassName("android.app.Notification")
 public interface Notification {

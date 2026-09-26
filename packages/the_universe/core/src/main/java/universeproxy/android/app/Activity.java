@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.IBinder;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BMethod;
 
 @BClassName("android.app.Activity")
 public interface Activity {

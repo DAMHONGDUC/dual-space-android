@@ -2,8 +2,8 @@ package universeproxy.com.android.internal.content;
 
 import android.content.Intent;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
 
 @BClassName("com.android.internal.content.ReferrerIntent")
 public interface ReferrerIntent {

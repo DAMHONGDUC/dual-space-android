@@ -1,8 +1,8 @@
 package universeproxy.libcore.io;
 
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticField;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BStaticField;
 
 @BClassName("libcore.io.Libcore")
 public interface Libcore {

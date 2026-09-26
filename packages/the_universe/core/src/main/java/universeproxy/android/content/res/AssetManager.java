@@ -3,9 +3,9 @@ package universeproxy.android.content.res;
 import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BMethod;
 
 @BClassName("android.content.res.AssetManager")
 public interface AssetManager {
