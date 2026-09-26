@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import android.content.pm.PackageParser;
 import android.content.pm.PackageParser.Package;

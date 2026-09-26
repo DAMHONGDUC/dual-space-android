@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import java.lang.reflect.Method;
 import java.util.List;

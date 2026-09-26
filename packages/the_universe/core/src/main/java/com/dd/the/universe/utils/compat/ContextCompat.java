@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -12,9 +12,9 @@ import universeproxy.android.content.AttributionSourceStateContext;
 import universeproxy.android.content.BRAttributionSource;
 import universeproxy.android.content.BRAttributionSourceState;
 import universeproxy.android.content.BRContentResolver;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.utils.Slog;
 
 
 public class ContextCompat {

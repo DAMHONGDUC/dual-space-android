@@ -1,10 +1,10 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dalvik.system.DexFile;
-import com.duplicateapp.theuniverse.utils.Reflector;
+import com.dd.the.universe.utils.Reflector;
 
 
 public class DexFileCompat {

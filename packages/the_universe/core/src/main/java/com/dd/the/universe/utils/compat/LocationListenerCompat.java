@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import android.location.Location;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import universeproxy.android.content.pm.BRParceledListSlice;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.utils.Slog;
 
 public final class LocationListenerCompat {
     private static final String TAG = "LocationListenerCompat";

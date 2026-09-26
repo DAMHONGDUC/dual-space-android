@@ -1,8 +1,8 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import android.text.TextUtils;
 
-import com.duplicateapp.theuniverse.utils.Reflector;
+import com.dd.the.universe.utils.Reflector;
 
 
 public class SystemPropertiesCompat {

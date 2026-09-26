@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 
 import android.app.Activity;
@@ -16,9 +16,9 @@ import android.view.WindowManager;
 
 import universeproxy.android.app.BRActivity;
 import universeproxy.com.android.internal.BRRstyleable;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.utils.DrawableUtils;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.utils.DrawableUtils;
 
 
 public class ActivityCompat {

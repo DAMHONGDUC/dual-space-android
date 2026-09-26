@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.utils.compat;
+package com.dd.the.universe.utils.compat;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -8,9 +8,9 @@ import android.graphics.drawable.Drawable;
 
 import java.util.Locale;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.utils.DrawableUtils;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.utils.DrawableUtils;
 
 public class TaskDescriptionCompat {
     public static ActivityManager.TaskDescription fix(ActivityManager.TaskDescription td) {
