@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.am;
+package com.dd.the.universe.core.system.am;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.core.system.pm.BPackage;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageManagerService;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageSettings;
-import com.duplicateapp.theuniverse.core.system.pm.PackageMonitor;
-import com.duplicateapp.theuniverse.entity.am.PendingResultData;
-import com.duplicateapp.theuniverse.proxy.ProxyBroadcastReceiver;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.core.system.pm.BPackage;
+import com.dd.the.universe.core.system.pm.BPackageManagerService;
+import com.dd.the.universe.core.system.pm.BPackageSettings;
+import com.dd.the.universe.core.system.pm.PackageMonitor;
+import com.dd.the.universe.entity.am.PendingResultData;
+import com.dd.the.universe.proxy.ProxyBroadcastReceiver;
+import com.dd.the.universe.utils.Slog;
 
 
 public class BroadcastManager implements PackageMonitor {

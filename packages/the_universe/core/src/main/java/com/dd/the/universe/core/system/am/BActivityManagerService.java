@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.am;
+package com.dd.the.universe.core.system.am;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -15,18 +15,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.core.system.BProcessManagerService;
-import com.duplicateapp.theuniverse.core.system.ISystemService;
-import com.duplicateapp.theuniverse.core.system.ProcessRecord;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageManagerService;
-import com.duplicateapp.theuniverse.entity.AppConfig;
-import com.duplicateapp.theuniverse.entity.UnbindRecord;
-import com.duplicateapp.theuniverse.entity.am.PendingResultData;
-import com.duplicateapp.theuniverse.entity.am.ReceiverData;
-import com.duplicateapp.theuniverse.entity.am.RunningAppProcessInfo;
-import com.duplicateapp.theuniverse.entity.am.RunningServiceInfo;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.core.system.BProcessManagerService;
+import com.dd.the.universe.core.system.ISystemService;
+import com.dd.the.universe.core.system.ProcessRecord;
+import com.dd.the.universe.core.system.pm.BPackageManagerService;
+import com.dd.the.universe.entity.AppConfig;
+import com.dd.the.universe.entity.UnbindRecord;
+import com.dd.the.universe.entity.am.PendingResultData;
+import com.dd.the.universe.entity.am.ReceiverData;
+import com.dd.the.universe.entity.am.RunningAppProcessInfo;
+import com.dd.the.universe.entity.am.RunningServiceInfo;
+import com.dd.the.universe.utils.Slog;
 
 import static android.content.pm.PackageManager.GET_META_DATA;
 

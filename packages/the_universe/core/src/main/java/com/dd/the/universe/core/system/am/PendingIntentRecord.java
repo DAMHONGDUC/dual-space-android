@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.am;
+package com.dd.the.universe.core.system.am;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.am;
+package com.dd.the.universe.core.system.am;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -6,7 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.duplicateapp.theuniverse.core.system.ProcessRecord;
+import com.dd.the.universe.core.system.ProcessRecord;
 
 
 

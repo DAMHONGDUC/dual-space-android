@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.am;
+package com.dd.the.universe.core.system.am;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -18,15 +18,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.core.IEmpty;
-import com.duplicateapp.theuniverse.core.system.BProcessManagerService;
-import com.duplicateapp.theuniverse.core.system.ProcessRecord;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageManagerService;
-import com.duplicateapp.theuniverse.entity.UnbindRecord;
-import com.duplicateapp.theuniverse.entity.am.RunningServiceInfo;
-import com.duplicateapp.theuniverse.proxy.ProxyManifest;
-import com.duplicateapp.theuniverse.proxy.record.ProxyServiceRecord;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.core.IEmpty;
+import com.dd.the.universe.core.system.BProcessManagerService;
+import com.dd.the.universe.core.system.ProcessRecord;
+import com.dd.the.universe.core.system.pm.BPackageManagerService;
+import com.dd.the.universe.entity.UnbindRecord;
+import com.dd.the.universe.entity.am.RunningServiceInfo;
+import com.dd.the.universe.proxy.ProxyManifest;
+import com.dd.the.universe.proxy.record.ProxyServiceRecord;
 
 
 @SuppressLint("NewApi")
