@@ -66,7 +66,9 @@ public class GmsCore {
                 return installResult;
             }
         }
-        return new InstallResult();
+        InstallResult result = new InstallResult();
+        result.success = true;
+        return result;
     }
 
     private static void uninstallPackages(Set<String> list, int userId) {

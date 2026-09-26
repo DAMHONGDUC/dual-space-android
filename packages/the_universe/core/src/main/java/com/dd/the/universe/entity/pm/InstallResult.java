@@ -9,7 +9,7 @@ import com.dd.the.universe.utils.Slog;
 public class InstallResult implements Parcelable {
     public static final String TAG = "InstallResult";
 
-    public boolean success = true;
+    public boolean success = false;
     public String packageName;
     public String msg;
 

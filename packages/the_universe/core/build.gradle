@@ -75,6 +75,7 @@ tasks.withType(Javadoc) {
 
 
 dependencies {
+    testImplementation 'junit:junit:4.13.2'
     implementation(project(":the-universe-reflection"))
     annotationProcessor(project(":the-universe-compiler"))
 

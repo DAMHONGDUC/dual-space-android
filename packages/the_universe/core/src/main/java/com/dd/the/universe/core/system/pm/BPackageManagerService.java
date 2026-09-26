@@ -806,15 +806,19 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
             }
             synchronized (mPackages) {
                 bPackageSettings.setInstalled(true, userId);
-                bPackageSettings.save();
+                if (!bPackageSettings.save()) {
+                    return result.installError("Unable to persist installed package");
+                }
             }
             mComponentResolver.removeAllComponents(bPackageSettings.pkg);
             mComponentResolver.addAllComponents(bPackageSettings.pkg);
             mSettings.scanPackage(aPackage.packageName);
             onPackageInstalled(bPackageSettings.pkg.packageName, userId);
+            result.success = true;
             return result;
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception error) {
+            Slog.e(TAG, "Package installation failed", error);
+            return result.installError("Package installation failed: " + error.getClass().getSimpleName());
         } finally {
             if (stagedFile != null && option.isFlag(InstallOption.FLAG_URI_FILE)) {
                 BzFileUtils.deleteDir(stagedFile);
@@ -824,7 +828,6 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
             }
             Slog.d(TAG, "install finish: " + (System.currentTimeMillis() - l) + "ms");
         }
-        return result;
     }
 
     private String resolveDisplayName(Uri uri) {
