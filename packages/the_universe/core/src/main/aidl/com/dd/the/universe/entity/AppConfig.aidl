@@ -1,0 +1,6 @@
+// AppConfig.aidl
+package com.dd.the.universe.entity;
+
+// Declare any non-default types here with import statements
+
+parcelable AppConfig;
