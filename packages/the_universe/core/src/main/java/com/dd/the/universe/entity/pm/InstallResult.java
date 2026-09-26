@@ -1,9 +1,9 @@
-package com.duplicateapp.theuniverse.entity.pm;
+package com.dd.the.universe.entity.pm;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.utils.Slog;
 
 
 public class InstallResult implements Parcelable {

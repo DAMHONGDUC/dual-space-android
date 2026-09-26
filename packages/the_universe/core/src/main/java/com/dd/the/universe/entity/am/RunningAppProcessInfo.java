@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.entity.am;
+package com.dd.the.universe.entity.am;
 
 import android.app.ActivityManager;
 import android.os.Parcel;

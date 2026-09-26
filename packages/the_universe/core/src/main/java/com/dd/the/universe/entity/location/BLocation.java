@@ -1,5 +1,5 @@
 
-package com.duplicateapp.theuniverse.entity.location;
+package com.dd.the.universe.entity.location;
 
 import android.location.Location;
 import android.location.LocationManager;

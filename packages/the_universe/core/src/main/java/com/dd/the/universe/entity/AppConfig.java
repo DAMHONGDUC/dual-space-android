@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.entity;
+package com.dd.the.universe.entity;
 
 import android.os.IBinder;
 import android.os.Parcel;

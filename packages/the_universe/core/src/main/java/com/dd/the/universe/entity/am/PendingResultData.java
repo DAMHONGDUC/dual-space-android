@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.entity.am;
+package com.dd.the.universe.entity.am;
 
 import android.content.BroadcastReceiver;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import universeproxy.android.content.BRBroadcastReceiverPendingResult;
 import universeproxy.android.content.BRBroadcastReceiverPendingResultM;
 import universeproxy.android.content.BroadcastReceiverPendingResultContext;
 import universeproxy.android.content.BroadcastReceiverPendingResultMContext;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 public class PendingResultData implements Parcelable {

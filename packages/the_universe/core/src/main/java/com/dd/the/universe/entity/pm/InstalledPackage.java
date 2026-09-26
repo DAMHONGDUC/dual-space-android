@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.entity.pm;
+package com.dd.the.universe.entity.pm;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -8,7 +8,7 @@ import android.os.Parcelable;
 
 import java.util.Objects;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
+import com.dd.the.universe.TheUniverseCore;
 
 
 public class InstalledPackage implements Parcelable {

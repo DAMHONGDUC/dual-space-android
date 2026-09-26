@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.entity;
+package com.dd.the.universe.entity;
 
 import android.app.Service;
 import android.content.Intent;

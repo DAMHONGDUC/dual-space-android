@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.entity.pm;
+package com.dd.the.universe.entity.pm;
 
 import android.os.Parcel;
 import android.os.Parcelable;
