@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.accounts;
+package com.dd.the.universe.core.system.accounts;
 
 import android.accounts.Account;
 import android.os.Parcel;

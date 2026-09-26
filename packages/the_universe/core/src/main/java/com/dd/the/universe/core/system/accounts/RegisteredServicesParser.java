@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.accounts;
+package com.dd.the.universe.core.system.accounts;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -9,9 +9,9 @@ import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 
 import universeproxy.android.content.res.BRAssetManager;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageManagerService;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageSettings;
-import com.duplicateapp.theuniverse.core.system.pm.PackageManagerCompat;
+import com.dd.the.universe.core.system.pm.BPackageManagerService;
+import com.dd.the.universe.core.system.pm.BPackageSettings;
+import com.dd.the.universe.core.system.pm.PackageManagerCompat;
 
 public class RegisteredServicesParser {
 

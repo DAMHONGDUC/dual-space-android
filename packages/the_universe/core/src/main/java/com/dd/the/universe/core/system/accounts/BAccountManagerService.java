@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.accounts;
+package com.dd.the.universe.core.system.accounts;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -34,8 +34,8 @@ import android.util.Log;
 import android.util.Xml;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.AtomicFile;
-import androidx.core.util.Preconditions;
+import android.util.AtomicFile;
+import com.dd.the.universe.utils.Preconditions;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -56,19 +56,19 @@ import java.util.Objects;
 
 import universeproxy.com.android.internal.BRRstyleable;
 import universeproxy.com.android.internal.RstyleableStatic;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.core.system.BProcessManagerService;
-import com.duplicateapp.theuniverse.core.system.ISystemService;
-import com.duplicateapp.theuniverse.core.system.ProcessRecord;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageManagerService;
-import com.duplicateapp.theuniverse.core.system.pm.PackageMonitor;
-import com.duplicateapp.theuniverse.core.system.user.BUserHandle;
-import com.duplicateapp.theuniverse.utils.BzArrayUtils;
-import com.duplicateapp.theuniverse.utils.CloseUtils;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
-import com.duplicateapp.theuniverse.utils.compat.AccountManagerCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.BProcessManagerService;
+import com.dd.the.universe.core.system.ISystemService;
+import com.dd.the.universe.core.system.ProcessRecord;
+import com.dd.the.universe.core.system.pm.BPackageManagerService;
+import com.dd.the.universe.core.system.pm.PackageMonitor;
+import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.utils.BzArrayUtils;
+import com.dd.the.universe.utils.CloseUtils;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.compat.AccountManagerCompat;
 
 
 @SuppressLint("InlinedApi")
