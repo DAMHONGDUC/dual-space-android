@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection;
+package com.dd.the.universe.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
@@ -9,19 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClass;
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BClassNameNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructorNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BFieldCheckNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BFieldNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BFieldSetNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethodCheckNotProcess;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClass;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClassName;
-import com.duplicateapp.theuniverse.reflection.utils.Reflector;
+import com.dd.the.universe.reflection.annotation.BClass;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BClassNameNotProcess;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BConstructorNotProcess;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BFieldCheckNotProcess;
+import com.dd.the.universe.reflection.annotation.BFieldNotProcess;
+import com.dd.the.universe.reflection.annotation.BFieldSetNotProcess;
+import com.dd.the.universe.reflection.annotation.BMethodCheckNotProcess;
+import com.dd.the.universe.reflection.annotation.BParamClass;
+import com.dd.the.universe.reflection.annotation.BParamClassName;
+import com.dd.the.universe.reflection.utils.Reflector;
 
 
 @SuppressWarnings("unchecked")

@@ -1,8 +1,8 @@
-package com.duplicateapp.theuniverse.reflection.utils;
+package com.dd.the.universe.reflection.utils;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClass;
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BClassNameNotProcess;
+import com.dd.the.universe.reflection.annotation.BClass;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BClassNameNotProcess;
 
 
 public class ClassUtil {

@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.reflection.annotation;
+package com.dd.the.universe.reflection.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
