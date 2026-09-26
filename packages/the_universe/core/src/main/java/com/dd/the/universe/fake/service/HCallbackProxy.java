@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -28,13 +28,13 @@ import universeproxy.android.app.servertransaction.BRClientTransaction;
 import universeproxy.android.app.servertransaction.BRLaunchActivityItem;
 import universeproxy.android.app.servertransaction.LaunchActivityItemContext;
 import universeproxy.android.os.BRHandler;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.fake.hook.IInjectHook;
-import com.duplicateapp.theuniverse.proxy.ProxyManifest;
-import com.duplicateapp.theuniverse.proxy.record.ProxyActivityRecord;
-import com.duplicateapp.theuniverse.utils.Slog;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.hook.IInjectHook;
+import com.dd.the.universe.proxy.ProxyManifest;
+import com.dd.the.universe.proxy.record.ProxyActivityRecord;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 

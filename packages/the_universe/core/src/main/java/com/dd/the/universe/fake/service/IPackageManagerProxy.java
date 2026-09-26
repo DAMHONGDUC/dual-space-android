@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,22 +24,22 @@ import universeproxy.android.app.BRActivityThread;
 import universeproxy.android.app.BRContextImpl;
 import universeproxy.android.app.ContextImpl;
 import universeproxy.android.content.pm.BRPackageManager;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.core.env.AppSystemEnv;
-import com.duplicateapp.theuniverse.core.env.SamsungHealthCompat;
-import com.duplicateapp.theuniverse.fake.FakeCore;
-import com.duplicateapp.theuniverse.fake.hook.BinderInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.fake.service.base.PkgMethodProxy;
-import com.duplicateapp.theuniverse.fake.service.base.ValueMethodProxy;
-import com.duplicateapp.theuniverse.media.TheUniverseMediaContract;
-import com.duplicateapp.theuniverse.utils.MethodParameterUtils;
-import com.duplicateapp.theuniverse.utils.Reflector;
-import com.duplicateapp.theuniverse.utils.Slog;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
-import com.duplicateapp.theuniverse.utils.compat.ParceledListSliceCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.core.env.AppSystemEnv;
+import com.dd.the.universe.core.env.SamsungHealthCompat;
+import com.dd.the.universe.fake.FakeCore;
+import com.dd.the.universe.fake.hook.BinderInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.fake.service.base.PkgMethodProxy;
+import com.dd.the.universe.fake.service.base.ValueMethodProxy;
+import com.dd.the.universe.media.TheUniverseMediaContract;
+import com.dd.the.universe.utils.MethodParameterUtils;
+import com.dd.the.universe.utils.Reflector;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.compat.BuildCompat;
+import com.dd.the.universe.utils.compat.ParceledListSliceCompat;
 
 
 public class IPackageManagerProxy extends BinderInvocationStub {

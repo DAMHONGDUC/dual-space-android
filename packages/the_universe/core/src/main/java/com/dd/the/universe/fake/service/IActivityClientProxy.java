@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.service;
+package com.dd.the.universe.fake.service;
 
 import android.app.ActivityManager;
 import android.os.IBinder;
@@ -7,12 +7,12 @@ import java.lang.reflect.Method;
 
 import universeproxy.android.app.BRActivityClient;
 import universeproxy.android.util.BRSingleton;
-import com.duplicateapp.theuniverse.fake.frameworks.BActivityManager;
-import com.duplicateapp.theuniverse.fake.hook.ClassInvocationStub;
-import com.duplicateapp.theuniverse.fake.hook.MethodHook;
-import com.duplicateapp.theuniverse.fake.hook.ProxyMethod;
-import com.duplicateapp.theuniverse.fake.hook.ScanClass;
-import com.duplicateapp.theuniverse.utils.compat.TaskDescriptionCompat;
+import com.dd.the.universe.fake.frameworks.BActivityManager;
+import com.dd.the.universe.fake.hook.ClassInvocationStub;
+import com.dd.the.universe.fake.hook.MethodHook;
+import com.dd.the.universe.fake.hook.ProxyMethod;
+import com.dd.the.universe.fake.hook.ScanClass;
+import com.dd.the.universe.utils.compat.TaskDescriptionCompat;
 
 
 @ScanClass(ActivityManagerCommonProxy.class)
