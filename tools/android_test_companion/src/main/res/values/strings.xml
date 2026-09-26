@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_description">Runs the user-started UI quality test for Parallel Game Space. It does not read passwords or control Google Play.</string>
+</resources>
