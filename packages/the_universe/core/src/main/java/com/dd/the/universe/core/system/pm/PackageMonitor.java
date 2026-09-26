@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 
 public interface PackageMonitor {

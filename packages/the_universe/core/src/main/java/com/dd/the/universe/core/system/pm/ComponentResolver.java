@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.utils.Slog;
 
 
 

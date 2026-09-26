@@ -1,9 +1,9 @@
-package com.duplicateapp.theuniverse.core.system.pm.installer;
+package com.dd.the.universe.core.system.pm.installer;
 
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageSettings;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.pm.BPackageSettings;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.BzFileUtils;
 
 
 public class CreateUserExecutor implements Executor {

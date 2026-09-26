@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import android.content.ComponentName;
 import android.content.IntentFilter;
@@ -19,8 +19,8 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 public class BPackage implements Parcelable {

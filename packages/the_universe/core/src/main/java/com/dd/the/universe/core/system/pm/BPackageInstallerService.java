@@ -1,17 +1,17 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.core.system.ISystemService;
-import com.duplicateapp.theuniverse.core.system.pm.installer.CopyExecutor;
-import com.duplicateapp.theuniverse.core.system.pm.installer.CreatePackageExecutor;
-import com.duplicateapp.theuniverse.core.system.pm.installer.CreateUserExecutor;
-import com.duplicateapp.theuniverse.core.system.pm.installer.Executor;
-import com.duplicateapp.theuniverse.core.system.pm.installer.RemoveAppExecutor;
-import com.duplicateapp.theuniverse.core.system.pm.installer.RemoveUserExecutor;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.core.system.ISystemService;
+import com.dd.the.universe.core.system.pm.installer.CopyExecutor;
+import com.dd.the.universe.core.system.pm.installer.CreatePackageExecutor;
+import com.dd.the.universe.core.system.pm.installer.CreateUserExecutor;
+import com.dd.the.universe.core.system.pm.installer.Executor;
+import com.dd.the.universe.core.system.pm.installer.RemoveAppExecutor;
+import com.dd.the.universe.core.system.pm.installer.RemoveUserExecutor;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.Slog;
 
 
 public class BPackageInstallerService extends IBPackageInstallerService.Stub implements ISystemService {

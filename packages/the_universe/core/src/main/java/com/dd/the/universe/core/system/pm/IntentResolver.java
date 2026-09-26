@@ -1,6 +1,6 @@
 
 
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.utils.Slog;
 
 
 public abstract class IntentResolver<F extends BPackage.IntentInfo, R extends Object> {

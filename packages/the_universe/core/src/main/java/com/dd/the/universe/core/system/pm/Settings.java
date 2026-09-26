@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,14 +15,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.core.system.BProcessManagerService;
-import com.duplicateapp.theuniverse.core.system.user.BUserHandle;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
-import com.duplicateapp.theuniverse.utils.compat.PackageParserCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.BProcessManagerService;
+import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.compat.PackageParserCompat;
 
 
  class Settings {

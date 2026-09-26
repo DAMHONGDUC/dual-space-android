@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -26,13 +26,13 @@ import universeproxy.android.content.pm.BRApplicationInfoN;
 import universeproxy.android.content.pm.BRPackageParserSigningDetails;
 import universeproxy.android.content.pm.BRSigningInfo;
 import universeproxy.android.content.res.BRAssetManager;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.core.env.AppSystemEnv;
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.BzArrayUtils;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.core.env.AppSystemEnv;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.BzArrayUtils;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 @SuppressLint({"SdCardPath", "NewApi"})

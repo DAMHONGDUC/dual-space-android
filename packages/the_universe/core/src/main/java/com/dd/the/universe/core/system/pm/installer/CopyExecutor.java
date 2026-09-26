@@ -1,16 +1,16 @@
-package com.duplicateapp.theuniverse.core.system.pm.installer;
+package com.dd.the.universe.core.system.pm.installer;
 
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.core.system.pm.BPackageSettings;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
-import com.duplicateapp.theuniverse.utils.NativeUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.pm.BPackageSettings;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.NativeUtils;
+import com.dd.the.universe.utils.Slog;
 
 
 public class CopyExecutor implements Executor {

@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.core.system.pm;
+package com.dd.the.universe.core.system.pm;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.core.system.user.BUserHandle;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.utils.CloseUtils;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.utils.CloseUtils;
+import com.dd.the.universe.utils.BzFileUtils;
 
 
 public class BPackageSettings implements Parcelable {
