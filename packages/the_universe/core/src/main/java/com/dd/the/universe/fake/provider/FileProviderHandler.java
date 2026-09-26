@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.provider;
+package com.dd.the.universe.fake.provider;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
@@ -7,9 +7,9 @@ import android.net.Uri;
 import java.io.File;
 import java.util.List;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.utils.compat.BuildCompat;
 
 
 public class FileProviderHandler {

@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.view;
+package com.dd.the.universe.fake.view;
 
 import android.content.res.Resources;
 import android.util.Log;

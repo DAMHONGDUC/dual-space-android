@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.location;
+package com.dd.the.universe.fake.location;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,11 +13,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.entity.location.BLocation;
-import com.duplicateapp.theuniverse.fake.frameworks.BLocationManager;
-import com.duplicateapp.theuniverse.utils.Slog;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.entity.location.BLocation;
+import com.dd.the.universe.fake.frameworks.BLocationManager;
+import com.dd.the.universe.utils.Slog;
 
 public final class FakeLocationPendingIntentDispatcher {
     private static final String TAG = "FakeLocationPI";

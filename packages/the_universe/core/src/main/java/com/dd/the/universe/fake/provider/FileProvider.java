@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.fake.provider;
+package com.dd.the.universe.fake.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -17,7 +17,6 @@ import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import androidx.core.content.ContextCompat;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -232,12 +231,12 @@ public class FileProvider extends ContentProvider {
                     
                     target = context.getExternalFilesDir(null);
                 } else if (TAG_EXTERNAL_FILES.equals(tag)) {
-                    File[] externalFilesDirs = ContextCompat.getExternalFilesDirs(context, null);
+                    File[] externalFilesDirs = context.getExternalFilesDirs(null);
                     if (externalFilesDirs.length > 0) {
                         target = externalFilesDirs[0];
                     }
                 } else if (TAG_EXTERNAL_CACHE.equals(tag)) {
-                    File[] externalCacheDirs = ContextCompat.getExternalCacheDirs(context);
+                    File[] externalCacheDirs = context.getExternalCacheDirs();
                     if (externalCacheDirs.length > 0) {
                         target = externalCacheDirs[0];
                     }
