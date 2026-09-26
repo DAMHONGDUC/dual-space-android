@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.app.dispatcher;
+package com.dd.the.universe.app.dispatcher;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,11 +10,11 @@ import android.os.IBinder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.entity.ServiceRecord;
-import com.duplicateapp.theuniverse.entity.UnbindRecord;
-import com.duplicateapp.theuniverse.proxy.record.ProxyServiceRecord;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.entity.ServiceRecord;
+import com.dd.the.universe.entity.UnbindRecord;
+import com.dd.the.universe.proxy.record.ProxyServiceRecord;
 
 import static android.app.Service.START_NOT_STICKY;
 

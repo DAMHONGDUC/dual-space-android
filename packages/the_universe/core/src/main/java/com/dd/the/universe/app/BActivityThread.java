@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.app;
+package com.dd.the.universe.app;
 
 import android.app.Activity;
 import android.app.Application;
@@ -59,32 +59,32 @@ import universeproxy.android.graphics.BRCompatibility;
 import universeproxy.android.security.net.config.BRNetworkSecurityConfigProvider;
 import universeproxy.com.android.internal.content.BRReferrerIntent;
 import universeproxy.dalvik.system.BRVMRuntime;
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.configuration.AppLifecycleCallback;
-import com.duplicateapp.theuniverse.app.dispatcher.AppServiceDispatcher;
-import com.duplicateapp.theuniverse.core.CrashHandler;
-import com.duplicateapp.theuniverse.core.IBActivityThread;
-import com.duplicateapp.theuniverse.core.IOCore;
-import com.duplicateapp.theuniverse.core.NativeCore;
-import com.duplicateapp.theuniverse.core.env.VirtualRuntime;
-import com.duplicateapp.theuniverse.core.system.user.BUserHandle;
-import com.duplicateapp.theuniverse.entity.AppConfig;
-import com.duplicateapp.theuniverse.entity.am.ReceiverData;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.configuration.AppLifecycleCallback;
+import com.dd.the.universe.app.dispatcher.AppServiceDispatcher;
+import com.dd.the.universe.core.CrashHandler;
+import com.dd.the.universe.core.IBActivityThread;
+import com.dd.the.universe.core.IOCore;
+import com.dd.the.universe.core.NativeCore;
+import com.dd.the.universe.core.env.VirtualRuntime;
+import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.entity.AppConfig;
+import com.dd.the.universe.entity.am.ReceiverData;
 
-import com.duplicateapp.theuniverse.fake.delegate.AppInstrumentation;
-import com.duplicateapp.theuniverse.fake.delegate.ContentProviderDelegate;
+import com.dd.the.universe.fake.delegate.AppInstrumentation;
+import com.dd.the.universe.fake.delegate.ContentProviderDelegate;
 
-import com.duplicateapp.theuniverse.fake.hook.HookManager;
-import com.duplicateapp.theuniverse.fake.service.HCallbackProxy;
-import com.duplicateapp.theuniverse.utils.Reflector;
-import com.duplicateapp.theuniverse.utils.SafeContextWrapper;
-import com.duplicateapp.theuniverse.utils.GlobalContextWrapper;
-import com.duplicateapp.theuniverse.utils.Slog;
-import com.duplicateapp.theuniverse.utils.compat.ActivityManagerCompat;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
-import com.duplicateapp.theuniverse.utils.compat.ContextCompat;
-import com.duplicateapp.theuniverse.utils.compat.StrictModeCompat;
-import com.duplicateapp.theuniverse.core.system.JarManager;
+import com.dd.the.universe.fake.hook.HookManager;
+import com.dd.the.universe.fake.service.HCallbackProxy;
+import com.dd.the.universe.utils.Reflector;
+import com.dd.the.universe.utils.SafeContextWrapper;
+import com.dd.the.universe.utils.GlobalContextWrapper;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.compat.ActivityManagerCompat;
+import com.dd.the.universe.utils.compat.BuildCompat;
+import com.dd.the.universe.utils.compat.ContextCompat;
+import com.dd.the.universe.utils.compat.StrictModeCompat;
+import com.dd.the.universe.core.system.JarManager;
 
 
 public class BActivityThread extends IBActivityThread.Stub {
@@ -407,7 +407,7 @@ public class BActivityThread extends IBActivityThread.Stub {
         BRLoadedApk.get(loadedApk)._set_mApplicationInfo(applicationInfo);
 
         try {
-            com.duplicateapp.theuniverse.utils.Reflector.with(loadedApk).field("mClassLoader").set(null);
+            com.dd.the.universe.utils.Reflector.with(loadedApk).field("mClassLoader").set(null);
         } catch (Throwable t) {
             Slog.w(TAG, "Failed to reset LoadedApk.mClassLoader: " + t.getMessage());
         }
@@ -572,10 +572,10 @@ public class BActivityThread extends IBActivityThread.Stub {
         final String apacheLegacyJar = "/system/framework/org.apache.http.legacy.jar";
         final String apacheLegacyBootJar = "/system/framework/org.apache.http.legacy.boot.jar";
 
-        if (com.duplicateapp.theuniverse.utils.BzFileUtils.isExist(apacheLegacyJar)) {
+        if (com.dd.the.universe.utils.BzFileUtils.isExist(apacheLegacyJar)) {
             return apacheLegacyJar;
         }
-        if (com.duplicateapp.theuniverse.utils.BzFileUtils.isExist(apacheLegacyBootJar)) {
+        if (com.dd.the.universe.utils.BzFileUtils.isExist(apacheLegacyBootJar)) {
             return apacheLegacyBootJar;
         }
         return null;
@@ -587,7 +587,7 @@ public class BActivityThread extends IBActivityThread.Stub {
         }
 
         try {
-            Object pathList = com.duplicateapp.theuniverse.utils.Reflector.on("dalvik.system.BaseDexClassLoader")
+            Object pathList = com.dd.the.universe.utils.Reflector.on("dalvik.system.BaseDexClassLoader")
                     .field("pathList")
                     .get(target);
             if (pathList == null) {

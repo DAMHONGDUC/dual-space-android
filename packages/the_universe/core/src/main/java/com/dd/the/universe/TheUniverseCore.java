@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse;
+package com.dd.the.universe;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -32,44 +32,41 @@ import java.util.Map;
 
 import universeproxy.android.app.BRActivityThread;
 import me.weishu.reflection.Reflection;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.app.LauncherActivity;
-import com.duplicateapp.theuniverse.app.configuration.AppLifecycleCallback;
-import com.duplicateapp.theuniverse.app.configuration.ClientConfiguration;
-import com.duplicateapp.theuniverse.core.GmsCore;
-import com.duplicateapp.theuniverse.core.NativeCore;
-import com.duplicateapp.theuniverse.core.env.BEnvironment;
-import com.duplicateapp.theuniverse.core.system.DaemonService;
-import com.duplicateapp.theuniverse.core.system.ServiceManager;
-import com.duplicateapp.theuniverse.core.system.user.BUserHandle;
-import com.duplicateapp.theuniverse.core.system.user.BUserInfo;
-import com.duplicateapp.theuniverse.entity.pm.InstallOption;
-import com.duplicateapp.theuniverse.entity.pm.InstallResult;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.app.configuration.AppLifecycleCallback;
+import com.dd.the.universe.app.configuration.ClientConfiguration;
+import com.dd.the.universe.core.GmsCore;
+import com.dd.the.universe.core.NativeCore;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.DaemonService;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.core.system.user.BUserInfo;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.entity.pm.InstallResult;
 
-import com.duplicateapp.theuniverse.fake.delegate.ContentProviderDelegate;
-import com.duplicateapp.theuniverse.fake.frameworks.BActivityManager;
-import com.duplicateapp.theuniverse.fake.frameworks.BJobManager;
-import com.duplicateapp.theuniverse.fake.frameworks.BPackageManager;
-import com.duplicateapp.theuniverse.fake.frameworks.BStorageManager;
-import com.duplicateapp.theuniverse.fake.frameworks.BUserManager;
+import com.dd.the.universe.fake.delegate.ContentProviderDelegate;
+import com.dd.the.universe.fake.frameworks.BActivityManager;
+import com.dd.the.universe.fake.frameworks.BJobManager;
+import com.dd.the.universe.fake.frameworks.BPackageManager;
+import com.dd.the.universe.fake.frameworks.BStorageManager;
+import com.dd.the.universe.fake.frameworks.BUserManager;
 
-import com.duplicateapp.theuniverse.fake.hook.HookManager;
-import com.duplicateapp.theuniverse.proxy.ProxyManifest;
-import com.duplicateapp.theuniverse.utils.BzFileUtils;
-import com.duplicateapp.theuniverse.utils.ShellUtils;
-import com.duplicateapp.theuniverse.utils.Slog;
-import com.duplicateapp.theuniverse.utils.SimpleCrashFix;
-import com.duplicateapp.theuniverse.utils.compat.BuildCompat;
-import com.duplicateapp.theuniverse.utils.compat.BundleCompat;
+import com.dd.the.universe.fake.hook.HookManager;
+import com.dd.the.universe.proxy.ProxyManifest;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.SimpleCrashFix;
+import com.dd.the.universe.utils.compat.BuildCompat;
+import com.dd.the.universe.utils.compat.BundleCompat;
 
-import com.duplicateapp.theuniverse.utils.provider.ProviderCall;
-import com.duplicateapp.theuniverse.utils.StackTraceFilter;
-import com.duplicateapp.theuniverse.utils.SocialMediaAppCrashPrevention;
-import com.duplicateapp.theuniverse.utils.DexCrashPrevention;
-import com.duplicateapp.theuniverse.utils.NativeCrashPrevention;
-import com.duplicateapp.theuniverse.utils.CrashMonitor;
-import com.duplicateapp.theuniverse.utils.StoragePermissionHelper;
-import com.duplicateapp.theuniverse.utils.LogSender;
+import com.dd.the.universe.utils.provider.ProviderCall;
+import com.dd.the.universe.utils.StackTraceFilter;
+import com.dd.the.universe.utils.SocialMediaAppCrashPrevention;
+import com.dd.the.universe.utils.DexCrashPrevention;
+import com.dd.the.universe.utils.NativeCrashPrevention;
+import com.dd.the.universe.utils.CrashMonitor;
+import com.dd.the.universe.utils.StoragePermissionHelper;
 
 
 
@@ -840,7 +837,6 @@ public class TheUniverseCore extends ClientConfiguration {
         mProcessName = processName;
         if (processName.equals(TheUniverseCore.getHostPkg())) {
             mProcessType = ProcessType.Main;
-            startLogcat();
         } else if (processName.endsWith(getContext().getString(R.string.the_universe_service_name))) {
             mProcessType = ProcessType.Server;
         } else {
@@ -962,7 +958,6 @@ public class TheUniverseCore extends ClientConfiguration {
         }
         
         
-        initVpnService();
         
         HookManager.get().init();
     }
@@ -1025,11 +1020,7 @@ public class TheUniverseCore extends ClientConfiguration {
     }
 
     public void startActivity(Intent intent, int userId) {
-        if (mClientConfiguration.isEnableLauncherActivity()) {
-            LauncherActivity.launch(intent, userId);
-        } else {
-            getBActivityManager().startActivity(intent, userId);
-        }
+        getBActivityManager().startActivity(intent, userId);
     }
 
     public static BJobManager getBJobManager() {
@@ -1291,144 +1282,6 @@ public class TheUniverseCore extends ClientConfiguration {
         return mClientConfiguration.requestInstallPackage(file, userId);
     }
 
-    private void startLogcat() {
-        new Thread(() -> {
-            File logFile = null;
-            Context context = getContext();
-            String fileName = context.getPackageName() + "_logcat.txt";
-            boolean useMediaStore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-            
-            
-            logDeviceInfo();
-            
-            try {
-                if (useMediaStore) {
-                    
-                    android.content.ContentValues values = new android.content.ContentValues();
-                    values.put(android.provider.MediaStore.Downloads.DISPLAY_NAME, fileName);
-                    values.put(android.provider.MediaStore.Downloads.MIME_TYPE, "text/plain");
-                    values.put(android.provider.MediaStore.Downloads.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS + "/logs");
-                    android.net.Uri uri = context.getContentResolver().insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
-                    if (uri != null) {
-                        try (java.io.OutputStream out = context.getContentResolver().openOutputStream(uri)) {
-                            
-                            ShellUtils.execCommand("logcat -c", false);
-                            java.lang.Process process = Runtime.getRuntime().exec("logcat");
-                            try (java.io.InputStream in = process.getInputStream()) {
-                                byte[] buffer = new byte[4096];
-                                int len;
-                                while ((len = in.read(buffer)) != -1) {
-                                    out.write(buffer, 0, len);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    
-                    File docuentsdir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "logs");
-                    if (!docuentsdir.exists()) {
-                        docuentsdir.mkdirs();
-                    }
-                    logFile = new File(docuentsdir, fileName);
-                    BzFileUtils.deleteDir(logFile);
-                    ShellUtils.execCommand("logcat -c", false);
-                    ShellUtils.execCommand("logcat -f " + logFile.getAbsolutePath(), false);
-                }
-            } catch (Exception e) {
-                Slog.e(TAG, "Failed to save logcat: " + e.getMessage());
-            }
-        }).start();
-    }
-
-    
-    private void logDeviceInfo() {
-        try {
-            Slog.i(TAG, "╔══════════════════════════════════════════════════════════════╗");
-            Slog.i(TAG, "║                    DEVICE INFORMATION                        ║");
-            Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-            
-            
-            Slog.i(TAG, "║ Android Version: " + Build.VERSION.RELEASE);
-            Slog.i(TAG, "║ SDK Level: " + Build.VERSION.SDK_INT);
-            Slog.i(TAG, "║ Build ID: " + Build.ID);
-            Slog.i(TAG, "║ Build Display: " + Build.DISPLAY);
-            
-            
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Slog.i(TAG, "║ Security Patch: " + Build.VERSION.SECURITY_PATCH);
-            }
-            
-            
-            Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-            Slog.i(TAG, "║ Manufacturer: " + Build.MANUFACTURER);
-            Slog.i(TAG, "║ Brand: " + Build.BRAND);
-            Slog.i(TAG, "║ Model: " + Build.MODEL);
-            Slog.i(TAG, "║ Device: " + Build.DEVICE);
-            Slog.i(TAG, "║ Product: " + Build.PRODUCT);
-            Slog.i(TAG, "║ Board: " + Build.BOARD);
-            Slog.i(TAG, "║ Hardware: " + Build.HARDWARE);
-            
-            
-            Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-            Slog.i(TAG, "║ Supported ABIs: " + String.join(", ", Build.SUPPORTED_ABIS));
-            if (Build.SUPPORTED_32_BIT_ABIS.length > 0) {
-                Slog.i(TAG, "║ 32-bit ABIs: " + String.join(", ", Build.SUPPORTED_32_BIT_ABIS));
-            }
-            if (Build.SUPPORTED_64_BIT_ABIS.length > 0) {
-                Slog.i(TAG, "║ 64-bit ABIs: " + String.join(", ", Build.SUPPORTED_64_BIT_ABIS));
-            }
-            
-            
-            Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-            Slog.i(TAG, "║ Fingerprint: " + Build.FINGERPRINT);
-            Slog.i(TAG, "║ Type: " + Build.TYPE);
-            Slog.i(TAG, "║ Tags: " + Build.TAGS);
-            
-            
-            try {
-                Runtime runtime = Runtime.getRuntime();
-                long maxMem = runtime.maxMemory() / (1024 * 1024);
-                long totalMem = runtime.totalMemory() / (1024 * 1024);
-                long freeMem = runtime.freeMemory() / (1024 * 1024);
-                Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-                Slog.i(TAG, "║ Max Heap: " + maxMem + " MB");
-                Slog.i(TAG, "║ Total Heap: " + totalMem + " MB");
-                Slog.i(TAG, "║ Free Heap: " + freeMem + " MB");
-                Slog.i(TAG, "║ Used Heap: " + (totalMem - freeMem) + " MB");
-            } catch (Exception e) {
-                Slog.w(TAG, "║ Memory info unavailable: " + e.getMessage());
-            }
-            
-            
-            try {
-                Context context = getContext();
-                if (context != null) {
-                    Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-                    Slog.i(TAG, "║ Package: " + context.getPackageName());
-                    android.content.pm.PackageInfo pInfo = context.getPackageManager()
-                            .getPackageInfo(context.getPackageName(), 0);
-                    Slog.i(TAG, "║ App Version: " + pInfo.versionName);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        Slog.i(TAG, "║ Version Code: " + pInfo.getLongVersionCode());
-                    } else {
-                        Slog.i(TAG, "║ Version Code: " + pInfo.versionCode);
-                    }
-                }
-            } catch (Exception e) {
-                Slog.w(TAG, "║ App info unavailable: " + e.getMessage());
-            }
-            
-            
-            Slog.i(TAG, "╠══════════════════════════════════════════════════════════════╣");
-            Slog.i(TAG, "║ Timestamp: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", 
-                    java.util.Locale.getDefault()).format(new java.util.Date()));
-            Slog.i(TAG, "╚══════════════════════════════════════════════════════════════╝");
-            
-        } catch (Exception e) {
-            Slog.e(TAG, "Failed to log device info: " + e.getMessage());
-        }
-    }
-
     @SuppressWarnings("deprecation")
     private static String getProcessName(Context context) {
         int pid = Process.myPid();
@@ -1501,7 +1354,7 @@ public class TheUniverseCore extends ClientConfiguration {
 
     public void closeCodeInit(){
         try {
-            Class entry = Class.forName("com.duplicateapp.theuniverse.closecode.Entry");
+            Class entry = Class.forName("com.dd.the.universe.closecode.Entry");
             Method attach = entry.getDeclaredMethod("attach");
             attach.invoke(null);
         } catch (Exception e) {
@@ -1553,7 +1406,7 @@ public class TheUniverseCore extends ClientConfiguration {
         }
     }
 
-    public static com.duplicateapp.theuniverse.entity.AppConfig getAppConfig() {
+    public static com.dd.the.universe.entity.AppConfig getAppConfig() {
         try {
             return BActivityThread.getAppConfig();
         } catch (Exception e) {
@@ -1704,61 +1557,6 @@ public class TheUniverseCore extends ClientConfiguration {
     }
     
     
-    private void initVpnService() {
-        try {
-            
-            if (mClientConfiguration == null || !mClientConfiguration.isUseVpnNetwork()) {
-                Slog.d(TAG, "VPN network mode disabled, using normal network");
-                return;
-            }
-
-            // Safety: the current ProxyVpnService implementation does not implement packet
-            // forwarding (TUN read/write + TCP/UDP handling). On modern Android (including API 36),
-            // establishing a VPN with a default route will black-hole the app’s traffic.
-            // Until a real tunnel implementation exists, skip starting the VPN to preserve
-            // normal internet connectivity.
-            if (Build.VERSION.SDK_INT >= 34) {
-                Slog.w(TAG, "VPN network mode requested but disabled on this Android version (stub VPN would break connectivity). Falling back to normal network.");
-                try {
-                    // Best-effort: stop any previously started instance after upgrade.
-                    Intent stopIntent = new Intent(getContext(), com.duplicateapp.theuniverse.proxy.ProxyVpnService.class);
-                    getContext().stopService(stopIntent);
-                } catch (Throwable ignored) {
-                }
-                return;
-            }
-            
-            
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        
-                        Intent vpnIntent = new Intent(getContext(), com.duplicateapp.theuniverse.proxy.ProxyVpnService.class);
-                        vpnIntent.setAction("android.net.VpnService");
-                        
-                        if (BuildCompat.isOreo()) {
-                            getContext().startForegroundService(vpnIntent);
-                        } else {
-                            getContext().startService(vpnIntent);
-                        }
-                        
-                        Slog.d(TAG, "VPN service started successfully for internet access");
-                    } catch (Exception e) {
-                        Slog.w(TAG, "Failed to start VPN service: " + e.getMessage());
-                        
-                        
-                    }
-                }
-            }, "VPNServiceInit").start();
-            
-        } catch (Exception e) {
-            Slog.w(TAG, "Failed to initialize VPN service: " + e.getMessage());
-            
-        }
-    }
-    
-    
     private static void ensureProperInitialization() {
         try {
             // Keep the host main/UI process as “clean” as possible: no native init or
@@ -1813,16 +1611,16 @@ public class TheUniverseCore extends ClientConfiguration {
             
             
             ServiceManager.get();
-            com.duplicateapp.theuniverse.core.system.am.ActivityStack stack =
-                (com.duplicateapp.theuniverse.core.system.am.ActivityStack) ServiceManager.getService(ServiceManager.ACTIVITY_MANAGER);
+            com.dd.the.universe.core.system.am.ActivityStack stack =
+                (com.dd.the.universe.core.system.am.ActivityStack) ServiceManager.getService(ServiceManager.ACTIVITY_MANAGER);
             if (stack == null) return false;
-            java.util.Map<Integer, com.duplicateapp.theuniverse.core.system.am.TaskRecord> tasks =
-                    com.duplicateapp.theuniverse.utils.Reflector.with(stack).field("mTasks").get();
+            java.util.Map<Integer, com.dd.the.universe.core.system.am.TaskRecord> tasks =
+                    com.dd.the.universe.utils.Reflector.with(stack).field("mTasks").get();
             if (tasks == null) return false;
-            for (com.duplicateapp.theuniverse.core.system.am.TaskRecord task : tasks.values()) {
+            for (com.dd.the.universe.core.system.am.TaskRecord task : tasks.values()) {
                 if (task.userId == userId && task.taskAffinity != null && task.taskAffinity.contains(packageName)) {
                     
-                    for (com.duplicateapp.theuniverse.core.system.am.ActivityRecord activity : task.activities) {
+                    for (com.dd.the.universe.core.system.am.ActivityRecord activity : task.activities) {
                         if (!activity.finished) {
                             return true;
                         }
@@ -2106,210 +1904,5 @@ public class TheUniverseCore extends ClientConfiguration {
             
             tryAlternativeServerStartupMethods();
         }
-    }
-    public interface LogSendListener {
-        void onSuccess();
-        void onFailure(String error);
-    }
-
-    public void sendLogs(String caption, boolean async) {
-        sendLogs(caption, async, null);
-    }
-
-    public void sendLogs(String caption, boolean async, LogSendListener listener) {
-        String chatId = mClientConfiguration != null ? mClientConfiguration.getLogSenderChatId() : null;
-        if (chatId == null || chatId.isEmpty()) return;
-
-        Runnable sendTask = () -> {
-            try {
-                
-                File cacheDir = getContext().getCacheDir();
-                File tempLog = File.createTempFile("crash_log_", ".txt", cacheDir);
-
-
-                String deviceInfo = getDeviceInfoString();
-
-
-                try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempLog)) {
-                    
-                    String header = "Caption: " + caption + "\n\n" + deviceInfo + "\n\n--- LOGCAT ---\n";
-                    fos.write(header.getBytes("UTF-8"));
-                    
-                    
-                    java.lang.Process process = Runtime.getRuntime().exec("logcat -d -v threadtime");
-                    try (java.io.InputStream in = process.getInputStream()) {
-                        byte[] buffer = new byte[8192];
-                        int len;
-                        while ((len = in.read(buffer)) != -1) {
-                            fos.write(buffer, 0, len);
-                        }
-                    }
-                    fos.flush();
-                }
-                
-                
-                String error = LogSender.send(chatId, tempLog, deviceInfo);
-                if (error != null) {
-                    Slog.e(TAG, "Log upload failed: " + error);
-                    
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                         try {
-                             android.widget.Toast.makeText(getContext(), "Log Upload Failed: " + error, android.widget.Toast.LENGTH_LONG).show();
-                         } catch (Exception e) {}
-                        if (listener != null) {
-                            listener.onFailure(error);
-                        }
-                    });
-                    
-                    
-                    if (getContext() != null) {
-                        NotificationManager nm = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                        if (nm != null) {
-                            String channelId = getContext().getPackageName() + ".theuniverse_core";
-                            Notification.Builder builder;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                builder = new Notification.Builder(getContext(), channelId);
-                            } else {
-                                builder = new Notification.Builder(getContext());
-                            }
-                            
-                            builder.setSmallIcon(android.R.drawable.stat_notify_error)
-                                   .setContentTitle("TheUniverse Log Upload Failed")
-                                   .setContentText(error)
-                                   .setAutoCancel(true);
-                                   
-                            nm.notify(9999, builder.build());
-                        }
-                    }
-                } else {
-                    
-                     new Handler(Looper.getMainLooper()).post(() -> {
-                         try {
-                             android.widget.Toast.makeText(getContext(), "Log Upload Success", android.widget.Toast.LENGTH_SHORT).show();
-                         } catch (Exception e) {}
-                         if (listener != null) {
-                             listener.onSuccess();
-                         }
-                     });
-
-                    
-                    if (getContext() != null) {
-                        NotificationManager nm = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                        if (nm != null) {
-                            String channelId = getContext().getPackageName() + ".theuniverse_core";
-                            Notification.Builder builder;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                builder = new Notification.Builder(getContext(), channelId);
-                            } else {
-                                builder = new Notification.Builder(getContext());
-                            }
-
-                            builder.setSmallIcon(android.R.drawable.stat_sys_upload_done)
-                                   .setContentTitle("TheUniverse Log Upload")
-                                   .setContentText("Logs sent successfully")
-                                   .setAutoCancel(true);
-
-                            nm.notify(9999, builder.build());
-                        }
-                    }
-                }
-                
-                
-                tempLog.delete();
-            } catch (Exception e) {
-                Slog.e(TAG, "Failed to send logs: " + e.getMessage());
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    if (listener != null) {
-                        listener.onFailure(e.getMessage());
-                    }
-                });
-            }
-        };
-
-        if (async) {
-            new Thread(sendTask).start();
-        } else {
-            sendTask.run();
-        }
-    }
-
-    private String getDeviceInfoString() {
-        StringBuilder sb = new StringBuilder();
-        try {
-            sb.append("DEVICE INFORMATION\n");
-            sb.append("------------------\n");
-            
-            
-            sb.append("Android Version: ").append(Build.VERSION.RELEASE).append("\n");
-            sb.append("SDK Level: ").append(Build.VERSION.SDK_INT).append("\n");
-            sb.append("Build ID: ").append(Build.ID).append("\n");
-            sb.append("Build Display: ").append(Build.DISPLAY).append("\n");
-            
-            
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                sb.append("Security Patch: ").append(Build.VERSION.SECURITY_PATCH).append("\n");
-            }
-            
-            
-            sb.append("Manufacturer: ").append(Build.MANUFACTURER).append("\n");
-            sb.append("Brand: ").append(Build.BRAND).append("\n");
-            sb.append("Model: ").append(Build.MODEL).append("\n");
-            sb.append("Device: ").append(Build.DEVICE).append("\n");
-            sb.append("Product: ").append(Build.PRODUCT).append("\n");
-            sb.append("Board: ").append(Build.BOARD).append("\n");
-            sb.append("Hardware: ").append(Build.HARDWARE).append("\n");
-            
-            
-            sb.append("Supported ABIs: ").append(String.join(", ", Build.SUPPORTED_ABIS)).append("\n");
-            if (Build.SUPPORTED_32_BIT_ABIS.length > 0) {
-                sb.append("32-bit ABIs: ").append(String.join(", ", Build.SUPPORTED_32_BIT_ABIS)).append("\n");
-            }
-            if (Build.SUPPORTED_64_BIT_ABIS.length > 0) {
-                sb.append("64-bit ABIs: ").append(String.join(", ", Build.SUPPORTED_64_BIT_ABIS)).append("\n");
-            }
-            
-
-
-
-            
-            try {
-                Runtime runtime = Runtime.getRuntime();
-                long maxMem = runtime.maxMemory() / (1024 * 1024);
-                long totalMem = runtime.totalMemory() / (1024 * 1024);
-                long freeMem = runtime.freeMemory() / (1024 * 1024);
-                sb.append("Max Heap: ").append(maxMem).append(" MB\n");
-                sb.append("Total Heap: ").append(totalMem).append(" MB\n");
-                sb.append("Free Heap: ").append(freeMem).append(" MB\n");
-                sb.append("Used Heap: ").append(totalMem - freeMem).append(" MB\n");
-            } catch (Exception e) {
-                sb.append("Memory info unavailable: ").append(e.getMessage()).append("\n");
-            }
-            
-            
-            try {
-                Context context = getContext();
-                if (context != null) {
-                    sb.append("Package: ").append(context.getPackageName()).append("\n");
-                    android.content.pm.PackageInfo pInfo = context.getPackageManager()
-                            .getPackageInfo(context.getPackageName(), 0);
-                    sb.append("App Version: ").append(pInfo.versionName).append("\n");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        sb.append("Version Code: ").append(pInfo.getLongVersionCode()).append("\n");
-                    } else {
-                        sb.append("Version Code: ").append(pInfo.versionCode).append("\n");
-                    }
-                }
-            } catch (Exception e) {
-                sb.append("App info unavailable: ").append(e.getMessage()).append("\n");
-            }
-            
-            
-            sb.append("Timestamp: ").append(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", 
-                    java.util.Locale.getDefault()).format(new java.util.Date())).append("\n");
-            
-        } catch (Exception e) {
-            sb.append("Failed to build device info: ").append(e.getMessage());
-        }
-        return sb.toString();
     }
 }

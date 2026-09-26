@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.app.configuration;
+package com.dd.the.universe.app.configuration;
 
 import android.app.Activity;
 import android.app.Application;

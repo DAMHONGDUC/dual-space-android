@@ -1,10 +1,10 @@
-package com.duplicateapp.theuniverse.closecode;
+package com.dd.the.universe.closecode;
 
 
 import java.io.File;
 
-import com.duplicateapp.theuniverse.app.configuration.AppLifecycleCallback;
-import com.duplicateapp.theuniverse.TheUniverseCore;
+import com.dd.the.universe.app.configuration.AppLifecycleCallback;
+import com.dd.the.universe.TheUniverseCore;
 
 public class Entry {
     private static final String TAG = "Lib Injection";
@@ -20,12 +20,12 @@ public class Entry {
                         java.io.File file = new File(libPath);
                         if (file.exists()){
                             System.load(libPath);
-                            com.duplicateapp.theuniverse.utils.Slog.d(TAG, "Injected native lib before Application created: " + libPath + " for package: " + targetpackagename);
+                            com.dd.the.universe.utils.Slog.d(TAG, "Injected native lib before Application created: " + libPath + " for package: " + targetpackagename);
                         }else {
-                            com.duplicateapp.theuniverse.utils.Slog.d(TAG, "Failed to inject because lib not found");
+                            com.dd.the.universe.utils.Slog.d(TAG, "Failed to inject because lib not found");
                         }
                     } catch (Throwable t) {
-                        com.duplicateapp.theuniverse.utils.Slog.e(TAG, "Failed to inject native lib before Application created: " + libPath + " for package: " + targetpackagename, t);
+                        com.dd.the.universe.utils.Slog.e(TAG, "Failed to inject native lib before Application created: " + libPath + " for package: " + targetpackagename, t);
                     }
                 }
             }
@@ -38,17 +38,17 @@ public class Entry {
                         java.io.File file = new File(libPath);
                         if (file.exists()){
                             System.load(libPath);
-                            com.duplicateapp.theuniverse.utils.Slog.d(TAG, "Injected native lib before Application created: " + libPath + " for package: " + targetpackagename);
+                            com.dd.the.universe.utils.Slog.d(TAG, "Injected native lib before Application created: " + libPath + " for package: " + targetpackagename);
                         }else {
-                            com.duplicateapp.theuniverse.utils.Slog.d(TAG, "Failed to inject because lib not found");
+                            com.dd.the.universe.utils.Slog.d(TAG, "Failed to inject because lib not found");
                         }
                     } catch (Throwable t) {
-                        com.duplicateapp.theuniverse.utils.Slog.e(TAG, "Failed to inject native lib after main activity onCreate: " + libPath + " for package: " + targetpackagename, t);
+                        com.dd.the.universe.utils.Slog.e(TAG, "Failed to inject native lib after main activity onCreate: " + libPath + " for package: " + targetpackagename, t);
                     }
                 }
             }
             
         });
-        com.duplicateapp.theuniverse.utils.Slog.d(TAG, "Custom closed code initialized!");
+        com.dd.the.universe.utils.Slog.d(TAG, "Custom closed code initialized!");
     }
 }

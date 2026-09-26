@@ -1,4 +1,4 @@
-package com.duplicateapp.theuniverse.app.dispatcher;
+package com.dd.the.universe.app.dispatcher;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
@@ -7,9 +7,9 @@ import android.content.res.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.TheUniverseCore;
-import com.duplicateapp.theuniverse.app.BActivityThread;
-import com.duplicateapp.theuniverse.entity.JobRecord;
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.entity.JobRecord;
 
 
 public class AppJobServiceDispatcher {
