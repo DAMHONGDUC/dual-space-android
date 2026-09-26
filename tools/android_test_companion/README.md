@@ -1,6 +1,6 @@
 # Android Test Companion
 
-One-button, user-started UI regression test for Parallel Game Space.
+One-button, user-started UI regression test for Dual Space.
 
 ## Build and install
 

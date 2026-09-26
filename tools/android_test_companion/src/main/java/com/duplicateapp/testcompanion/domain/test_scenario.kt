@@ -1,7 +1,7 @@
 package com.duplicateapp.testcompanion.domain
 
 object TestScenario {
-    const val targetPackage: String = "com.duplicateapp.gamespace"
+    const val targetPackage: String = "com.dd.dual.space"
     const val timeoutMillis: Long = 45_000L
 
     val continueLabels: List<String> = listOf("Continue", "Tiếp tục")
@@ -10,6 +10,6 @@ object TestScenario {
     val settingsMarkers: List<String> = listOf("Appearance", "Giao diện", "Privacy options", "Tùy chọn quyền riêng tư")
     val closeLabels: List<String> = listOf("Close", "Đóng")
     val aboutLabels: List<String> = listOf("About and help", "Giới thiệu và trợ giúp")
-    val aboutMarkers: List<String> = listOf("About Parallel Game Space", "Về Parallel Game Space")
+    val aboutMarkers: List<String> = listOf("About Dual Space", "Về Dual Space")
     val gotItLabels: List<String> = listOf("Got it", "Đã hiểu")
 }

@@ -6,4 +6,4 @@
     android:canRetrieveWindowContent="true"
     android:description="@string/accessibility_description"
     android:notificationTimeout="250"
-    android:packageNames="com.duplicateapp.gamespace" />
+    android:packageNames="com.dd.dual.space" />

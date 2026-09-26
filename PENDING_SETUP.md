@@ -4,7 +4,7 @@ The following publisher-owned configuration is required before authentication, a
 
 ## Firebase
 
-- Create the Android app `com.duplicateapp.gamespace` in the publisher's Firebase project.
+- Create the Android app `com.dd.dual.space` in the publisher's Firebase project.
 - Add the upload and Play App Signing SHA-1 and SHA-256 certificate fingerprints.
 - Enable Google as a Firebase Authentication provider.
 - Download `google-services.json` to `app/google-services.json`; this path is gitignored.

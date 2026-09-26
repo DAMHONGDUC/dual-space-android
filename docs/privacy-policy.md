@@ -1,8 +1,8 @@
 # Privacy policy
 
-Parallel Game Space stores session names, selected application package names, profile choices, and onboarding status locally on the device.
+Dual Space stores session names, selected application package names, profile choices, and onboarding status locally on the device.
 
-Parallel Game Space does not read, modify, transmit, or sell game data. It does not use accessibility services, location spoofing, macros, memory modification, or anti-cheat bypasses.
+Dual Space does not read, modify, transmit, or sell game data. It does not use accessibility services, location spoofing, macros, memory modification, or anti-cheat bypasses.
 
 The free version uses Google AdMob to display advertising. Google may process device identifiers, diagnostics, approximate location derived from network information, and ad interaction data according to the user's consent choices. The app requests consent where required before loading ads and provides privacy options when applicable.
 

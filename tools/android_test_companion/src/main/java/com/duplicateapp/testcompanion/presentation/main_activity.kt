@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         }
         val launchIntent = packageManager.getLaunchIntentForPackage(TestScenario.targetPackage)
         if (launchIntent == null) {
-            TestRunStore(this).fail("Parallel Game Space is not installed")
+            TestRunStore(this).fail("Dual Space is not installed")
             return
         }
         TestRunStore(this).start()
@@ -93,7 +93,7 @@ private fun TestCompanionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text("Android Test Companion", style = MaterialTheme.typography.headlineMedium)
-            Text("Parallel Game Space · safe UI regression flow")
+            Text("Dual Space · safe UI regression flow")
             Text(if (enabled) "Accessibility: ready" else "Accessibility: setup required")
             Text("Status: ${run.status.name}\nStep: ${run.step}")
             run.finishedAtMillis?.let { timestamp ->

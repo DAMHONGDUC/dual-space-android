@@ -8,7 +8,7 @@ needs at least 12 real people who remain opted in continuously.
 
 1. Install Android platform tools so `adb` is available.
 2. Enable USB debugging and connect one or more Android devices.
-3. Install the closed-test build of Parallel Game Space on each device.
+3. Install the closed-test build of Dual Space on each device.
 4. Double-click `run.command`, then select **Bắt đầu / làm lại**.
 
 The dashboard is available at <http://127.0.0.1:8765>. Test state, logs, screenshots,

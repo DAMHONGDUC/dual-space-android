@@ -4,7 +4,7 @@ Reviewed on 2026-09-11. Only the `prod` flavor is eligible for Google Play.
 
 ## Product position
 
-Parallel Game Space is a privacy-first game account switcher that uses Android's personal and managed profiles. It does not embed, modify, automate, or bypass protections in third-party games.
+Dual Space is a privacy-first game account switcher that uses Android's personal and managed profiles. It does not embed, modify, automate, or bypass protections in third-party games.
 
 Do not describe the Play build as an unlimited app cloner. The Play build opens apps that are already installed in an Android profile, and device support varies by manufacturer and Android version.
 
@@ -42,7 +42,7 @@ Do not describe the Play build as an unlimited app cloner. The Play build opens 
 
 - Parallel Space reports 100M+ installs, 24 languages, two free accounts, app hiding, security lock, and a Pro tier. Its listing and reviews expose demand for clearer account identity, fewer launch failures, reliable notifications, and less intrusive monetization.
 - Multiple Accounts reports 50M+ installs and competes on broad app compatibility, simultaneous accounts, Secret Zone, and Security Lock.
-- Both major competitors now state that apps declaring `REQUIRE_SECURE_ENV` are unsupported. Parallel Game Space must preserve this boundary in every distribution.
+- Both major competitors now state that apps declaring `REQUIRE_SECURE_ENV` are unsupported. Dual Space must preserve this boundary in every distribution.
 
 The defensible wedge is trust and game-specific reliability rather than clone count: clear profile identity, honest compatibility status, local-only state, no launch-path ads, and actionable setup diagnostics.
 

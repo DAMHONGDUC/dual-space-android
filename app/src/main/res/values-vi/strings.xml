@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Parallel Game Space</string>
+  <string name="app_name">Dual Space</string>
   <string name="settings">Cài đặt</string>
   <string name="theme">Giao diện</string>
   <string name="theme_system">Hệ thống</string>
@@ -24,13 +24,13 @@
   <string name="profile_count">Bản sao đã sẵn sàng</string>
   <string name="profile_unsupported">Không hỗ trợ bản sao</string>
   <string name="profile_creation_failed">Không thể bắt đầu thiết lập bản sao thứ hai</string>
-  <string name="game_profile_name">Parallel Game Space</string>
+  <string name="game_profile_name">Dual Space</string>
   <string name="profile_admin_label">Trình quản lý game profile</string>
   <string name="profile_admin_description">Tạo và kích hoạt một game profile độc lập sau khi bạn đồng ý.</string>
   <string name="add_session">Thêm game</string>
   <string name="add_game">Thêm game</string>
   <string name="no_game_selected">Chưa chọn game</string>
-  <string name="select_game_description">Thêm một game đã cài để bắt đầu sử dụng Parallel Game Space.</string>
+  <string name="select_game_description">Thêm một game đã cài để bắt đầu sử dụng Dual Space.</string>
   <string name="add_copy">Thêm bản copy</string>
   <string name="no_copies">Chưa có bản copy nào</string>
   <string name="no_copies_description">Thêm một game đã cài để tạo 1 bản copy độc lập.</string>
@@ -49,14 +49,14 @@
   <string name="second_copy_unsupported">Thiết bị này không thể tạo không gian ứng dụng thứ hai.</string>
   <string name="add">Thêm</string>
   <string name="cancel">Hủy</string>
-  <string name="onboarding_title">Chào mừng đến Parallel Game Space</string>
-  <string name="onboarding_profiles">Mỗi game hỗ trợ tối đa 2 bản copy độc lập. Game gốc được mở ở bên ngoài Parallel Game Space.</string>
+  <string name="onboarding_title">Chào mừng đến Dual Space</string>
+  <string name="onboarding_profiles">Mỗi game hỗ trợ tối đa 2 bản copy độc lập. Game gốc được mở ở bên ngoài Dual Space.</string>
   <string name="onboarding_monetization">Free includes a small banner ad. Premium removes all ads.</string>
-  <string name="onboarding_privacy">Mỗi bản sao giữ dữ liệu riêng bên trong Parallel Game Space. Game gốc không bị chỉnh sửa.</string>
+  <string name="onboarding_privacy">Mỗi bản sao giữ dữ liệu riêng bên trong Dual Space. Game gốc không bị chỉnh sửa.</string>
   <string name="continue_label">Tiếp tục</string>
   <string name="profile_available">Chưa bật</string>
   <string name="settings_profile">Bản sao thứ hai: %1$s</string>
-  <string name="settings_privacy">Tên phiên chỉ lưu trên thiết bị. Parallel Game Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
+  <string name="settings_privacy">Tên phiên chỉ lưu trên thiết bị. Dual Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
   <string name="android_settings">Cài đặt Android</string>
   <string name="settings_open_failed">Không thể mở cài đặt Android</string>
   <string name="close">Đóng</string>
@@ -80,7 +80,7 @@
   <string name="copy_one">Bản sao độc lập</string>
   <string name="copy_number">Bản copy %1$d</string>
   <string name="delete_game">Xóa game khỏi danh sách</string>
-  <string name="delete_game_message">Xóa tất cả bản copy “%1$s” khỏi Parallel Game Space? Dữ liệu ứng dụng của các bản copy sẽ bị xóa. Game gốc không bị ảnh hưởng.</string>
+  <string name="delete_game_message">Xóa tất cả bản copy “%1$s” khỏi Dual Space? Dữ liệu ứng dụng của các bản copy sẽ bị xóa. Game gốc không bị ảnh hưởng.</string>
   <string name="choose_game_to_copy">Chọn game</string>
   <string name="empty_library_title">Thêm game đầu tiên</string>
   <string name="empty_library_description">Bấm Thêm, chọn game, sau đó chạm biểu tượng để chơi.</string>
@@ -100,7 +100,7 @@
   <string name="rescan">Quét lại</string>
   <string name="privacy_options">Tùy chọn quyền riêng tư</string>
   <string name="update_required_title">Cần cập nhật</string>
-  <string name="update_required_message">Bạn cần cài đặt bản cập nhật quan trọng để tiếp tục sử dụng Parallel Game Space.</string>
+  <string name="update_required_message">Bạn cần cài đặt bản cập nhật quan trọng để tiếp tục sử dụng Dual Space.</string>
   <string name="update_now">Cập nhật ngay</string>
   <string name="close_app">Đóng ứng dụng</string>
   <string name="ready_to_open">Sẵn sàng mở</string>
@@ -114,9 +114,9 @@
   <string name="sort_name">Tên</string>
   <string name="account_count">%1$d tài khoản</string>
   <string name="shortcut_long_label">Mở %1$s trong %2$s</string>
-  <string name="diagnostic_report_title">Chẩn đoán Parallel Game Space</string>
+  <string name="diagnostic_report_title">Chẩn đoán Dual Space</string>
   <string name="share_diagnostic_report">Chia sẻ báo cáo chẩn đoán</string>
-  <string name="diagnostic_report_body">Parallel Game Space %1$s\nAndroid %2$d\nThiết bị: %3$s %4$s\nKhông gian: %5$s\nTrạng thái: %6$s\n\nKhông bao gồm thông tin đăng nhập hoặc dữ liệu game.</string>
+  <string name="diagnostic_report_body">Dual Space %1$s\nAndroid %2$d\nThiết bị: %3$s %4$s\nKhông gian: %5$s\nTrạng thái: %6$s\n\nKhông bao gồm thông tin đăng nhập hoặc dữ liệu game.</string>
   <string name="privacy_lock_title">Khóa riêng tư</string>
   <string name="privacy_lock_prompt">Mở khóa tài khoản game</string>
   <string name="privacy_lock_description">Xác thực để xem các tài khoản game.</string>
@@ -137,11 +137,11 @@
   <string name="compatibility_permission">Cần cấp quyền</string>
   <string name="compatibility_checking">Đang kiểm tra</string>
   <string name="about_and_help">Giới thiệu và trợ giúp</string>
-  <string name="about_title">Về Parallel Game Space</string>
-  <string name="about_description">Parallel Game Space hỗ trợ tối đa 2 bản copy độc lập cho mỗi game. Tính cả game gốc ở bên ngoài, bạn có thể dùng 3 phiên game riêng biệt.</string>
+  <string name="about_title">Về Dual Space</string>
+  <string name="about_description">Dual Space hỗ trợ tối đa 2 bản copy độc lập cho mỗi game. Tính cả game gốc ở bên ngoài, bạn có thể dùng 3 phiên game riêng biệt.</string>
   <string name="about_step_copy">1. Bấm Thêm game và chọn một game đã cài.</string>
   <string name="about_step_add">2. Thêm lại cùng game để tạo bản copy độc lập thứ hai.</string>
   <string name="about_step_play">3. Bấm vào game trong thư viện để mở bản copy.</string>
-  <string name="about_plan">Bản Free có quảng cáo. Premium loại bỏ toàn bộ quảng cáo. Parallel Game Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
+  <string name="about_plan">Bản Free có quảng cáo. Premium loại bỏ toàn bộ quảng cáo. Dual Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
   <string name="got_it">Đã hiểu</string>
 </resources>

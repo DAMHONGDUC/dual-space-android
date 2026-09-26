@@ -25,11 +25,11 @@ if (file("google-services.json").exists()) {
 }
 
 android {
-    namespace = "com.duplicateapp.gamespace"
+    namespace = "com.dd.dual.space"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.duplicateapp.gamespace"
+        applicationId = "com.dd.dual.space"
         minSdk = 29
         targetSdk = 37
         versionCode = 5

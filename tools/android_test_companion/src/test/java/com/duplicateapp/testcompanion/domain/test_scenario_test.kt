@@ -7,7 +7,7 @@ import org.junit.Test
 class TestScenarioTest {
     @Test
     fun targetPackageMatchesParallelGameSpace() {
-        assertEquals("com.duplicateapp.gamespace", TestScenario.targetPackage)
+        assertEquals("com.dd.dual.space", TestScenario.targetPackage)
     }
 
     @Test

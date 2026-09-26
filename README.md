@@ -1,6 +1,16 @@
-# Parallel Game Space
+# Dual Space
 
 Android multi-session gaming workspace built with Kotlin and Jetpack Compose. The Google Play build uses Android managed profiles; games open as separate Android tasks because Android does not allow arbitrary third-party activities to be embedded without game-side support.
+
+## App identity
+
+| Field | Value |
+| --- | --- |
+| App name | `Dual Space` |
+| Application ID | `com.dd.dual.space` |
+| Namespace | `com.dd.dual.space` |
+
+Kotlin sources, `R`, and `BuildConfig` all live under `com.dd.dual.space`.
 
 ## Requirements
 
@@ -33,7 +43,7 @@ ADMOB_BANNER_AD_UNIT_ID=
 
 For Firebase Authentication:
 
-1. Register Android package `com.duplicateapp.gamespace` in Firebase.
+1. Register Android package `com.dd.dual.space` in Firebase.
 2. Enable the Google sign-in provider.
 3. Add debug and release SHA-1/SHA-256 fingerprints.
 4. Download `google-services.json` to `app/google-services.json`.
@@ -53,7 +63,7 @@ For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace
 
 The repository also provides **prod**, which runs `:app:bundleProdRelease` directly from Android Studio.
 
-Use the **dev** configuration for local testing; it builds `devDebug`, mirrors the managed-profile behavior of `prod`, and installs as `com.duplicateapp.gamespace.dev`. Use **prod** for the Google Play release.
+Use the **dev** configuration for local testing; it builds `devDebug`, mirrors the managed-profile behavior of `prod`, and installs as `com.dd.dual.space.dev`. Use **prod** for the Google Play release.
 
 If Android Studio tries to execute `:app:assembleDebug` and cannot find `app-debug.apk`, sync Gradle again and reselect `devDebug`; the actual APK is flavor-qualified.
 
@@ -139,8 +149,8 @@ Upload the AAB to an Internal testing track first, finish App content/Data safet
 
 | Flavor | Application ID | Purpose |
 | --- | --- | --- |
-| `prod` | `com.duplicateapp.gamespace` | Google Play-safe managed-profile build |
-| `dev` | `com.duplicateapp.gamespace.dev` | Local debug build with the same managed-profile behavior as `prod` |
+| `prod` | `com.dd.dual.space` | Google Play-safe managed-profile build |
+| `dev` | `com.dd.dual.space.dev` | Local debug build with the same managed-profile behavior as `prod` |
 
 Do not upload the `dev` flavor to Google Play.
 
