@@ -22,6 +22,7 @@ dependencyResolutionManagement {
 rootProject.name = "Parallel_app"
 include(":app")
 include(":test-companion")
+include(":guest-fixture")
 include(":the-universe-core")
 include(":the-universe-reflection")
 include(":the-universe-compiler")
@@ -30,3 +31,4 @@ project(":the-universe-core").projectDir = file("packages/the_universe/core")
 project(":the-universe-reflection").projectDir = file("packages/the_universe/reflection")
 project(":the-universe-compiler").projectDir = file("packages/the_universe/compiler")
 project(":test-companion").projectDir = file("tools/android_test_companion")
+project(":guest-fixture").projectDir = file("tools/guest_fixture")
