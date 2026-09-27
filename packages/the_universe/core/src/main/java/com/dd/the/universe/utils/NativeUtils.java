@@ -69,14 +69,16 @@ public class NativeUtils {
 
 
 
+            // Always overwrite: an equal size does not prove equal content across versions.
             File libFile = new File(nativeLibDir, libName);
-            if (libFile.exists() && libFile.length() == entry.getSize()) {
-                Log.d(TAG, libName + " skip copy");
-                continue;
-            }
-            FileOutputStream fos = new FileOutputStream(libFile);
             Log.d(TAG, "copy so " + entry.getName() + " of " + cpuArch);
-            copySo(buffer, zipfile.getInputStream(entry), fos);
+            try (InputStream input = zipfile.getInputStream(entry);
+                 FileOutputStream fos = new FileOutputStream(libFile)) {
+                copySo(buffer, input, fos);
+            }
+            if (libFile.length() != entry.getSize()) {
+                throw new IOException("truncated native library: " + libName);
+            }
         }
 
         if (!findLib) {

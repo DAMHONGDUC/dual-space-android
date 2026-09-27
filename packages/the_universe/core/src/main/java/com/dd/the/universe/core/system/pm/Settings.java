@@ -19,6 +19,7 @@ import com.dd.the.universe.TheUniverseCore;
 import com.dd.the.universe.core.env.BEnvironment;
 import com.dd.the.universe.core.system.BProcessManagerService;
 import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.core.system.pm.installer.PackageDirectoryTransaction;
 import com.dd.the.universe.entity.pm.InstallOption;
 import com.dd.the.universe.utils.BzFileUtils;
 import com.dd.the.universe.utils.Slog;
@@ -101,7 +102,7 @@ import com.dd.the.universe.utils.compat.PackageParserCompat;
         
         Integer integer = mAppIds.get(obj.pkg.packageName);
         if (integer != null)
-            return integer;
+            return Process.FIRST_APPLICATION_UID + integer;
 
         if (mCurrUid >= Process.LAST_APPLICATION_UID) {
             return -1;
@@ -155,15 +156,11 @@ import com.dd.the.universe.utils.compat.PackageParserCompat;
                 mAppIds.putAll(hashMap);
             }
         } catch (Exception e) {
-            
-            try {
-                
-                BEnvironment.getUidConf().delete();
-            } catch (Exception deleteException) {
-                
-            }
-            
-            
+            // Keep the unreadable file for recovery; app ids are rebuilt from package settings after scan.
+            File uidConf = BEnvironment.getUidConf();
+            File backup = new File(uidConf.getParentFile(), uidConf.getName() + ".corrupt-" + System.currentTimeMillis());
+            boolean preserved = uidConf.renameTo(backup);
+            Slog.e(TAG, "loadUidLP: unreadable uid config, preserved=" + preserved, e);
             mCurrUid = 0;
             synchronized (mAppIds) {
                 mAppIds.clear();
@@ -178,13 +175,48 @@ import com.dd.the.universe.utils.compat.PackageParserCompat;
             File appRootDir = BEnvironment.getAppRootDir();
             BzFileUtils.mkdirs(appRootDir);
             File[] apps = appRootDir.listFiles();
+            if (apps == null) {
+                return;
+            }
             for (File app : apps) {
-                if (!app.isDirectory()) {
+                if (!app.isDirectory() || PackageDirectoryTransaction.isTransientDirectory(app.getName())) {
                     continue;
                 }
+                // Finishes or rolls back a binary swap that was interrupted by process death.
+                new PackageDirectoryTransaction(app).recover();
                 scanPackage(app.getName());
             }
+            for (File app : apps) {
+                String name = app.getName();
+                if (name.endsWith(PackageDirectoryTransaction.PREVIOUS_SUFFIX)) {
+                    String packageName = name.substring(0, name.length() - PackageDirectoryTransaction.PREVIOUS_SUFFIX.length());
+                    new PackageDirectoryTransaction(BEnvironment.getAppDir(packageName)).recover();
+                    scanPackage(packageName);
+                }
+            }
+            reconcileAppIdsLP();
         }
+    }
+
+    // Prevents a rebuilt uid table from handing out an app id that a loaded package already owns.
+    private void reconcileAppIdsLP() {
+        HashSet<Integer> assigned = new HashSet<>();
+        for (BPackageSettings settings : mPackages.values()) {
+            assigned.add(settings.appId);
+            int offset = settings.appId - Process.FIRST_APPLICATION_UID;
+            if (offset > 0 && !mAppIds.containsKey(settings.pkg.packageName)) {
+                mAppIds.put(settings.pkg.packageName, offset);
+            }
+        }
+        for (SharedUserSetting sharedUser : mSharedUsers.values()) {
+            assigned.add(sharedUser.userId);
+        }
+        int floor = AppIdRecovery.nextOffsetFloor(mCurrUid, assigned, Process.FIRST_APPLICATION_UID);
+        if (floor != mCurrUid) {
+            Slog.w(TAG, "reconcileAppIdsLP: advancing uid offset " + mCurrUid + " -> " + floor);
+            mCurrUid = floor;
+        }
+        saveUidLP();
     }
 
     public void scanPackage(String packageName) {
@@ -220,14 +252,18 @@ import com.dd.the.universe.utils.compat.PackageParserCompat;
             bPackageSettings.save();
             mPackages.put(bPackageSettings.pkg.packageName, bPackageSettings);
             Slog.d(TAG, "loaded Package: " + packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            // The original game is not installed right now; keep every copy on disk and load it again
+            // once the game returns instead of deleting the user's copies.
+            removePackage(packageName);
+            Slog.w(TAG, "host package missing, copy kept on disk: " + packageName);
         } catch (Throwable e) {
-            e.printStackTrace();
-            
-            BzFileUtils.deleteDir(app);
+            Slog.e(TAG, "bad Package: " + packageName, e);
             removePackage(packageName);
             BProcessManagerService.get().killAllByPackageName(packageName);
+            File quarantined = PackageQuarantine.move(app, new File(BEnvironment.getSystemDir(), "quarantine"), System.currentTimeMillis());
+            Slog.e(TAG, "bad Package quarantined: " + packageName + " -> " + quarantined);
             BPackageManagerService.get().onPackageUninstalled(packageName, true, BUserHandle.USER_ALL);
-            Slog.d(TAG, "bad Package: " + packageName);
         } finally {
             packageSettingsIn.recycle();
         }

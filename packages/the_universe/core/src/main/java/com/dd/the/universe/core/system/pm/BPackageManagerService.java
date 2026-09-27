@@ -569,7 +569,10 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
                 BProcessManagerService.get().killPackageAsUser(packageName, userId);
                 int i = BPackageInstallerService.get().uninstallPackageAsUser(ps, removeApp, userId);
                 if (i < 0) {
-                    
+                    // Keep the copy registered: callers see it still installed and can retry, and the
+                    // virtual user slot is never reused while old data is still on disk.
+                    Slog.e(TAG, "uninstallPackageAsUser: data removal failed for " + packageName + " user " + userId);
+                    return;
                 }
 
                 if (removeApp) {
@@ -592,15 +595,25 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
                 if (ps == null)
                     return;
                 BProcessManagerService.get().killAllByPackageName(packageName);
-                    for (Integer userId : ps.getUserIds()) {
-                        int i = BPackageInstallerService.get().uninstallPackageAsUser(ps, true, userId);
-                        if (i < 0) {
-                            continue;
-                        }
-                        onPackageUninstalled(packageName, true, userId);
+                boolean allRemoved = true;
+                for (Integer userId : ps.getUserIds()) {
+                    int i = BPackageInstallerService.get().uninstallPackageAsUser(ps, false, userId);
+                    if (i < 0) {
+                        allRemoved = false;
+                        continue;
                     }
+                    ps.removeUser(userId);
+                    onPackageUninstalled(packageName, false, userId);
+                }
+                if (!allRemoved) {
+                    Slog.e(TAG, "uninstallPackage: some user data remains for " + packageName);
+                    ps.save();
+                    return;
+                }
+                BPackageInstallerService.get().uninstallPackageAsUser(ps, true, BUserHandle.USER_ALL);
                 mSettings.removePackage(packageName);
                 mComponentResolver.removeAllComponents(ps.pkg);
+                onPackageUninstalled(packageName, true, BUserHandle.USER_ALL);
             }
         }
     }
@@ -704,7 +717,10 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
                 if (inputStream == null) {
                     return result.installError("openInputStream returned null for uri: " + file);
                 }
-                BzFileUtils.copyFile(inputStream, stagedFile);
+                // Throws on a short read so a truncated download is never installed.
+                try (InputStream source = inputStream) {
+                    BzFileUtils.writeToFile(source, stagedFile);
+                }
             } else {
                 stagedFile = new File(file);
             }
@@ -795,10 +811,19 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
             if (option.isFlag(InstallOption.FLAG_SYSTEM)) {
                 aPackage.applicationInfo = TheUniverseCore.getPackageManager().getPackageInfo(aPackage.packageName, 0).applicationInfo;
             }
+            BPackageSettings previous;
+            synchronized (mPackages) {
+                previous = mPackages.get(aPackage.packageName);
+            }
             BPackageSettings bPackageSettings = mSettings.getPackageLPw(aPackage.packageName, aPackage, option);
 
-            
-            BProcessManagerService.get().killPackageAsUser(aPackage.packageName, userId);
+            // Binaries are shared by every copy of a package: a version change must stop all of them,
+            // while adding another copy of the same version only restarts the target user.
+            if (previous != null && previous.pkg.mVersionCode != aPackage.mVersionCode) {
+                BProcessManagerService.get().killAllByPackageName(aPackage.packageName);
+            } else {
+                BProcessManagerService.get().killPackageAsUser(aPackage.packageName, userId);
+            }
 
             int i = BPackageInstallerService.get().installPackageAsUser(bPackageSettings, userId);
             if (i < 0) {

@@ -11,10 +11,10 @@ public class RemoveUserExecutor implements Executor {
     @Override
     public int exec(BPackageSettings ps, InstallOption option, int userId) {
         String packageName = ps.pkg.packageName;
-        
-        BzFileUtils.deleteDir(BEnvironment.getDataDir(packageName, userId));
-        BzFileUtils.deleteDir(BEnvironment.getDeDataDir(packageName, userId));
-        BzFileUtils.deleteDir(BEnvironment.getExternalDataDir(packageName, userId));
-        return 0;
+        // Report partial deletion so the caller keeps the copy registered instead of reusing its slot.
+        boolean removed = BzFileUtils.deleteDirFully(BEnvironment.getDataDir(packageName, userId));
+        removed &= BzFileUtils.deleteDirFully(BEnvironment.getDeDataDir(packageName, userId));
+        removed &= BzFileUtils.deleteDirFully(BEnvironment.getExternalDataDir(packageName, userId));
+        return removed ? 0 : -1;
     }
 }

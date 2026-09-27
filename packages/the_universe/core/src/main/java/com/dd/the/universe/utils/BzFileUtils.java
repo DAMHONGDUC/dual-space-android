@@ -178,6 +178,12 @@ public class BzFileUtils {
         return deleted;
     }
 
+    /** Deletes a file tree and reports whether nothing is left behind. */
+    public static boolean deleteDirFully(File dir) {
+        deleteDir(dir);
+        return dir == null || !dir.exists();
+    }
+
     public static int deleteDir(String dir) {
         return deleteDir(new File(dir));
     }

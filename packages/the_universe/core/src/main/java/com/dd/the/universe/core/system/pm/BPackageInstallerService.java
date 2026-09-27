@@ -5,7 +5,8 @@ import java.util.List;
 
 import com.dd.the.universe.core.system.ISystemService;
 import com.dd.the.universe.core.system.pm.installer.CopyExecutor;
-import com.dd.the.universe.core.system.pm.installer.CreatePackageExecutor;
+import com.dd.the.universe.core.system.pm.installer.PackageDirectoryTransaction;
+import com.dd.the.universe.core.env.BEnvironment;
 import com.dd.the.universe.core.system.pm.installer.CreateUserExecutor;
 import com.dd.the.universe.core.system.pm.installer.Executor;
 import com.dd.the.universe.core.system.pm.installer.RemoveAppExecutor;
@@ -25,41 +26,52 @@ public class BPackageInstallerService extends IBPackageInstallerService.Stub imp
 
     @Override
     public int installPackageAsUser(BPackageSettings ps, int userId) {
-        List<Executor> executors = new ArrayList<>();
-        
-        executors.add(new CreateUserExecutor());
-        
-        executors.add(new CreatePackageExecutor());
-        
-        executors.add(new CopyExecutor());
-        InstallOption option = ps.installOption;
-        for (Executor executor : executors) {
-            int exec = executor.exec(ps, option, userId);
-            Slog.d(TAG, "installPackageAsUser: " + executor.getClass().getSimpleName() + " exec: " + exec);
-            if (exec != 0) {
-                return exec;
-            }
+        int created = new CreateUserExecutor().exec(ps, ps.installOption, userId);
+        Slog.d(TAG, "installPackageAsUser: CreateUserExecutor exec: " + created);
+        if (created != 0) {
+            return created;
         }
-        return 0;
+        return installPackageFiles(ps, userId);
+    }
+
+    // Stages binaries beside the live directory and swaps them in only after every copy succeeded.
+    private int installPackageFiles(BPackageSettings ps, int userId) {
+        PackageDirectoryTransaction transaction = new PackageDirectoryTransaction(BEnvironment.getAppDir(ps.pkg.packageName));
+        if (!transaction.begin()) {
+            Slog.e(TAG, "installPackageFiles: cannot prepare staging for " + ps.pkg.packageName);
+            return -1;
+        }
+        try {
+            int copied = new CopyExecutor(transaction.stagingDir(), transaction.targetDir()).exec(ps, ps.installOption, userId);
+            if (copied != 0) {
+                transaction.abort();
+                return copied;
+            }
+            if (!transaction.commit(BEnvironment.getPackageConf(ps.pkg.packageName).getName())) {
+                Slog.e(TAG, "installPackageFiles: commit failed for " + ps.pkg.packageName);
+                transaction.abort();
+                return -1;
+            }
+            return 0;
+        } catch (Throwable error) {
+            Slog.e(TAG, "installPackageFiles: " + ps.pkg.packageName, error);
+            transaction.abort();
+            return -1;
+        }
     }
 
     @Override
     public int uninstallPackageAsUser(BPackageSettings ps, boolean removeApp, int userId) {
-        List<Executor> executors = new ArrayList<>();
-        if (removeApp) {
-            
-            executors.add(new RemoveAppExecutor());
-        }
-        
-        executors.add(new RemoveUserExecutor());
         InstallOption option = ps.installOption;
-        for (Executor executor : executors) {
-            int exec = executor.exec(ps, option, userId);
-            Slog.d(TAG, "uninstallPackageAsUser: " + executor.getClass().getSimpleName() + " exec: " + exec);
-            if (exec != 0) {
-                return exec;
-            }
+        // User data goes first: if it cannot be removed, the binaries stay and the copy remains usable.
+        int removedUser = new RemoveUserExecutor().exec(ps, option, userId);
+        Slog.d(TAG, "uninstallPackageAsUser: RemoveUserExecutor exec: " + removedUser);
+        if (removedUser != 0 || !removeApp) {
+            return removedUser;
         }
+        // Leftover binaries hold no user data, so they are logged rather than blocking the uninstall.
+        int removedApp = new RemoveAppExecutor().exec(ps, option, userId);
+        Slog.d(TAG, "uninstallPackageAsUser: RemoveAppExecutor exec: " + removedApp);
         return 0;
     }
 
@@ -83,17 +95,7 @@ public class BPackageInstallerService extends IBPackageInstallerService.Stub imp
 
     @Override
     public int updatePackage(BPackageSettings ps) {
-        List<Executor> executors = new ArrayList<>();
-        executors.add(new CreatePackageExecutor());
-        executors.add(new CopyExecutor());
-        InstallOption option = ps.installOption;
-        for (Executor executor : executors) {
-            int exec = executor.exec(ps, option, -1);
-            if (exec != 0) {
-                return exec;
-            }
-        }
-        return 0;
+        return installPackageFiles(ps, -1);
     }
 
     @Override

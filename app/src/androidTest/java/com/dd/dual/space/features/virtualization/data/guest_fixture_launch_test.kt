@@ -9,7 +9,9 @@ import com.dd.the.universe.core.env.BEnvironment
 import java.io.File
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
@@ -52,6 +54,43 @@ class GuestFixtureLaunchTest {
         assertNotEquals(firstReport["filesDir"], secondReport["filesDir"])
         assertNotEquals(firstReport["pid"], secondReport["pid"])
     }
+
+    @Test
+    fun addingAnotherCopyKeepsTheRunningCopyAliveAndItsDataIntact() {
+        assertEquals(VirtualRuntimeResult.Success, runtime.installFromDevice(fixturePackage, firstUserId))
+        assertEquals(VirtualRuntimeResult.Success, runtime.launch(fixturePackage, firstUserId))
+        val before: Map<String, String> = awaitMarker(firstUserId)
+        assertTrue("first copy is not reported running after launch", runtime.isRunning(fixturePackage, firstUserId))
+
+        assertEquals(VirtualRuntimeResult.Success, runtime.installFromDevice(fixturePackage, secondUserId))
+
+        assertTrue("first copy was stopped by installing the second", runtime.isRunning(fixturePackage, firstUserId))
+        assertEquals(before, readMarker(firstUserId))
+        assertTrue(runtime.isInstalled(fixturePackage, firstUserId))
+    }
+
+    @Test
+    fun failedDataRemovalKeepsTheCopyRegisteredUntilRetrySucceeds() {
+        assertEquals(VirtualRuntimeResult.Success, runtime.installFromDevice(fixturePackage, firstUserId))
+        val filesDir: File = BEnvironment.getDataFilesDir(fixturePackage, firstUserId)
+        val lockedDir = File(filesDir, "locked").apply { mkdirs() }
+        File(lockedDir, "save.dat").writeText("progress")
+        assertTrue(lockedDir.setWritable(false, false))
+        try {
+            assertTrue(runtime.uninstall(fixturePackage, firstUserId) is VirtualRuntimeResult.Failure)
+            assertTrue(runtime.isInstalled(fixturePackage, firstUserId))
+        } finally {
+            lockedDir.setWritable(true, false)
+        }
+
+        assertEquals(VirtualRuntimeResult.Success, runtime.uninstall(fixturePackage, firstUserId))
+        assertFalse(filesDir.exists())
+    }
+
+    private fun readMarker(userId: Int): Map<String, String> =
+        File(BEnvironment.getDataFilesDir(fixturePackage, userId), markerFileName).readLines()
+            .filter { line -> '=' in line }
+            .associate { line -> line.substringBefore('=') to line.substringAfter('=') }
 
     private fun awaitMarker(userId: Int): Map<String, String> {
         val marker = File(BEnvironment.getDataFilesDir(fixturePackage, userId), markerFileName)

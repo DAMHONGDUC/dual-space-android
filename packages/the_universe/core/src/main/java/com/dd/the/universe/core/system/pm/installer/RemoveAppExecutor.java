@@ -9,7 +9,6 @@ import com.dd.the.universe.utils.BzFileUtils;
 public class RemoveAppExecutor implements Executor {
     @Override
     public int exec(BPackageSettings ps, InstallOption option, int userId) {
-        BzFileUtils.deleteDir(BEnvironment.getAppDir(ps.pkg.packageName));
-        return 0;
+        return BzFileUtils.deleteDirFully(BEnvironment.getAppDir(ps.pkg.packageName)) ? 0 : -1;
     }
 }
