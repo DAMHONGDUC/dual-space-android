@@ -18,6 +18,34 @@ val firebaseWebClientId: String = configuredValue("FIREBASE_WEB_CLIENT_ID")
 val admobBannerAdUnitId: String = configuredValue("ADMOB_BANNER_AD_UNIT_ID")
 val admobAppId: String = configuredValue("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
 
+// Google's published sample publisher; its IDs never serve revenue.
+val admobTestPublisherPrefix = "ca-app-pub-3940256099942544"
+
+// Reports only key names so secret values never reach build logs.
+val releaseConfigurationProblems: List<String> = buildList {
+    if (revenueCatApiKey.isBlank()) add("REVENUECAT_GOOGLE_API_KEY is missing")
+    if (revenueCatEntitlementId.isBlank()) add("REVENUECAT_ENTITLEMENT_ID is missing")
+    if (firebaseWebClientId.isBlank()) add("FIREBASE_WEB_CLIENT_ID is missing")
+    if (admobBannerAdUnitId.isBlank()) add("ADMOB_BANNER_AD_UNIT_ID is missing")
+    if (admobBannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID uses a Google test ID")
+    if (admobAppId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID uses a Google test ID")
+    if (!file("google-services.json").exists()) add("app/google-services.json is missing")
+}
+
+val validateProdReleaseConfiguration by tasks.registering {
+    description = "Fails a Play release build that lacks production monetization configuration."
+    val problems = releaseConfigurationProblems
+    doLast {
+        if (problems.isNotEmpty()) {
+            throw GradleException("Release configuration is incomplete:\n- " + problems.joinToString("\n- "))
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name == "preProdReleaseBuild") dependsOn(validateProdReleaseConfiguration)
+}
+
 fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
 if (file("google-services.json").exists()) {
