@@ -68,3 +68,25 @@ Optional O-items remain deferred. Free/paid copy limits have not been changed.
 GitNexus gates use the pinned 1.6.12 distribution with schema-4 runner receipts.
 Its graph has known dispatch/receiver-resolution and process-trace limits;
 zero reported affected flows is not proof of no runtime impact.
+
+## Branch `release/core-remaining-items` (2026-09-27, second pass)
+
+The application is still **not release-ready**. This pass closed app-layer items only; engine items and all G-gates remain open.
+
+| Item | Change | Evidence | Remaining |
+| --- | --- | --- | --- |
+| C32 | `preProdReleaseBuild` depends on `validateProdReleaseConfiguration`; blank keys, Google test AdMob IDs, or missing `google-services.json` fail with key names only | Ran against this machine: fails listing 5 problems; `devDebug`/`devRelease` still build | Owner supplies production values |
+| C23, C27 | `PurchaseOutcome` separates activated/not activated/pending/cancelled/failed; auth, restore, sign-out release the busy flag in `finally`; restore failure no longer says "not found" | `PurchaseOutcomeTest` (3) | Sandbox purchase (G05) |
+| C11 | Per-record session parsing; invalid, duplicate, negative-user and unknown-enum records are skipped; original payload is backed up once under `sessions_recovery_backup`; state is published only after `commit()` succeeds | `PersistentWorkspaceRepositoryTest` (3) on emulator API 36 | Recovery UI to re-import the backup |
+| C34 | Release builds log only event names and error types | Compiles in `devRelease` | Verify on release artifact |
+| C29 | `startUpdateFlowForResult == false`, start exceptions, and check failures fail open instead of looping or blocking | Compiles | Device test with internal app sharing |
+| C25, C26 | API 29 uses `BIOMETRIC_WEAK or DEVICE_CREDENTIAL` (lock gates UI only, no keys); FLAG_SECURE follows the toggle immediately through a preference listener | Compiles | API 29 device test |
+| C28 | Blank sessions skipped, launcher limit respected, removed pinned shortcuts disabled | `AndroidWorkspaceShortcutPublisherTest` (2) on emulator | — |
+| C20, C22 | Per-copy in-flight set blocks launch/delete races; results for deleted copies are dropped; entitlement refreshes on resume, latest wins, unknown never overwrites known | Compiles | ViewModel test harness does not exist yet |
+| C33 | All 10 locales match English keys; copy limit text uses `GameCopyLimits.maximumCopiesPerGame` (was hard-coded "2" while the code allows 5) | Resource merge passes | Native-speaker review |
+| C36 | Settings → Delete account: confirmation, Firebase deletion, re-authentication with the same Google account when required, RevenueCat logout | Compiles | Public web deletion URL and support email (owner) |
+| C37 | Privacy policy rewritten for the virtualization engine, diagnostics, and deletion | Doc only | Owner legal fields and HTTPS URL |
+
+Test infrastructure finding: all 13 Compose UI tests fail on the API 36 emulator with `NoSuchMethodException: InputManager.getInstance`. This comes from the transitive Espresso version, not from these changes; data-layer instrumented tests pass.
+
+Still open: C05, C07–C10, C15, C21, C24 (needs the owner's choice of products to sell), C30, C31, C35, G01–G08.
