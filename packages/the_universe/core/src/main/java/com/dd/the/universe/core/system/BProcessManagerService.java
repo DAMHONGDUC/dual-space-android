@@ -62,11 +62,13 @@ public class BProcessManagerService implements ISystemService {
                 app = bProcess.get(processName);
                 if (app != null) {
                     if (app.initLock != null) {
-                        app.initLock.block();
+                        if (!app.initLock.block(10_000L)) return null;
                     }
-                    if (app.bActivityThread != null) {
+                    if (app.bActivityThread != null && app.bActivityThread.asBinder().isBinderAlive()) {
                         return app;
                     }
+                    bProcess.remove(processName);
+                    mPidsSelfLocked.remove(app);
                 }
                 bpid = getUsingBPidL();
                 Slog.d(TAG, "init bUid = " + buid + ", bPid = " + bpid);
@@ -84,9 +86,7 @@ public class BProcessManagerService implements ISystemService {
             bProcess.put(processName, app);
             mPidsSelfLocked.add(app);
 
-            synchronized (mProcessMap) {
-                mProcessMap.put(buid, bProcess);
-            }
+            mProcessMap.put(buid, bProcess);
             if (!initAppProcessL(app)) {
                 
                 bProcess.remove(processName);
@@ -103,9 +103,11 @@ public class BProcessManagerService implements ISystemService {
         ActivityManager manager = (ActivityManager) TheUniverseCore.getContext().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = manager.getRunningAppProcesses();
         Set<Integer> usingPs = new HashSet<>();
-        for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
-            int i = parseBPid(runningAppProcess.processName);
-            usingPs.add(i);
+        for (ProcessRecord record : mPidsSelfLocked) usingPs.add(record.bpid);
+        if (runningAppProcesses != null) {
+            for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
+                usingPs.add(parseBPid(runningAppProcess.processName));
+            }
         }
         for (int i = 0; i < ProxyManifest.FREE_COUNT; i++) {
             if (usingPs.contains(i)) {
@@ -191,13 +193,17 @@ public class BProcessManagerService implements ISystemService {
 
     public void onProcessDie(ProcessRecord record) {
         synchronized (mProcessLock) {
+            int key = BUserHandle.getUid(record.userId, record.buid);
+            Map<String, ProcessRecord> process = mProcessMap.get(key);
+            // A late death callback must not affect a replacement using the same slot.
+            if (process == null || process.get(record.processName) != record) {
+                mPidsSelfLocked.remove(record);
+                return;
+            }
             record.kill();
-            Map<String, ProcessRecord> process = mProcessMap.get(record.buid);
-            if (process != null) {
-                process.remove(record.processName);
-                if (process.isEmpty()) {
-                    mProcessMap.remove(record.buid);
-                }
+            process.remove(record.processName);
+            if (process.isEmpty()) {
+                mProcessMap.remove(key);
             }
             mPidsSelfLocked.remove(record);
 
@@ -207,7 +213,7 @@ public class BProcessManagerService implements ISystemService {
     }
 
     public ProcessRecord findProcessRecord(String packageName, String processName, int userId) {
-        synchronized (mProcessMap) {
+        synchronized (mProcessLock) {
             int appId = BPackageManagerService.get().getAppId(packageName);
             int buid = BUserHandle.getUid(userId, appId);
             Map<String, ProcessRecord> processRecordMap = mProcessMap.get(buid);
@@ -219,20 +225,18 @@ public class BProcessManagerService implements ISystemService {
 
     public void killAllByPackageName(String packageName) {
         synchronized (mProcessLock) {
-            synchronized (mPidsSelfLocked) {
-                List<ProcessRecord> tmp = new ArrayList<>(mPidsSelfLocked);
-                int appId = BPackageManagerService.get().getAppId(packageName);
-                for (ProcessRecord processRecord : mPidsSelfLocked) {
-                    int appId1 = BUserHandle.getAppId(processRecord.buid);
-                    if (appId == appId1) {
-                        mProcessMap.remove(processRecord.buid);
-                        tmp.remove(processRecord);
-                        processRecord.kill();
-                    }
+            List<ProcessRecord> tmp = new ArrayList<>(mPidsSelfLocked);
+            int appId = BPackageManagerService.get().getAppId(packageName);
+            for (ProcessRecord processRecord : mPidsSelfLocked) {
+                int appId1 = BUserHandle.getAppId(processRecord.buid);
+                if (appId == appId1) {
+                    mProcessMap.remove(BUserHandle.getUid(processRecord.userId, processRecord.buid));
+                    tmp.remove(processRecord);
+                    processRecord.kill();
                 }
-                mPidsSelfLocked.clear();
-                mPidsSelfLocked.addAll(tmp);
             }
+            mPidsSelfLocked.clear();
+            mPidsSelfLocked.addAll(tmp);
         }
     }
 
@@ -251,7 +255,7 @@ public class BProcessManagerService implements ISystemService {
     }
 
     public List<ProcessRecord> getPackageProcessAsUser(String packageName, int userId) {
-        synchronized (mProcessMap) {
+        synchronized (mProcessLock) {
             int buid = BUserHandle.getUid(userId, BPackageManagerService.get().getAppId(packageName));
             Map<String, ProcessRecord> process = mProcessMap.get(buid);
             if (process == null)
@@ -277,7 +281,7 @@ public class BProcessManagerService implements ISystemService {
     }
 
     public ProcessRecord findProcessByPid(int pid) {
-        synchronized (mPidsSelfLocked) {
+        synchronized (mProcessLock) {
             for (ProcessRecord processRecord : mPidsSelfLocked) {
                 if (processRecord.pid == pid)
                     return processRecord;
