@@ -9,6 +9,18 @@ val localEnvironment: Properties = Properties().apply {
     rootProject.file(".env.local").takeIf { file -> file.isFile }?.inputStream()?.use { stream -> load(stream) }
 }
 
+val versionProperties: Properties = Properties().apply {
+    rootProject.file("version.properties").inputStream().use { stream -> load(stream) }
+}
+
+fun versionValue(name: String): String =
+    versionProperties.getProperty(name)?.trim()?.takeIf { value -> value.isNotEmpty() }
+        ?: throw GradleException("$name is missing in version.properties")
+
+val appVersionCode: Int = versionValue("versionCode").toIntOrNull()
+    ?: throw GradleException("versionCode in version.properties must be a whole number")
+val appVersionName: String = versionValue("versionName")
+
 fun configuredValue(name: String, fallback: String = ""): String =
     providers.gradleProperty(name).orNull ?: localEnvironment.getProperty(name, fallback)
 
@@ -50,8 +62,8 @@ android {
         applicationId = "com.dd.dual.space"
         minSdk = 29
         targetSdk = 37
-        versionCode = 5
-        versionName = "0.5.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(admobBannerAdUnitId))
