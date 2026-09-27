@@ -85,7 +85,7 @@ public class BroadcastManager implements PackageMonitor {
                 List<BPackage.ActivityIntentInfo> intents = receiver.intents;
                 for (BPackage.ActivityIntentInfo intent : intents) {
                     ProxyBroadcastReceiver proxyBroadcastReceiver = new ProxyBroadcastReceiver();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         TheUniverseCore.getContext().registerReceiver(proxyBroadcastReceiver, intent.intentFilter, Context.RECEIVER_EXPORTED);
                     }else{
                         TheUniverseCore.getContext().registerReceiver(proxyBroadcastReceiver, intent.intentFilter);

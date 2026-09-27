@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.os.IBinder;
+import android.os.Build;
 import android.os.IInterface;
 import android.text.TextUtils;
 import android.util.Log;
@@ -813,7 +814,7 @@ public class IActivityManagerProxy extends ClassInvocationStub {
                 args[getPermissionIndex()] = null;
             }
 
-            if (BuildCompat.isU()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 int flagsIndex = args.length - 1;
                 int flags = (int)args[flagsIndex];
                 if((flags & RECEIVER_NOT_EXPORTED) == 0 && (flags & RECEIVER_EXPORTED) == 0){
