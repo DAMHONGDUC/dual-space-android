@@ -2,16 +2,20 @@
 # Clears every build output, rebuilds from scratch, and produces the Play release bundle (AAB).
 #
 # Usage:
-#   scripts/build_release_aab.sh            # prod bundle for Google Play
-#   FLAVOR=dev scripts/build_release_aab.sh # dev bundle, for checking the pipeline only
+#   scripts/build_release_aab.sh            # prod bundle for Google Play, ads from env/prod.env.properties
+#   FLAVOR=dev scripts/build_release_aab.sh # dev bundle, ads from env/dev.env.properties; pipeline check only
 #
-# Signing: reads env/keystore.properties (see env/keystore.properties.example). Without it the
+# Signing: reads env/keystore.properties (storeFile, storePassword, keyAlias, keyPassword). Without it the
 # bundle is left unsigned and must be signed before upload. KEYSTORE_PROPERTIES overrides the path.
 # Passwords are passed to jarsigner through the environment, never on the command line.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 flavor="${FLAVOR:-prod}"
+case "$flavor" in
+  dev|prod) ;;
+  *) echo "Unknown flavor: $flavor (FLAVOR must be dev or prod)" >&2; exit 1 ;;
+esac
 flavor_title="$(printf '%s' "${flavor:0:1}" | tr '[:lower:]' '[:upper:]')${flavor:1}"
 bundle="$root/app/build/outputs/bundle/${flavor}Release/app-${flavor}-release.aab"
 output_dir="$root/build/release"
@@ -66,8 +70,8 @@ if [ ! -f "$bundle" ]; then
 fi
 
 mkdir -p "$output_dir"
-version_name="$(grep -E '^[[:space:]]*versionName[[:space:]]*=' "$root/version.properties" | tail -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]+$//')"
-version_code="$(grep -E '^[[:space:]]*versionCode[[:space:]]*=' "$root/version.properties" | tail -1 | sed -E 's/[^0-9]//g')"
+version_name="$(grep -E '^[[:space:]]*versionName[[:space:]]*=' "$root/env/version.properties" | tail -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]+$//')"
+version_code="$(grep -E '^[[:space:]]*versionCode[[:space:]]*=' "$root/env/version.properties" | tail -1 | sed -E 's/[^0-9]//g')"
 result="$output_dir/dual-space-${flavor}-${version_name}-${version_code}.aab"
 
 echo "==> 4/4 Signing and verifying"

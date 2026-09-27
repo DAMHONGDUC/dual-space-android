@@ -5,37 +5,50 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-val localEnvironment: Properties = Properties().apply {
-    rootProject.file(".env.local").takeIf { file -> file.isFile }?.inputStream()?.use { stream -> load(stream) }
+// Each flavor reads its own env file: env/dev.env.properties or env/prod.env.properties.
+fun flavorEnvironment(flavor: String): Properties = Properties().apply {
+    rootProject.file("env/$flavor.env.properties").takeIf { file -> file.isFile }?.inputStream()?.use { stream -> load(stream) }
 }
 
 val versionProperties: Properties = Properties().apply {
-    rootProject.file("version.properties").inputStream().use { stream -> load(stream) }
+    rootProject.file("env/version.properties").inputStream().use { stream -> load(stream) }
 }
 
 fun versionValue(name: String): String =
     versionProperties.getProperty(name)?.trim()?.takeIf { value -> value.isNotEmpty() }
-        ?: throw GradleException("$name is missing in version.properties")
+        ?: throw GradleException("$name is missing in env/version.properties")
 
 val appVersionCode: Int = versionValue("versionCode").toIntOrNull()
-    ?: throw GradleException("versionCode in version.properties must be a whole number")
+    ?: throw GradleException("versionCode in env/version.properties must be a whole number")
 val appVersionName: String = versionValue("versionName")
 
-fun configuredValue(name: String, fallback: String = ""): String =
-    providers.gradleProperty(name).orNull ?: localEnvironment.getProperty(name, fallback)
-
-// Debug builds fall back to Google's test banner; prod release validation rejects test IDs.
-val admobBannerAdUnitId: String = configuredValue("ADMOB_BANNER_AD_UNIT_ID", "ca-app-pub-3940256099942544/6300978111")
-val admobAppId: String = configuredValue("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
+// Blank values count as unset so an env file with empty keys still builds with the fallback.
+fun configuredValue(environment: Properties, name: String, fallback: String): String =
+    providers.gradleProperty(name).orNull?.takeIf { value -> value.isNotBlank() }
+        ?: environment.getProperty(name)?.trim()?.takeIf { value -> value.isNotEmpty() }
+        ?: fallback
 
 // Google's published sample publisher; its IDs never serve revenue.
 val admobTestPublisherPrefix = "ca-app-pub-3940256099942544"
 
+class AdmobIds(val appId: String, val bannerAdUnitId: String)
+
+// Unset IDs fall back to Google's test IDs; prod release validation rejects them.
+fun admobIds(flavor: String): AdmobIds {
+    val environment = flavorEnvironment(flavor)
+    return AdmobIds(
+        appId = configuredValue(environment, "ADMOB_APP_ID", "$admobTestPublisherPrefix~3347511713"),
+        bannerAdUnitId = configuredValue(environment, "ADMOB_BANNER_AD_UNIT_ID", "$admobTestPublisherPrefix/6300978111"),
+    )
+}
+
+val prodAdmobIds = admobIds("prod")
+val devAdmobIds = admobIds("dev")
+
 // Reports only key names so secret values never reach build logs.
 val releaseConfigurationProblems: List<String> = buildList {
-    if (admobBannerAdUnitId.isBlank()) add("ADMOB_BANNER_AD_UNIT_ID is missing")
-    if (admobBannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID uses a Google test ID")
-    if (admobAppId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID uses a Google test ID")
+    if (prodAdmobIds.bannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID in env/prod.env.properties is missing or a Google test ID")
+    if (prodAdmobIds.appId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID in env/prod.env.properties is missing or a Google test ID")
 }
 
 val validateProdReleaseConfiguration by tasks.registering {
@@ -66,19 +79,21 @@ android {
         versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(admobBannerAdUnitId))
-        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     flavorDimensions += "distribution"
     productFlavors {
         create("prod") {
             dimension = "distribution"
+            buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(prodAdmobIds.bannerAdUnitId))
+            manifestPlaceholders["admobAppId"] = prodAdmobIds.appId
         }
         create("dev") {
             dimension = "distribution"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+            buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(devAdmobIds.bannerAdUnitId))
+            manifestPlaceholders["admobAppId"] = devAdmobIds.appId
         }
     }
 

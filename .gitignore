@@ -1,7 +1,6 @@
 .gradle/
 **/build/
 local.properties
-.env.local
 **/google-services.json
 *.iml
 .idea/
@@ -13,8 +12,8 @@ gradle/gradle-daemon-jvm.properties
 tools/play_test_companion/data/
 __pycache__/
 
-# Release signing: keystore and passwords stay local; only the example is committed.
+# Local env files and signing keys stay out of Git; only the shared app version is committed.
 env/*
-!env/keystore.properties.example
+!env/version.properties
 *.jks
 *.keystore

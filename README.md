@@ -23,22 +23,19 @@ In Android Studio, set **Settings → Build, Execution, Deployment → Build Too
 
 ## Local setup
 
-Clone the repository, then create the ignored environment file:
+Each flavor reads its AdMob IDs from its own ignored env file:
 
-```sh
-cp .env.example .env.local
-```
+- `env/dev.env.properties` for `devDebug` and `devRelease`
+- `env/prod.env.properties` for `prodDebug` and `prodRelease`
 
-Fill these values in `.env.local`:
+Both files use the same keys:
 
 ```properties
 ADMOB_APP_ID=
 ADMOB_BANNER_AD_UNIT_ID=
 ```
 
-`.env.local` is ignored by Git. Gradle/CI properties take precedence over `.env.local`, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
-
-For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace them with production IDs only in the protected release environment.
+Empty values fall back to Google's test IDs, which is fine for debug builds; `prodRelease` fails until `env/prod.env.properties` holds production IDs. Gradle/CI properties take precedence over both files, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
 
 ## Run from Android Studio
 
@@ -102,7 +99,7 @@ Reports are written under `app/build/reports/`.
 
 Before every release:
 
-1. Bump `versionCode` and `versionName` in `version.properties`.
+1. Bump `versionCode` and `versionName` in `env/version.properties`.
 2. Provide production AdMob configuration through the protected release environment; `prodRelease` fails while any ID is missing or still a Google test ID.
 3. Confirm the AdMob app and banner-ad unit belong to the production package.
 4. Run unit tests, connected UI tests, `scripts/run_guest_e2e.sh`, `scripts/release_smoke.sh`, and lint.
