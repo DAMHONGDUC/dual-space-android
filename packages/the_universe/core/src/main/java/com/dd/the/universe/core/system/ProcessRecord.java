@@ -2,7 +2,6 @@ package com.dd.the.universe.core.system;
 
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
-import android.os.ConditionVariable;
 import android.os.IInterface;
 import android.os.Process;
 
@@ -24,7 +23,9 @@ public class ProcessRecord extends Binder {
     public int callingBUid;
     public int userId;
 
-    public ConditionVariable initLock = new ConditionVariable();
+    public InitSignal initLock = new InitSignal();
+    // Set while the client is being initialized outside the process registry lock.
+    public volatile boolean initializing;
 
     public ProcessRecord(ApplicationInfo info, String processName) {
         this.info = info;
@@ -69,5 +70,23 @@ public class ProcessRecord extends Binder {
 
     public String getPackageName() {
         return info.packageName;
+    }
+
+    /** One-shot signal for client initialization; plain Java so its behavior is testable off-device. */
+    public static final class InitSignal {
+        private final java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+
+        public void open() {
+            latch.countDown();
+        }
+
+        public boolean block(long timeoutMillis) {
+            try {
+                return latch.await(timeoutMillis, java.util.concurrent.TimeUnit.MILLISECONDS);
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
     }
 }
