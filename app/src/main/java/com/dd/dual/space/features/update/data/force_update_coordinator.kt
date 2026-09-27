@@ -35,21 +35,35 @@ class ForceUpdateCoordinator(
                 AppLogger.success("check_force_update", mapOf("required" to required, "priority" to info.updatePriority()))
                 if (inProgress) start()
             }
-            .addOnFailureListener { error -> AppLogger.error("check_force_update", error, emptyMap()) }
+            .addOnFailureListener { error ->
+                AppLogger.error("check_force_update", error, emptyMap())
+                release()
+            }
     }
 
     fun start() {
         val info: AppUpdateInfo = pendingUpdate ?: return check()
         AppLogger.action("start_force_update", mapOf("priority" to info.updatePriority()))
         try {
-            updateManager.startUpdateFlowForResult(
+            val started: Boolean = updateManager.startUpdateFlowForResult(
                 info,
                 launcher,
                 AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
             )
+            if (!started) {
+                AppLogger.error("start_force_update", IllegalStateException("flow_not_started"), emptyMap())
+                release()
+            }
         } catch (error: Exception) {
             AppLogger.error("start_force_update", error, emptyMap())
-            check()
+            release()
         }
+    }
+
+    // Fails open: when Play cannot check or start the update, the app stays usable instead of
+    // blocking behind a dialog that can never complete; the next resume checks again.
+    private fun release() {
+        pendingUpdate = null
+        onRequiredChanged(false)
     }
 }
