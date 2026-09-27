@@ -90,3 +90,28 @@ The application is still **not release-ready**. This pass closed app-layer items
 Test infrastructure finding: all 13 Compose UI tests fail on the API 36 emulator with `NoSuchMethodException: InputManager.getInstance`. This comes from the transitive Espresso version, not from these changes; data-layer instrumented tests pass.
 
 Still open: C05, C07–C10, C15, C21, C24 (needs the owner's choice of products to sell), C30, C31, C35, G01–G08.
+
+## Third pass: engine and remaining code items (2026-09-27)
+
+Every code item in C01–C37 now has a change on this branch. The release still depends on owner setup and on G01, G03, G05 and G06, which need real devices, legal review or console access.
+
+| Item | Change | Evidence |
+| --- | --- | --- |
+| C35 | Proxy activities, services and receiver are no longer exported; job proxies keep `BIND_JOB_SERVICE` | `ProxyComponentExposureTest` fails on the old manifest and passes now; guest launch E2E passes |
+| C07 | Package binaries are staged beside the live directory and swapped in with renames; interrupted swaps are recovered at boot; only a version change stops every copy | `PackageDirectoryTransactionTest` (5); device test: adding copy 2 keeps copy 1 running with its data |
+| C08 | Missing splits and failed library copies fail the install; libraries are always overwritten and length-checked; URI installs throw on short reads | Covered by the transaction tests and E2E install |
+| C09 | Partial data removal keeps the copy registered, so its slot is never reused and it can be retried | Device test with a read-only directory: uninstall fails, retry succeeds |
+| C10 | Unreadable `uid.conf` is preserved, not deleted; the uid allocator is advanced past loaded app ids; broken packages are quarantined; a missing original game no longer deletes its copies; the reused-uid lookup returns a real uid | `PackageRecoveryTest` (4) |
+| C05 | Process initialization runs outside `mProcessLock`; concurrent starts share one process; waits are bounded; failures free the slot | `ProcessStartConcurrencyTest` (4), stable over 3 runs; E2E passes |
+| C15 | New virtual users get a random persisted Android ID from the server process; users with existing copies keep the legacy value | `VirtualDeviceIdentityTest` (3) |
+| C15 (found while testing) | Guests read the **host app's real ANDROID_ID** through `Settings.Secure`: the two proxy classes meant to hook it never injected. The settings provider stub now answers `GET_secure android_id` per user | E2E asserts each copy's ID differs from the host, from the other copy, and from the legacy value |
+| Running state | `isRunningApplication` read a local service that only exists in the server process, so it always returned false; it now asks the server over Binder | E2E `isRunning` assertion |
+| C21 | Runtime failures carry `FailureKind`; the UI shows engine unavailable, install failed, timed out, or game missing instead of "permission denied" | `VirtualizedGameLauncherTest` (+4) |
+| C24 | Offer is chosen annual → monthly → lifetime regardless of remote order; the button shows price and period plus a renewal note; purchase buys only the displayed package identifier | `PremiumOfferTest` (3), `SettingsDialogTest.upgradeButtonShowsThePriceItWillCharge` |
+| C30 | Companion server rejects foreign Host/Origin, requires a custom header on POST, and caps bodies at 16 KB | `test_request_guard.py` (5) |
+| C31 | Exact package and focus matching, cleared log buffers, crash-buffer and ANR detection, PID continuity, failed log reads no longer pass | `test_device_checks.py` (4); focus parser checked against real API 36 output |
+| Release build | R8 full mode crashed the app at startup (WorkManager's Room constructor) and broke the engine (`universeproxy` interfaces lost their annotations). Both keep rules added; `scripts/release_smoke.sh` guards startup | Signed `devRelease` starts, adds and opens a guest from the UI on the emulator |
+| Test infra | Espresso pinned to 3.7 so Compose UI tests run on API 36 | 27/27 instrumented tests pass |
+| G04 (partial) | All packaged `.so` files have 16 KB LOAD alignment and the APK passes `zipalign -c -P 16` | Checked on the `devRelease` APK; a signed prod AAB is still required |
+
+Test totals at the end of this pass: core JVM 31, app JVM 27 per flavor, instrumented 27 (including 6 engine E2E), companion Python 15, release smoke passed. All runs were on the Pixel 9 Pro API 36 emulator; no physical or OEM device was used.
