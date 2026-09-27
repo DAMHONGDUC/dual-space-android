@@ -25,3 +25,9 @@
 -keep class android.** {*; }
 -keep class com.android.** {*; }
 
+
+# Reflection proxies: TheUniverseReflection reads @BClass/@BClassName and method annotations from
+# these interfaces at runtime, so R8 must keep their names, members and annotations.
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+-keep class universeproxy.** { *; }
+-keep interface universeproxy.** { *; }
