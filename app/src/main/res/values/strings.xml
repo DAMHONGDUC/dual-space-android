@@ -58,7 +58,7 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="onboarding_title">Welcome to Dual Space</string>
-    <string name="onboarding_profiles">Each game supports up to 2 independent copies. Open the original game outside Dual Space.</string>
+    <string name="onboarding_profiles">Each game supports up to %1$d independent copies. Open the original game outside Dual Space.</string>
     <string name="onboarding_monetization">Free includes a small banner ad. Premium removes all ads.</string>
     <string name="onboarding_privacy">Each copy keeps its own app data inside Dual Space. Your original game is not modified.</string>
     <string name="continue_label">Continue</string>

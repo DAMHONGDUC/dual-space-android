@@ -1,5 +1,6 @@
 package com.dd.dual.space.features.onboarding.presentation
 
+import com.dd.dual.space.features.workspace.domain.GameCopyLimits
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -30,7 +31,7 @@ class OnboardingDialogTest {
         }
 
         composeRule.onNodeWithText(context.getString(R.string.onboarding_title)).assertIsDisplayed()
-        composeRule.onNodeWithText(context.getString(R.string.onboarding_profiles)).assertIsDisplayed()
+        composeRule.onNodeWithText(context.getString(R.string.onboarding_profiles, GameCopyLimits.maximumCopiesPerGame)).assertIsDisplayed()
         composeRule.onNodeWithText(context.getString(R.string.onboarding_privacy)).assertIsDisplayed()
         composeRule.onNodeWithText(context.getString(R.string.continue_label)).performClick()
 

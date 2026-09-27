@@ -1,5 +1,6 @@
 package com.dd.dual.space.features.onboarding.presentation
 
+import com.dd.dual.space.features.workspace.domain.GameCopyLimits
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,7 +49,7 @@ fun onboardingDialog(onContinue: () -> Unit) {
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12)) {
-                onboardingItem(Icons.Filled.ContentCopy, stringResource(R.string.onboarding_profiles))
+                onboardingItem(Icons.Filled.ContentCopy, stringResource(R.string.onboarding_profiles, GameCopyLimits.maximumCopiesPerGame))
                 onboardingItem(Icons.Filled.WorkspacePremium, stringResource(R.string.onboarding_monetization))
                 onboardingItem(Icons.Filled.Shield, stringResource(R.string.onboarding_privacy))
             }
