@@ -51,9 +51,6 @@ import com.dd.the.universe.fake.service.SystemLibraryProxy;
 import com.dd.the.universe.fake.service.ReLinkerProxy;
 import com.dd.the.universe.fake.service.WebViewProxy;
 import com.dd.the.universe.fake.service.WebViewFactoryProxy;
-import com.dd.the.universe.fake.service.MediaRecorderProxy;
-import com.dd.the.universe.fake.service.AudioRecordProxy;
-import com.dd.the.universe.fake.service.MediaRecorderClassProxy;
 import com.dd.the.universe.fake.service.SQLiteDatabaseProxy;
 import com.dd.the.universe.fake.service.ClassLoaderProxy;
 import com.dd.the.universe.fake.service.FileSystemProxy;
@@ -63,7 +60,6 @@ import com.dd.the.universe.fake.service.DeviceIdProxy;
 import com.dd.the.universe.fake.service.GoogleAccountManagerProxy;
 import com.dd.the.universe.fake.service.AuthenticationProxy;
 import com.dd.the.universe.fake.service.AndroidIdProxy;
-import com.dd.the.universe.fake.service.AudioPermissionProxy;
 
 import com.dd.the.universe.fake.service.INetworkManagementServiceProxy;
 import com.dd.the.universe.fake.service.INotificationManagerProxy;
@@ -139,12 +135,9 @@ public class HookManager {
             addInjector(new WebViewProxy());
             addInjector(new WebViewFactoryProxy());
             addInjector(new WorkManagerProxy());
-            addInjector(new MediaRecorderProxy());
-            addInjector(new AudioRecordProxy());
             addInjector(new IMiuiSecurityManagerProxy());
             addInjector(new ISettingsProviderProxy());
             addInjector(new FeatureFlagUtilsProxy());
-            addInjector(new MediaRecorderClassProxy());
             addInjector(new SQLiteDatabaseProxy());
             addInjector(new ClassLoaderProxy());
             addInjector(new FileSystemProxy());
@@ -154,7 +147,6 @@ public class HookManager {
             addInjector(new GoogleAccountManagerProxy());
             addInjector(new AuthenticationProxy());
             addInjector(new AndroidIdProxy());
-            addInjector(new AudioPermissionProxy());
             addInjector(new ILocationManagerProxy());
             addInjector(new IStorageManagerProxy());
             addInjector(new ILauncherAppsProxy());

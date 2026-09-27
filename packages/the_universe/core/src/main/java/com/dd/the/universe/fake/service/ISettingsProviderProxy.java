@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 
 import com.dd.the.universe.TheUniverseCore;
 import com.dd.the.universe.app.BActivityThread;
-import com.dd.the.universe.fake.frameworks.BLocationManager;
 import com.dd.the.universe.fake.device.VirtualDeviceIdentity;
 import com.dd.the.universe.fake.hook.ClassInvocationStub;
 import com.dd.the.universe.fake.hook.MethodHook;
@@ -50,7 +49,7 @@ public class ISettingsProviderProxy extends ClassInvocationStub {
                 if (args != null && args.length > 0 && args[0] instanceof String) {
                     String key = (String) args[0];
                     if ("location_providers_allowed".equalsIgnoreCase(key)) {
-                        return BLocationManager.isFakeLocationEnable() ? "gps,network" : "";
+                        return "";
                     }
                 }
                 
@@ -88,7 +87,7 @@ public class ISettingsProviderProxy extends ClassInvocationStub {
                 if (args != null && args.length > 0 && args[0] instanceof String) {
                     String key = (String) args[0];
                     if ("location_providers_allowed".equalsIgnoreCase(key)) {
-                        return BLocationManager.isFakeLocationEnable() ? "gps,network" : "";
+                        return "";
                     }
                 }
                 
@@ -121,8 +120,8 @@ public class ISettingsProviderProxy extends ClassInvocationStub {
                 if (args != null && args.length > 0 && args[0] instanceof String) {
                     String key = (String) args[0];
                     if ("location_mode".equalsIgnoreCase(key)) {
-                        // Tie enabled-state to fake-location setting (privacy-first).
-                        return BLocationManager.isFakeLocationEnable() ? 3 : 0;
+                        // The host holds no location permission, so guests always see location off.
+                        return 0;
                     }
                 }
                 return method.invoke(who, args);
@@ -145,7 +144,7 @@ public class ISettingsProviderProxy extends ClassInvocationStub {
                 if (args != null && args.length > 0 && args[0] instanceof String) {
                     String key = (String) args[0];
                     if ("location_mode".equalsIgnoreCase(key)) {
-                        return BLocationManager.isFakeLocationEnable() ? 3 : 0;
+                        return 0;
                     }
                 }
                 return method.invoke(who, args);

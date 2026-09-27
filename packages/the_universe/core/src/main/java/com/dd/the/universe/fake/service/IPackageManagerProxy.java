@@ -151,7 +151,7 @@ public class IPackageManagerProxy extends BinderInvocationStub {
         super.onBindMethod();
         addMethodHook(new ValueMethodProxy("addOnPermissionsChangeListener", 0));
         addMethodHook(new ValueMethodProxy("removeOnPermissionsChangeListener", 0));
-        addMethodHook(new SimpleAudioPermissionHook());
+        addMethodHook(new CheckPermission());
         addMethodHook(new CheckSelfPermission());
         addMethodHook(new ShouldShowRequestPermissionRationale());
         addMethodHook(new RequestPermissions());
@@ -357,18 +357,6 @@ public class IPackageManagerProxy extends BinderInvocationStub {
             
             PackageInfo packageInfo = TheUniverseCore.getBPackageManager().getPackageInfo(packageName, flags, TheUniverseCore.getUserId());
             if (packageInfo != null) {
-                
-                if (packageInfo.requestedPermissions != null && packageInfo.requestedPermissionsFlags != null) {
-                    for (int i = 0; i < packageInfo.requestedPermissions.length; i++) {
-                        String perm = packageInfo.requestedPermissions[i];
-                        if (perm != null && (perm.equals(android.Manifest.permission.RECORD_AUDIO)
-                                || perm.equals("android.permission.FOREGROUND_SERVICE_MICROPHONE")
-                                || perm.equals(android.Manifest.permission.MODIFY_AUDIO_SETTINGS)
-                                || perm.equals(android.Manifest.permission.CAPTURE_AUDIO_OUTPUT))) {
-                            packageInfo.requestedPermissionsFlags[i] |= PackageInfo.REQUESTED_PERMISSION_GRANTED;
-                        }
-                    }
-                }
                 return packageInfo;
             }
             if (AppSystemEnv.isOpenPackage(packageName)) {
@@ -731,27 +719,27 @@ public class IPackageManagerProxy extends BinderInvocationStub {
 
 
     @ProxyMethod("checkPermission")
-    public static class SimpleAudioPermissionHook extends MethodHook {
+    public static class CheckPermission extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             String permission = (String) args[0];
             String packageName = (String) args[1];
             
             
-            if (isAudioPermission(permission)) {
-                Slog.d(TAG, "SimpleAudioPermissionHook: Granting audio permission: " + permission + " to " + packageName);
+            if (isForegroundServiceTypePermission(permission)) {
+                Slog.d(TAG, "CheckPermission: Granting foreground service type permission: " + permission + " to " + packageName);
                 return PackageManager.PERMISSION_GRANTED;
             }
 
             
             if (isStorageOrMediaPermission(permission)) {
-                Slog.d(TAG, "SimpleAudioPermissionHook: Granting storage/media permission: " + permission + " to " + packageName);
+                Slog.d(TAG, "CheckPermission: Granting storage/media permission: " + permission + " to " + packageName);
                 return PackageManager.PERMISSION_GRANTED;
             }
             
             
             if (isNotificationOrXiaomiPermission(permission)) {
-                Slog.d(TAG, "SimpleAudioPermissionHook: Granting notification/Xiaomi permission: " + permission + " to " + packageName);
+                Slog.d(TAG, "CheckPermission: Granting notification/Xiaomi permission: " + permission + " to " + packageName);
                 return PackageManager.PERMISSION_GRANTED;
             }
             
@@ -768,8 +756,8 @@ public class IPackageManagerProxy extends BinderInvocationStub {
             String packageName = (String) args[1];
             
             
-            if (isAudioPermission(permission)) {
-                Slog.d(TAG, "CheckSelfPermission: Granting audio permission: " + permission + " to " + packageName);
+            if (isForegroundServiceTypePermission(permission)) {
+                Slog.d(TAG, "CheckSelfPermission: Granting foreground service type permission: " + permission + " to " + packageName);
                 return PackageManager.PERMISSION_GRANTED;
             }
 
@@ -798,8 +786,8 @@ public class IPackageManagerProxy extends BinderInvocationStub {
             String packageName = (String) args[1];
             
             
-            if (isAudioPermission(permission)) {
-                Slog.d(TAG, "ShouldShowRequestPermissionRationale: Not showing rationale for audio permission: " + permission);
+            if (isForegroundServiceTypePermission(permission)) {
+                Slog.d(TAG, "ShouldShowRequestPermissionRationale: Not showing rationale for foreground service type permission: " + permission);
                 return false;
             }
 
@@ -876,12 +864,11 @@ public class IPackageManagerProxy extends BinderInvocationStub {
     }
 
     
-    private static boolean isAudioPermission(String permission) {
+    // Guest foreground-service types are stripped in setServiceForeground, so the host never
+    // needs these type permissions. Microphone access itself is not granted: the host does not hold it.
+    private static boolean isForegroundServiceTypePermission(String permission) {
         if (permission == null) return false;
-        return permission.equals(android.Manifest.permission.RECORD_AUDIO)
-                || permission.equals(android.Manifest.permission.CAPTURE_AUDIO_OUTPUT)
-                || permission.equals(android.Manifest.permission.MODIFY_AUDIO_SETTINGS)
-                || permission.equals("android.permission.FOREGROUND_SERVICE_MICROPHONE")
+        return permission.equals("android.permission.FOREGROUND_SERVICE_MICROPHONE")
                 || permission.equals("android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION")
                 || permission.equals("android.permission.FOREGROUND_SERVICE_CAMERA")
                 || permission.equals("android.permission.FOREGROUND_SERVICE_LOCATION")

@@ -4,7 +4,7 @@ Reviewed on 2026-09-11. Only the `prod` flavor is intended for Google Play; `dev
 
 ## Release blockers
 
-1. The `prod` flavor excludes `packages/the_universe`; its merged manifest must be checked before every release to prevent restricted permissions from returning.
+1. Both flavors link `packages/the_universe`, and guest games can only use permissions the host declares. The engine manifest keeps a minimal set (network, Wi-Fi state, wake lock, vibrate, notifications, foreground service with `specialUse`); check the merged `prodRelease` manifest before every release so restricted permissions, including `com.android.vending.BILLING`, do not return.
 2. Managed-profile provisioning makes the app a device policy controller. Store metadata, onboarding, and review notes must explain this core behavior accurately.
 3. Privacy and Data safety declarations must be finalized from the release AAB and actual runtime behavior.
 4. Release signing, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.

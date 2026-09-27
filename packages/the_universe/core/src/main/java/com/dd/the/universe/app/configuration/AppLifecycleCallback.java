@@ -17,10 +17,6 @@ public class AppLifecycleCallback implements Application.ActivityLifecycleCallba
     }
     
     
-    public boolean onStoragePermissionNeeded(String packageName, int userId) {
-        
-        return false;
-    }
 
     public void beforeMainApplicationAttach(Application app, Context context) {
 

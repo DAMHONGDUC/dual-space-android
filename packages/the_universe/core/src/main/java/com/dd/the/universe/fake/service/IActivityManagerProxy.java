@@ -941,14 +941,13 @@ public class IActivityManagerProxy extends ClassInvocationStub {
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             MethodParameterUtils.replaceLastUid(args);
             String permission = (String) args[0];
-            if (permission.equals(Manifest.permission.ACCOUNT_MANAGER)
-                    || permission.equals(Manifest.permission.SEND_SMS)) {
+            if (permission.equals(Manifest.permission.ACCOUNT_MANAGER)) {
                 return PackageManager.PERMISSION_GRANTED;
             }
             
             
-            if (isAudioPermission(permission)) {
-                Slog.d(TAG, "ActivityManager checkPermission: Granting audio permission: " + permission);
+            if (isForegroundServiceTypePermission(permission)) {
+                Slog.d(TAG, "ActivityManager checkPermission: Granting foreground service type permission: " + permission);
                 return PackageManager.PERMISSION_GRANTED;
             }
 
@@ -963,12 +962,11 @@ public class IActivityManagerProxy extends ClassInvocationStub {
     }
 
     
-    private static boolean isAudioPermission(String permission) {
+    // Guest foreground-service types are stripped in setServiceForeground, so the host never
+    // needs these type permissions. Microphone access itself is not granted: the host does not hold it.
+    private static boolean isForegroundServiceTypePermission(String permission) {
         if (permission == null) return false;
-        return permission.equals(Manifest.permission.RECORD_AUDIO)
-                || permission.equals(Manifest.permission.CAPTURE_AUDIO_OUTPUT)
-                || permission.equals(Manifest.permission.MODIFY_AUDIO_SETTINGS)
-                || permission.equals("android.permission.FOREGROUND_SERVICE_MICROPHONE")
+        return permission.equals("android.permission.FOREGROUND_SERVICE_MICROPHONE")
                 || permission.equals("android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION")
                 || permission.equals("android.permission.FOREGROUND_SERVICE_CAMERA")
                 || permission.equals("android.permission.FOREGROUND_SERVICE_LOCATION")

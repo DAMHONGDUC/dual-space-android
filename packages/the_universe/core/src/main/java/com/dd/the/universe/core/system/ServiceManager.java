@@ -9,7 +9,6 @@ import com.dd.the.universe.TheUniverseCore;
 import com.dd.the.universe.core.system.accounts.BAccountManagerService;
 import com.dd.the.universe.core.system.am.BActivityManagerService;
 import com.dd.the.universe.core.system.am.BJobManagerService;
-import com.dd.the.universe.core.system.location.BLocationManagerService;
 import com.dd.the.universe.core.system.notification.BNotificationManagerService;
 import com.dd.the.universe.core.system.os.BStorageManagerService;
 import com.dd.the.universe.core.system.pm.BPackageManagerService;
@@ -26,7 +25,6 @@ public class ServiceManager {
     public static final String USER_MANAGER = "user_manager";
 
     public static final String ACCOUNT_MANAGER = "account_manager";
-    public static final String LOCATION_MANAGER = "location_manager";
     public static final String NOTIFICATION_MANAGER = "notification_manager";
 
     private final Map<String, IBinder> mCaches = new HashMap<>();
@@ -54,7 +52,6 @@ public class ServiceManager {
         mCaches.put(USER_MANAGER, BUserManagerService.get());
 
         mCaches.put(ACCOUNT_MANAGER, BAccountManagerService.get());
-        mCaches.put(LOCATION_MANAGER, BLocationManagerService.get());
         mCaches.put(NOTIFICATION_MANAGER, BNotificationManagerService.get());
     }
 
@@ -70,7 +67,6 @@ public class ServiceManager {
         TheUniverseCore.get().getService(USER_MANAGER);
 
         TheUniverseCore.get().getService(ACCOUNT_MANAGER);
-        TheUniverseCore.get().getService(LOCATION_MANAGER);
         TheUniverseCore.get().getService(NOTIFICATION_MANAGER);
     }
 }

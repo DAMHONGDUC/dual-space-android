@@ -10,15 +10,13 @@ import android.util.Log;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 
 import universeproxy.android.os.BRServiceManager;
 import universeproxy.com.android.internal.telephony.BRITelephonyStub;
 import com.dd.the.universe.TheUniverseCore;
 import com.dd.the.universe.app.BActivityThread;
-import com.dd.the.universe.entity.location.BCell;
-import com.dd.the.universe.fake.frameworks.BLocationManager;
 import com.dd.the.universe.fake.hook.BinderInvocationStub;
 import com.dd.the.universe.fake.hook.MethodHook;
 import com.dd.the.universe.fake.hook.ProxyMethod;
@@ -194,13 +192,6 @@ public class ITelephonyManagerProxy extends BinderInvocationStub {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             Log.d(TAG, "getCellLocation");
-            if (BLocationManager.isFakeLocationEnable()) {
-                BCell cell = BLocationManager.get().getCell(BActivityThread.getUserId(), BActivityThread.getAppPackageName());
-                if (cell != null) {
-                    
-                    return null;
-                }
-            }
             return method.invoke(who, args);
         }
     }
@@ -209,11 +200,6 @@ public class ITelephonyManagerProxy extends BinderInvocationStub {
     public static class GetAllCellInfo extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            if (BLocationManager.isFakeLocationEnable()) {
-                List<BCell> cell = BLocationManager.get().getAllCell(BActivityThread.getUserId(), BActivityThread.getAppPackageName());
-                
-                return cell;
-            }
             try {
                 return method.invoke(who, args);
             } catch (Throwable e) {
@@ -248,11 +234,6 @@ public class ITelephonyManagerProxy extends BinderInvocationStub {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             Log.d(TAG, "getNeighboringCellInfo");
-            if (BLocationManager.isFakeLocationEnable()) {
-                List<BCell> cell = BLocationManager.get().getNeighboringCell(BActivityThread.getUserId(), BActivityThread.getAppPackageName());
-                
-                return null;
-            }
             return method.invoke(who, args);
         }
     }

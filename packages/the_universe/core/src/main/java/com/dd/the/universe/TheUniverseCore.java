@@ -66,7 +66,6 @@ import com.dd.the.universe.utils.SocialMediaAppCrashPrevention;
 import com.dd.the.universe.utils.DexCrashPrevention;
 import com.dd.the.universe.utils.NativeCrashPrevention;
 import com.dd.the.universe.utils.CrashMonitor;
-import com.dd.the.universe.utils.StoragePermissionHelper;
 
 
 
@@ -235,7 +234,6 @@ public class TheUniverseCore extends ClientConfiguration {
                     ServiceManager.JOB_MANAGER,
 
                     ServiceManager.ACCOUNT_MANAGER,
-                    ServiceManager.LOCATION_MANAGER,
                     ServiceManager.NOTIFICATION_MANAGER
                 };
                 
@@ -266,7 +264,6 @@ public class TheUniverseCore extends ClientConfiguration {
                 ServiceManager.JOB_MANAGER,
 
                 ServiceManager.ACCOUNT_MANAGER,
-                ServiceManager.LOCATION_MANAGER,
                 ServiceManager.NOTIFICATION_MANAGER
             };
             
@@ -299,7 +296,6 @@ public class TheUniverseCore extends ClientConfiguration {
                     ServiceManager.JOB_MANAGER,
 
                     ServiceManager.ACCOUNT_MANAGER,
-                    ServiceManager.LOCATION_MANAGER,
                     ServiceManager.NOTIFICATION_MANAGER
                 };
                 
@@ -1042,74 +1038,8 @@ public class TheUniverseCore extends ClientConfiguration {
     
     
     
-    public boolean hasStoragePermission() {
-        return StoragePermissionHelper.hasStoragePermission(sContext);
-    }
-    
-    
-    public boolean hasAllFilesAccess() {
-        return StoragePermissionHelper.hasAllFilesAccess();
-    }
-    
-    
-    public boolean hasFullFileAccess() {
-        return StoragePermissionHelper.hasFullFileAccess(sContext);
-    }
-    
-    
-    public void requestStoragePermission(android.app.Activity activity) {
-        StoragePermissionHelper.requestStoragePermission(activity);
-    }
-    
-    
-    public void requestAllFilesAccess(android.app.Activity activity) {
-        StoragePermissionHelper.requestAllFilesAccess(activity);
-    }
-    
-    
-    public void requestFullFileAccess(android.app.Activity activity) {
-        StoragePermissionHelper.requestFullFileAccess(activity);
-    }
-    
-    
-    public boolean handleStoragePermissionResult(android.app.Activity activity, int requestCode, 
-            String[] permissions, int[] grantResults) {
-        return StoragePermissionHelper.handlePermissionResult(activity, requestCode, permissions, grantResults);
-    }
-    
-    
-    public boolean handleAllFilesAccessResult(int requestCode) {
-        return StoragePermissionHelper.handleAllFilesAccessResult(requestCode);
-    }
-    
-    
-    public static int getStoragePermissionRequestCode() {
-        return StoragePermissionHelper.REQUEST_CODE_STORAGE_PERMISSION;
-    }
-    
-    public static int getAllFilesAccessRequestCode() {
-        return StoragePermissionHelper.REQUEST_CODE_MANAGE_STORAGE;
-    }
-
     public boolean launchApk(String packageName, int userId) {
         onBeforeMainLaunchApk(packageName, userId);
-        
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!hasAllFilesAccess()) {
-                Slog.w(TAG, "All files access not granted for launching: " + packageName);
-                
-                for (AppLifecycleCallback callback : mAppLifecycleCallbacks) {
-                    if (callback.onStoragePermissionNeeded(packageName, userId)) {
-                        
-                        Slog.d(TAG, "Launch cancelled - host app handling permission request");
-                        return false;
-                    }
-                }
-                
-                Slog.w(TAG, "Launching without all files access - some file operations may fail");
-            }
-        }
 
         Intent launchIntentForPackage = getBPackageManager().getLaunchIntentForPackage(packageName, userId);
         if (launchIntentForPackage == null) {

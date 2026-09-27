@@ -16,7 +16,6 @@ import com.dd.the.universe.core.env.BEnvironment;
 import com.dd.the.universe.core.system.accounts.BAccountManagerService;
 import com.dd.the.universe.core.system.am.BActivityManagerService;
 import com.dd.the.universe.core.system.am.BJobManagerService;
-import com.dd.the.universe.core.system.location.BLocationManagerService;
 import com.dd.the.universe.core.system.notification.BNotificationManagerService;
 import com.dd.the.universe.core.system.os.BStorageManagerService;
 import com.dd.the.universe.core.system.pm.BPackageInstallerService;
@@ -60,7 +59,6 @@ public class TheUniverseSystem {
 
         mServices.add(BProcessManagerService.get());
         mServices.add(BAccountManagerService.get());
-        mServices.add(BLocationManagerService.get());
         mServices.add(BNotificationManagerService.get());
 
         for (ISystemService service : mServices) {
