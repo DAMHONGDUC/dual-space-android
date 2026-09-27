@@ -1603,31 +1603,13 @@ public class TheUniverseCore extends ClientConfiguration {
 
     
     public static boolean isRunningApplication(String packageName, int userId) {
-        
+        // Process records live in the server process; asking it over Binder works from any process,
+        // whereas reading a local ServiceManager instance only works inside the server itself.
         try {
-            
-            android.app.ActivityManager am = (android.app.ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
-            if (am == null) return false;
-            
-            
-            
-            ServiceManager.get();
-            com.dd.the.universe.core.system.am.ActivityStack stack =
-                (com.dd.the.universe.core.system.am.ActivityStack) ServiceManager.getService(ServiceManager.ACTIVITY_MANAGER);
-            if (stack == null) return false;
-            java.util.Map<Integer, com.dd.the.universe.core.system.am.TaskRecord> tasks =
-                    com.dd.the.universe.utils.Reflector.with(stack).field("mTasks").get();
-            if (tasks == null) return false;
-            for (com.dd.the.universe.core.system.am.TaskRecord task : tasks.values()) {
-                if (task.userId == userId && task.taskAffinity != null && task.taskAffinity.contains(packageName)) {
-                    
-                    for (com.dd.the.universe.core.system.am.ActivityRecord activity : task.activities) {
-                        if (!activity.finished) {
-                            return true;
-                        }
-                    }
-                }
-            }
+            com.dd.the.universe.core.system.am.IBActivityManagerService service = getBActivityManager().getService();
+            if (service == null) return false;
+            com.dd.the.universe.entity.am.RunningAppProcessInfo info = service.getRunningAppProcesses(packageName, userId);
+            return info != null && info.mAppProcessInfoList != null && !info.mAppProcessInfoList.isEmpty();
         } catch (Exception e) {
             Slog.w(TAG, "isRunningApplication failed: " + e.getMessage());
         }
