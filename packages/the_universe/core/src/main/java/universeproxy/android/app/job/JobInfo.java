@@ -2,8 +2,8 @@ package universeproxy.android.app.job;
 
 import android.content.ComponentName;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BField;
 
 @BClassName("android.app.job.JobInfo")
 public interface JobInfo {

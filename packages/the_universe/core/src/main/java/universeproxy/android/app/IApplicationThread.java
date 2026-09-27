@@ -6,8 +6,8 @@ import android.os.IBinder;
 
 import java.util.List;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BMethod;
 
 @BClassName("android.app.IApplicationThread")
 public interface IApplicationThread {

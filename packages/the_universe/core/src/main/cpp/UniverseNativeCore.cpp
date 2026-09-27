@@ -14,7 +14,6 @@
 #include <Hook/DexFileHook.h>
 #include <Hook/RuntimeHook.h>
 #include "Utils/HexDump.h"
-#include "Utils/VirtualSpoof.h"
 #include "hidden_api.h"
 
 struct {
@@ -104,8 +103,16 @@ void init(JNIEnv *env, jobject clazz, jint api_level) {
 void addIORule(JNIEnv *env, jclass clazz, jstring target_path,
                jstring relocate_path) {
     ALOGD("set addIORule");
-    IO::addRule(env->GetStringUTFChars(target_path, JNI_FALSE),
-                env->GetStringUTFChars(relocate_path, JNI_FALSE));
+    if (target_path == nullptr || relocate_path == nullptr) return;
+    const char *target = env->GetStringUTFChars(target_path, nullptr);
+    if (target == nullptr) return;
+    const char *relocate = env->GetStringUTFChars(relocate_path, nullptr);
+    if (relocate != nullptr) {
+        // IO owns a copy; JNI buffers must not outlive this call.
+        IO::addRule(target, relocate);
+        env->ReleaseStringUTFChars(relocate_path, relocate);
+    }
+    env->ReleaseStringUTFChars(target_path, target);
 }
 
 void enableIO(JNIEnv *env, jclass clazz) {
@@ -140,23 +147,8 @@ void setDeviceSpoof(JNIEnv *env, jclass clazz,
                     jstring product,
                     jstring fingerprint,
                     jstring serial) {
-    const char *c_manufacturer = manufacturer ? env->GetStringUTFChars(manufacturer, JNI_FALSE) : nullptr;
-    const char *c_brand = brand ? env->GetStringUTFChars(brand, JNI_FALSE) : nullptr;
-    const char *c_model = model ? env->GetStringUTFChars(model, JNI_FALSE) : nullptr;
-    const char *c_device = device ? env->GetStringUTFChars(device, JNI_FALSE) : nullptr;
-    const char *c_product = product ? env->GetStringUTFChars(product, JNI_FALSE) : nullptr;
-    const char *c_fingerprint = fingerprint ? env->GetStringUTFChars(fingerprint, JNI_FALSE) : nullptr;
-    const char *c_serial = serial ? env->GetStringUTFChars(serial, JNI_FALSE) : nullptr;
-
-    setDeviceSpoofValues(c_manufacturer, c_brand, c_model, c_device, c_product, c_fingerprint, c_serial);
-
-    if (manufacturer) env->ReleaseStringUTFChars(manufacturer, c_manufacturer);
-    if (brand) env->ReleaseStringUTFChars(brand, c_brand);
-    if (model) env->ReleaseStringUTFChars(model, c_model);
-    if (device) env->ReleaseStringUTFChars(device, c_device);
-    if (product) env->ReleaseStringUTFChars(product, c_product);
-    if (fingerprint) env->ReleaseStringUTFChars(fingerprint, c_fingerprint);
-    if (serial) env->ReleaseStringUTFChars(serial, c_serial);
+    // Keep the JNI contract, but never alter process-wide system properties.
+    ALOGD("Native device property overrides are disabled");
 }
 
 static JNINativeMethod gMethods[] = {

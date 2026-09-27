@@ -16,13 +16,13 @@ import android.view.Window;
 import java.util.List;
 import java.util.Map;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticField;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BParamClassName;
+import com.dd.the.universe.reflection.annotation.BStaticField;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.app.ActivityThread")
 public interface ActivityThread {

@@ -20,25 +20,24 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.duplicateapp.theuniverse.** {*; }
--keep class top.niunaijun.jnihook.** {*; }
+-keep class com.dd.the.universe.** {*; }
 -keep class mirror.** {*; }
 -keep class android.** {*; }
 -keep class com.android.** {*; }
 
--keep class com.duplicateapp.theuniverse.reflection.** {*; }
--keep @com.duplicateapp.theuniverse.reflection.annotation.BClass class * {*;}
--keep @com.duplicateapp.theuniverse.reflection.annotation.BClassName class * {*;}
--keep @com.duplicateapp.theuniverse.reflection.annotation.BClassNameNotProcess class * {*;}
+-keep class com.dd.the.universe.reflection.** {*; }
+-keep @com.dd.the.universe.reflection.annotation.BClass class * {*;}
+-keep @com.dd.the.universe.reflection.annotation.BClassName class * {*;}
+-keep @com.dd.the.universe.reflection.annotation.BClassNameNotProcess class * {*;}
 -keepclasseswithmembernames class * {
-    @com.duplicateapp.theuniverse.reflection.annotation.BField.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BFieldNotProcess.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BFieldSetNotProcess.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BFieldCheckNotProcess.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BMethod.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BStaticField.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BMethodCheckNotProcess.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BConstructor.* <methods>;
-    @com.duplicateapp.theuniverse.reflection.annotation.BConstructorNotProcess.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BField.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BFieldNotProcess.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BFieldSetNotProcess.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BFieldCheckNotProcess.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BMethod.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BStaticField.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BStaticMethod.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BMethodCheckNotProcess.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BConstructor.* <methods>;
+    @com.dd.the.universe.reflection.annotation.BConstructorNotProcess.* <methods>;
 }

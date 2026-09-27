@@ -3,8 +3,8 @@ package universeproxy.android.service.persistentdata;
 import android.os.IBinder;
 import android.os.IInterface;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.service.persistentdata.IPersistentDataBlockService")
 public interface IPersistentDataBlockService {

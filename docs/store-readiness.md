@@ -1,34 +1,36 @@
 # Store readiness review
 
-Reviewed on 2026-09-11. The current repository builds, but the full runtime artifact is not ready for Google Play submission.
+Reviewed on 2026-09-11. Only the `prod` flavor is intended for Google Play; `dev` mirrors its managed-profile behavior with a separate application ID.
 
 ## Release blockers
 
-1. The merged The Universe manifest contributes hundreds of permission declarations, including `QUERY_ALL_PACKAGES`, `MANAGE_EXTERNAL_STORAGE`, SMS, call-log, background-location, microphone, camera, and package-install permissions. Google Play restricts several of these to narrow core use cases and declaration processes.
-2. The native runtime includes hooking, hidden-API, spoofing, and anti-detection code. Even if the product does not expose cheat features, shipping those capabilities creates a material Device and Network Abuse review risk. Google Play explicitly prohibits bypassing Android sandbox protections and affecting other apps without authorization.
-3. The Play artifact needs a separate flavor that excludes `packages/the_universe`. The Play version should use Android-managed-profile capabilities only; retain the full runtime for a separately distributed build after legal and security review.
-4. Privacy and Data safety declarations cannot be finalized until the Play flavor and its final merged manifest are fixed.
-5. Release signing, Play Console products, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.
+1. The `prod` flavor excludes `packages/the_universe`; its merged manifest must be checked before every release to prevent restricted permissions from returning.
+2. Managed-profile provisioning makes the app a device policy controller. Store metadata, onboarding, and review notes must explain this core behavior accurately.
+3. Privacy and Data safety declarations must be finalized from the release AAB and actual runtime behavior.
+4. Release signing, support contact, public privacy-policy URL, device testing, and native-language review remain incomplete.
+
+The `dev` flavor is not a Google Play artifact. Neither app flavor includes the experimental native container runtime.
 
 ## Current strengths
 
 - Targets API 37, above the Google Play API 36 requirement effective 2026-08-31.
 - Uses a feature-first clean architecture for application code and keeps low-level runtime modules under `packages/`.
 - Has adaptive Compose grids, 48dp control targets, local-only workspace persistence, system/light/dark appearance, and 11 configured locales.
-- Does not currently include ads, analytics, remote accounts, or backend collection in application code.
+- Uses consent-gated AdMob banners, optional Firebase authentication, RevenueCat purchase validation, and Play immediate updates.
+- Checks profile/game readiness before launch, confirms account identity, publishes account shortcuts, exports redacted diagnostics, and offers an opt-in device-authentication lock.
 
 ## Market position
 
 Parallel Space advertises 100M+ installs, 24 languages, private/hidden apps, secure lock, quick switching, concurrent accounts, and a Pro tier. 2Accounts advertises 50M+ installs and monetizes unlimited clones plus Secret Zone and Security Lock. Both products reveal a mature market, but reviews repeatedly surface reliability, notification, login, pricing, and account-identification friction.
 
-The best position is not “another unlimited cloner.” Position Parallel_app as the trustworthy game-account switcher: clear account identity, compatibility status per game, honest device limitations, no ads in the game-launch path, and privacy controls users can understand.
+The best position is not “another unlimited cloner.” Position Dual Space as the trustworthy game-account switcher: clear account identity, compatibility status per game, honest device limitations, no ads in the game-launch path, and privacy controls users can understand.
 
 ## Recommended paid roadmap
 
 ### Ship first
 
-- Free: two accounts per game, limited monthly usage, system/light/dark theme, local-only data, and a compatibility report.
-- Pro subscription: more profiles where the device/runtime supports them, unlimited usage, per-account custom icon/color/name, launch shortcuts, app lock, notification routing, and priority compatibility updates.
+- Free: two accounts per game, unrestricted launching, a small banner ad, system/light/dark theme, local-only data, and a compatibility report.
+- Pro subscription: no ads, plus future convenience features such as custom account identity, shortcuts, app lock, notification routing, and priority compatibility updates.
 - Lifetime purchase: offer this only for durable local features; recurring compatibility maintenance is better matched to a subscription.
 
 ### Highest-value differentiators
@@ -47,7 +49,7 @@ Avoid selling fake GPS, device-identity spoofing, root hiding, anti-cheat bypass
 - Test a monthly and annual Pro plan plus a clearly labeled lifetime purchase for local features.
 - Gate convenience and scale, not privacy or basic stability.
 - Show full billing amount, renewal cadence, trial conversion, and cancellation access in every supported locale.
-- Start pricing experiments only after retention and successful-launch metrics are trustworthy; a quota based only on local elapsed time is easy to reset and should not control paid entitlement.
+- Start pricing experiments only after retention and successful-launch metrics are trustworthy; Premium sells an ad-free experience rather than access to basic launching.
 
 ## Sources
 

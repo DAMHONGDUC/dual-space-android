@@ -1,0 +1,164 @@
+package com.dd.the.universe.fake.frameworks;
+
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.SystemClock;
+import android.util.Log;
+
+import java.lang.reflect.ParameterizedType;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.dd.the.universe.TheUniverseCore;
+import com.dd.the.universe.utils.Reflector;
+
+
+public abstract class TheUniverseManager<Service extends IInterface> {
+    public static final String TAG = "TheUniverseManager";
+
+    private volatile Service mService;
+    private final AtomicBoolean mServiceCreationFailed = new AtomicBoolean(false);
+    private long mLastRetryTime = 0;
+    private long mLastServiceCreationTime = 0;
+    private static final long RETRY_TIMEOUT_MS = 2000; 
+    private static final long MIN_SERVICE_CREATION_INTERVAL_MS = 50; 
+    
+    
+    private static final AtomicInteger globalServiceFailureCount = new AtomicInteger(0);
+    private static final long GLOBAL_FAILURE_RESET_INTERVAL_MS = 30000; 
+    private static long lastGlobalFailureReset = 0;
+
+    protected abstract String getServiceName();
+
+    public synchronized Service getService() {
+        
+        if (mServiceCreationFailed.get()) {
+            long currentTime = SystemClock.elapsedRealtime();
+            if (currentTime - mLastRetryTime < RETRY_TIMEOUT_MS) {
+                Log.d(TAG, "Skipping service creation for " + getServiceName() + " due to recent failure");
+                return null;
+            }
+            
+            mServiceCreationFailed.set(false);
+        }
+
+        if (mService != null && mService.asBinder().isBinderAlive()) {
+            return mService;
+        }
+        mService = null;
+
+        
+        long currentTime = SystemClock.elapsedRealtime();
+        if (currentTime - mLastServiceCreationTime < MIN_SERVICE_CREATION_INTERVAL_MS) {
+            Log.d(TAG, "Rate limiting service creation for " + getServiceName());
+            return mService; 
+        }
+
+        try {
+            IBinder binder = TheUniverseCore.get().getService(getServiceName());
+            if (binder == null) {
+                Log.w(TAG, "Failed to get binder for service: " + getServiceName());
+                markServiceCreationFailed();
+                return null;
+            }
+            
+            
+            if (!binder.isBinderAlive()) {
+                Log.w(TAG, "Binder is not alive for service: " + getServiceName());
+                markServiceCreationFailed();
+                return null;
+            }
+            
+            String stubClassName = getTClass().getName() + "$Stub";
+            Log.d(TAG, "Creating service for: " + stubClassName);
+            
+            mService = Reflector.on(stubClassName).method("asInterface", IBinder.class)
+                    .call(binder);
+            
+            if (mService != null) {
+                
+                try {
+                    if (!mService.asBinder().isBinderAlive()) {
+                        Log.w(TAG, "Service binder is not alive after creation: " + getServiceName());
+                        mService = null;
+                        markServiceCreationFailed();
+                        return null;
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "Error checking service binder health: " + getServiceName(), e);
+                    mService = null;
+                    markServiceCreationFailed();
+                    return null;
+                }
+                
+                final Service serviceRef = mService; 
+                try {
+                    serviceRef.asBinder().linkToDeath(new IBinder.DeathRecipient() {
+                        @Override
+                        public void binderDied() {
+                            try {
+                                if (serviceRef != null && serviceRef.asBinder() != null) {
+                                    serviceRef.asBinder().unlinkToDeath(this, 0);
+                                }
+                            } catch (Exception e) {
+                                Log.w(TAG, "Error unlinking death recipient for " + getServiceName(), e);
+                            }
+                            synchronized (TheUniverseManager.this) {
+                                if (mService == serviceRef) mService = null;
+                            }
+                            Log.w(TAG, "Service died: " + getServiceName());
+                        }
+                    }, 0);
+                } catch (Exception e) {
+                    Log.w(TAG, "Error linking death recipient for " + getServiceName(), e);
+                    mService = null;
+                    markServiceCreationFailed();
+                    return null;
+                }
+                
+                Log.d(TAG, "Successfully created service: " + getServiceName());
+                mServiceCreationFailed.set(false); 
+                mLastServiceCreationTime = currentTime; 
+            } else {
+                Log.w(TAG, "Failed to create service instance for: " + getServiceName());
+                markServiceCreationFailed();
+            }
+            
+            return mService;
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating service for " + getServiceName(), e);
+            markServiceCreationFailed();
+            return null;
+        }
+    }
+
+    private void markServiceCreationFailed() {
+        mServiceCreationFailed.set(true);
+        mLastRetryTime = SystemClock.elapsedRealtime();
+    }
+    
+    
+    public synchronized void clearServiceCache() {
+        mService = null;
+        mServiceCreationFailed.set(false);
+        mLastServiceCreationTime = 0;
+        Log.d(TAG, "Cleared service cache for " + getServiceName());
+    }
+    
+    
+    public synchronized boolean isServiceHealthy() {
+        if (mService == null) {
+            return false;
+        }
+        try {
+            return mService.asBinder().isBinderAlive();
+        } catch (Exception e) {
+            Log.w(TAG, "Service health check failed for " + getServiceName(), e);
+            return false;
+        }
+    }
+
+    private Class<Service> getTClass() {
+        return (Class<Service>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+}

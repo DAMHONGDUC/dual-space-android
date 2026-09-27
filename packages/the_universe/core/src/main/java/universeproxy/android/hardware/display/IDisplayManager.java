@@ -1,7 +1,7 @@
 package universeproxy.android.hardware.display;
 
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BClassName;
 
 @BClassName("android.hardware.display.IDisplayManager")
 public interface IDisplayManager {

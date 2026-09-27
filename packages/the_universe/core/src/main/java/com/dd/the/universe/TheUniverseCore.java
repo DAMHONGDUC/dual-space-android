@@ -1,0 +1,1909 @@
+package com.dd.the.universe;
+
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Process;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+import universeproxy.android.app.BRActivityThread;
+import me.weishu.reflection.Reflection;
+import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.app.configuration.AppLifecycleCallback;
+import com.dd.the.universe.app.configuration.ClientConfiguration;
+import com.dd.the.universe.core.GmsCore;
+import com.dd.the.universe.core.NativeCore;
+import com.dd.the.universe.core.env.BEnvironment;
+import com.dd.the.universe.core.system.DaemonService;
+import com.dd.the.universe.core.system.ServiceManager;
+import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.core.system.user.BUserInfo;
+import com.dd.the.universe.entity.pm.InstallOption;
+import com.dd.the.universe.entity.pm.InstallResult;
+
+import com.dd.the.universe.fake.delegate.ContentProviderDelegate;
+import com.dd.the.universe.fake.frameworks.BActivityManager;
+import com.dd.the.universe.fake.frameworks.BJobManager;
+import com.dd.the.universe.fake.frameworks.BPackageManager;
+import com.dd.the.universe.fake.frameworks.BStorageManager;
+import com.dd.the.universe.fake.frameworks.BUserManager;
+
+import com.dd.the.universe.fake.hook.HookManager;
+import com.dd.the.universe.proxy.ProxyManifest;
+import com.dd.the.universe.utils.BzFileUtils;
+import com.dd.the.universe.utils.Slog;
+import com.dd.the.universe.utils.SimpleCrashFix;
+import com.dd.the.universe.utils.compat.BuildCompat;
+import com.dd.the.universe.utils.compat.BundleCompat;
+
+import com.dd.the.universe.utils.provider.ProviderCall;
+import com.dd.the.universe.utils.StackTraceFilter;
+import com.dd.the.universe.utils.SocialMediaAppCrashPrevention;
+import com.dd.the.universe.utils.DexCrashPrevention;
+import com.dd.the.universe.utils.NativeCrashPrevention;
+import com.dd.the.universe.utils.CrashMonitor;
+import com.dd.the.universe.utils.StoragePermissionHelper;
+
+
+
+@SuppressLint({"StaticFieldLeak", "NewApi"})
+@SuppressWarnings({"unchecked", "deprecation"})
+public class TheUniverseCore extends ClientConfiguration {
+    public static final String TAG = "TheUniverseCore";
+
+    private static final int ANDROID_UID_PER_USER_RANGE = 100000;
+
+    private static final TheUniverseCore sTheUniverseCore = new TheUniverseCore();
+    private static Context sContext;
+    
+    
+    static {
+        try {
+            
+            SimpleCrashFix.installSimpleFix();
+            Slog.d(TAG, "Simple crash fix installed at class loading time");
+            
+            StackTraceFilter.install();
+            Slog.d(TAG, "Stack trace filter installed at class loading time");
+            
+            SocialMediaAppCrashPrevention.initialize();
+            Slog.d(TAG, "Social media app crash prevention initialized at class loading time");
+            
+            DexCrashPrevention.initialize();
+            Slog.d(TAG, "DEX crash prevention initialized at class loading time");
+            
+            NativeCrashPrevention.initialize();
+            Slog.d(TAG, "Native crash prevention initialized at class loading time");
+            
+            CrashMonitor.initialize();
+            Slog.d(TAG, "Comprehensive crash monitoring initialized at class loading time");
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to install simple crash fix or stack trace filter at class loading: " + e.getMessage());
+        }
+    }
+    private ProcessType mProcessType;
+    private final Map<String, IBinder> mServices = new HashMap<>();
+    private Thread.UncaughtExceptionHandler mExceptionHandler;
+    private ClientConfiguration mClientConfiguration;
+    private final List<AppLifecycleCallback> mAppLifecycleCallbacks = new ArrayList<>();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final int mHostUid = Process.myUid();
+    private final int mHostUserId = mHostUid / ANDROID_UID_PER_USER_RANGE;
+
+    private boolean mServicesInitialized = false;
+    private long mLastServiceInitAttempt = 0;
+    private static final long SERVICE_INIT_TIMEOUT_MS = 10000; 
+    
+    
+    private final List<Runnable> mServiceAvailableCallbacks = new ArrayList<>();
+    private final Object mServiceCallbackLock = new Object();
+
+    
+    private int mCurrentAppUid = -1;
+    private String mCurrentAppPackage = null;
+    private boolean mIsSandboxedEnvironment = false;
+    private String mProcessName;
+
+    public static TheUniverseCore get() {
+        return sTheUniverseCore;
+    }
+
+    public Handler getHandler() {
+        return mHandler;
+    }
+
+    public static PackageManager getPackageManager() {
+        return sContext.getPackageManager();
+    }
+
+    public static String getHostPkg() {
+        return get().getHostPackageName();
+    }
+
+    public static int getHostUid() {
+        return get().mHostUid;
+    }
+
+    public static int getHostUserId() {
+        return get().mHostUserId;
+    }
+
+    public static Context getContext() {
+        return sContext;
+    }
+
+    public Thread.UncaughtExceptionHandler getExceptionHandler() {
+        return mExceptionHandler;
+    }
+
+    public void setExceptionHandler(Thread.UncaughtExceptionHandler exceptionHandler) {
+        mExceptionHandler = exceptionHandler;
+    }
+
+    
+    public void setCurrentAppUid(int uid, String packageName) {
+        mCurrentAppUid = uid;
+        mCurrentAppPackage = packageName;
+        
+        
+        if (uid != mHostUid && uid > Process.FIRST_APPLICATION_UID && uid < Process.LAST_APPLICATION_UID) {
+            mIsSandboxedEnvironment = true;
+            Slog.d("TheUniverseCore", "Detected sandboxed environment for " + packageName + " with UID: " + uid);
+        }
+    }
+
+    public int getCurrentAppUid() {
+        return mCurrentAppUid > 0 ? mCurrentAppUid : mHostUid;
+    }
+
+    public String getCurrentAppPackage() {
+        return mCurrentAppPackage != null ? mCurrentAppPackage : getHostPackageName();
+    }
+
+    public boolean isSandboxedEnvironment() {
+        return mIsSandboxedEnvironment;
+    }
+
+    
+    public int resolveUidForOperation(int originalUid, String operation) {
+        try {
+            
+            if (originalUid > 0 && originalUid < Process.FIRST_APPLICATION_UID) {
+                return originalUid;
+            }
+            
+            
+            if (originalUid > Process.LAST_APPLICATION_UID) {
+                return originalUid;
+            }
+
+            
+            if (mIsSandboxedEnvironment && mCurrentAppUid > 0) {
+                Slog.d("TheUniverseCore", "Resolving UID for " + operation + ": " + originalUid + " -> " + mCurrentAppUid);
+                return mCurrentAppUid;
+            }
+
+            
+            return originalUid;
+        } catch (Exception e) {
+            Slog.e("TheUniverseCore", "Error resolving UID for " + operation + ": " + e.getMessage());
+            return originalUid;
+        }
+    }
+
+    public boolean areServicesAvailable() {
+        if (mServicesInitialized) {
+            return true;
+        }
+        
+        try {
+            
+            if (isMainProcess() && !isBlackProcessRunning()) {
+                Slog.w(TAG, "The Universe process not running, starting it and using fallback services...");
+                startBlackProcess();
+                
+                
+                String[] serviceNames = {
+                    ServiceManager.ACTIVITY_MANAGER,
+                    ServiceManager.PACKAGE_MANAGER,
+                    ServiceManager.STORAGE_MANAGER,
+                    ServiceManager.USER_MANAGER,
+                    ServiceManager.JOB_MANAGER,
+
+                    ServiceManager.ACCOUNT_MANAGER,
+                    ServiceManager.LOCATION_MANAGER,
+                    ServiceManager.NOTIFICATION_MANAGER
+                };
+                
+                for (String serviceName : serviceNames) {
+                    try {
+                        IBinder service = createFallbackService(serviceName);
+                        if (service != null) {
+                            mServices.put(serviceName, service);
+                        }
+                    } catch (Exception e) {
+                        Slog.w(TAG, "Failed to create fallback service: " + serviceName, e);
+                    }
+                }
+                
+                mServicesInitialized = true;
+                Slog.d(TAG, "Services initialized with fallbacks");
+                
+                notifyServiceAvailableCallbacks();
+                return true;
+            }
+            
+            
+            String[] serviceNames = {
+                ServiceManager.ACTIVITY_MANAGER,
+                ServiceManager.PACKAGE_MANAGER,
+                ServiceManager.STORAGE_MANAGER,
+                ServiceManager.USER_MANAGER,
+                ServiceManager.JOB_MANAGER,
+
+                ServiceManager.ACCOUNT_MANAGER,
+                ServiceManager.LOCATION_MANAGER,
+                ServiceManager.NOTIFICATION_MANAGER
+            };
+            
+            for (String serviceName : serviceNames) {
+                try {
+                    getServiceInternal(serviceName);
+                } catch (Exception e) {
+                    Slog.w(TAG, "Failed to initialize service: " + serviceName + ", trying fallback", e);
+                    
+                    IBinder fallbackService = createFallbackService(serviceName);
+                    if (fallbackService != null) {
+                        mServices.put(serviceName, fallbackService);
+                    }
+                }
+            }
+            
+            Slog.d(TAG, "Services initialized successfully");
+            mServicesInitialized = true;
+            
+            notifyServiceAvailableCallbacks();
+        } catch (Exception e) {
+            Slog.e(TAG, "Failed to initialize services, using fallbacks: " + e.getMessage());
+            
+            try {
+                String[] serviceNames = {
+                    ServiceManager.ACTIVITY_MANAGER,
+                    ServiceManager.PACKAGE_MANAGER,
+                    ServiceManager.STORAGE_MANAGER,
+                    ServiceManager.USER_MANAGER,
+                    ServiceManager.JOB_MANAGER,
+
+                    ServiceManager.ACCOUNT_MANAGER,
+                    ServiceManager.LOCATION_MANAGER,
+                    ServiceManager.NOTIFICATION_MANAGER
+                };
+                
+                for (String serviceName : serviceNames) {
+                    try {
+                        IBinder service = createFallbackService(serviceName);
+                        if (service != null) {
+                            mServices.put(serviceName, service);
+                        }
+                    } catch (Exception fallbackEx) {
+                        Slog.w(TAG, "Failed to create fallback service: " + serviceName, fallbackEx);
+                    }
+                }
+                
+                mServicesInitialized = true;
+                Slog.d(TAG, "Services initialized with fallbacks after error");
+                
+                notifyServiceAvailableCallbacks();
+                return true;
+            } catch (Exception fallbackEx) {
+                Slog.e(TAG, "Failed to create fallback services", fallbackEx);
+                mServicesInitialized = false;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public IBinder getService(String name) {
+        if (!areServicesAvailable()) {
+            Slog.w(TAG, "Services not available, skipping service request: " + name);
+            return null;
+        }
+        
+        return getServiceInternal(name);
+    }
+    
+    private IBinder getServiceInternal(String name) {
+        IBinder binder = mServices.get(name);
+        if (binder != null && binder.isBinderAlive()) {
+            return binder;
+        }
+        
+        
+        
+        if (isMainProcess() && !isBlackProcessRunning()) {
+            Slog.w(TAG, "Main process trying to access service " + name + " but black process not running, starting it...");
+            startBlackProcess();
+            
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        
+        
+        long startTime = System.currentTimeMillis();
+        long timeout = 3000; 
+        
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putString("_B_|_server_name_", name);
+            
+            
+            Bundle vm = null;
+            try {
+                vm = ProviderCall.callSafely(ProxyManifest.getBindProvider(), "VM", null, bundle);
+            } catch (Exception e) {
+                
+                if (System.currentTimeMillis() - startTime > timeout) {
+                    Slog.w(TAG, "Provider call timeout for service: " + name + ", using fallback");
+                    return createFallbackService(name);
+                }
+                throw e;
+            }
+            
+            if (vm == null) {
+                Slog.w(TAG, "Provider call returned null for service: " + name);
+                
+                return createFallbackService(name);
+            }
+            
+            binder = BundleCompat.getBinder(vm, "_B_|_server_");
+            Slog.d(TAG, "getService: " + name + ", " + binder);
+            if (binder != null) {
+                mServices.put(name, binder);
+            } else {
+                Slog.w(TAG, "Failed to get binder for service: " + name);
+                
+                return createFallbackService(name);
+            }
+            return binder;
+        } catch (Exception e) {
+            Slog.e(TAG, "Error getting service: " + name + ", creating fallback: " + e.getMessage());
+            return createFallbackService(name);
+        }
+    }
+    
+    
+    private IBinder createFallbackService(String name) {
+        try {
+            
+            
+            Slog.w(TAG, "No fallback available for service: " + name + " (avoiding circular dependency)");
+            return null;
+        } catch (Exception e) {
+            Slog.e(TAG, "Error creating fallback service for " + name, e);
+            return null;
+        }
+    }
+    
+
+    
+    
+    private boolean isBlackProcessRunning() {
+        try {
+            
+            Bundle testBundle = new Bundle();
+            testBundle.putString("_B_|_server_name_", "test");
+            
+            
+            try {
+                Bundle result = ProviderCall.callSafely(ProxyManifest.getBindProvider(), "VM", null, testBundle);
+                if (result != null) {
+                    Slog.d(TAG, "The Universe process is running - SystemCallProvider accessible");
+                    return true;
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Provider call failed: " + e.getMessage());
+            }
+            
+            
+            try {
+                String authority = ProxyManifest.getBindProvider();
+                if (authority != null && !authority.isEmpty()) {
+                    
+                    android.content.pm.ProviderInfo providerInfo = getContext().getPackageManager()
+                        .resolveContentProvider(authority, 0);
+                    if (providerInfo != null) {
+                        Slog.d(TAG, "Provider exists but call failed - black process may be starting");
+                        return false; 
+                    }
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Provider resolution failed: " + e.getMessage());
+            }
+            
+            
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) getContext()
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    for (android.app.ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
+                        if (service.service.getClassName().contains("DaemonService")) {
+                            Slog.d(TAG, "DaemonService is running - black process active");
+                            return true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Service check failed: " + e.getMessage());
+            }
+            
+            Slog.d(TAG, "The Universe process is not running");
+            return false;
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Error checking black process status: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    
+    private void startBlackProcess() {
+        try {
+            Slog.d(TAG, "Starting black process...");
+            
+            
+            if (!isValidProcessState()) {
+                Slog.w(TAG, "Process state is invalid, delaying service start");
+                
+                scheduleDelayedServiceStart();
+                return;
+            }
+            
+            
+            Intent intent = new Intent();
+            intent.setClass(getContext(), DaemonService.class);
+            
+            
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            
+            boolean serviceStarted = false;
+            int maxRetries = 3;
+            
+            for (int retry = 0; retry < maxRetries && !serviceStarted; retry++) {
+                try {
+                    if (retry > 0) {
+                        Slog.d(TAG, "Retry attempt " + (retry + 1) + " for starting DaemonService");
+                        
+                        if (retry == 1) {
+                            
+                            Slog.d(TAG, "First retry - continuing immediately");
+                        } else {
+                            
+                            scheduleDelayedRetry(intent, retry);
+                            return;
+                        }
+                    }
+                    
+                    if (BuildCompat.isOreo()) {
+                        getContext().startForegroundService(intent);
+                        Slog.d(TAG, "Started DaemonService as foreground service");
+                        serviceStarted = true;
+                    } else {
+                        getContext().startService(intent);
+                        Slog.d(TAG, "Started DaemonService as regular service");
+                        serviceStarted = true;
+                    }
+                    
+                } catch (SecurityException e) {
+                    if (e.getMessage() != null && e.getMessage().contains("MissingForegroundServiceTypeException")) {
+                        Slog.w(TAG, "Foreground service type missing, falling back to regular service");
+                        try {
+                            getContext().startService(intent);
+                            Slog.d(TAG, "Started DaemonService as regular service (fallback)");
+                            serviceStarted = true;
+                        } catch (Exception fallbackEx) {
+                            Slog.e(TAG, "Failed to start DaemonService even as regular service: " + fallbackEx.getMessage(), fallbackEx);
+                            handleServiceStartFailure(retry, maxRetries, e);
+                        }
+                    } else if (e.getMessage() != null && e.getMessage().contains("process is bad")) {
+                        Slog.w(TAG, "Process is bad, attempting to recover and retry");
+                        handleProcessBadError(retry, maxRetries);
+                    } else {
+                        Slog.e(TAG, "Security exception starting DaemonService: " + e.getMessage(), e);
+                        handleServiceStartFailure(retry, maxRetries, e);
+                    }
+                } catch (Exception e) {
+                    Slog.e(TAG, "Failed to start DaemonService: " + e.getMessage(), e);
+                    handleServiceStartFailure(retry, maxRetries, e);
+                }
+            }
+            
+            if (!serviceStarted) {
+                Slog.e(TAG, "Failed to start DaemonService after " + maxRetries + " attempts");
+                
+                tryAlternativeStartupMethods();
+                return;
+            }
+            
+            
+            scheduleProviderCheck();
+            
+            Slog.d(TAG, "Started DaemonService to initialize black process");
+        } catch (Exception e) {
+            Slog.e(TAG, "Failed to start black process", e);
+            
+            scheduleDelayedServiceStart();
+        }
+    }
+    
+    
+    private boolean isValidProcessState() {
+        try {
+            
+            if (getContext() == null) {
+                Slog.w(TAG, "Context is null, process state invalid");
+                return false;
+            }
+            
+            
+            if (!isMainProcess()) {
+                Slog.w(TAG, "Not in main process, skipping service start");
+                return false;
+            }
+            
+            
+            try {
+                getContext().getPackageName();
+            } catch (Exception e) {
+                Slog.w(TAG, "Package name access failed, process state invalid: " + e.getMessage());
+                return false;
+            }
+            
+            return true;
+        } catch (Exception e) {
+            Slog.w(TAG, "Process state validation failed: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    
+    private void scheduleDelayedRetry(Intent intent, int retry) {
+        try {
+            int delayMs = 1000 * retry;
+            Slog.d(TAG, "Scheduling delayed retry in " + delayMs + "ms");
+            
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Slog.d(TAG, "Executing delayed retry for DaemonService");
+                        if (BuildCompat.isOreo()) {
+                            getContext().startForegroundService(intent);
+                        } else {
+                            getContext().startService(intent);
+                        }
+                        Slog.d(TAG, "Delayed retry successful");
+                    } catch (Exception e) {
+                        Slog.e(TAG, "Delayed retry failed: " + e.getMessage());
+                        
+                        tryAlternativeStartupMethods();
+                    }
+                }
+            }, delayMs);
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule delayed retry: " + e.getMessage());
+            
+            tryAlternativeStartupMethods();
+        }
+    }
+    
+    
+    private void scheduleProviderCheck() {
+        try {
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        
+                        Bundle testBundle = new Bundle();
+                        testBundle.putString("_B_|_server_name_", "test");
+                        Bundle result = ProviderCall.callSafely(ProxyManifest.getBindProvider(), "VM", null, testBundle);
+                        if (result != null) {
+                            Slog.d(TAG, "The Universe process started successfully, SystemCallProvider is accessible");
+                        } else {
+                            Slog.w(TAG, "The Universe process started but SystemCallProvider is not accessible yet");
+                        }
+                    } catch (Exception e) {
+                        Slog.w(TAG, "SystemCallProvider not accessible yet, will retry later: " + e.getMessage());
+                    }
+                }
+            }, 1000); 
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule provider check: " + e.getMessage());
+        }
+    }
+    
+    
+    private void handleServiceStartFailure(int retry, int maxRetries, Exception e) {
+        if (retry < maxRetries - 1) {
+            Slog.w(TAG, "Service start failed, will retry. Attempt " + (retry + 1) + " of " + maxRetries);
+        } else {
+            Slog.e(TAG, "Service start failed after " + maxRetries + " attempts: " + e.getMessage());
+            
+            tryAlternativeStartupMethods();
+        }
+    }
+    
+    
+    private void handleProcessBadError(int retry, int maxRetries) {
+        if (retry < maxRetries - 1) {
+            Slog.w(TAG, "Process is bad, attempting recovery. Attempt " + (retry + 1) + " of " + maxRetries);
+            
+            
+            try {
+                
+                scheduleProcessRecovery(retry, maxRetries);
+                
+            } catch (Exception e) {
+                Slog.w(TAG, "Process recovery failed: " + e.getMessage());
+            }
+        } else {
+            Slog.e(TAG, "Process recovery failed after " + maxRetries + " attempts");
+            
+            tryAlternativeStartupMethods();
+        }
+    }
+    
+    
+    private void scheduleProcessRecovery(int retry, int maxRetries) {
+        try {
+            int delayMs = 2000; 
+            Slog.d(TAG, "Scheduling process recovery in " + delayMs + "ms");
+            
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Slog.d(TAG, "Executing process recovery");
+                        
+                        refreshProcessContext();
+                        
+                        
+                        if (isMainProcess() && !isBlackProcessRunning()) {
+                            startBlackProcess();
+                        }
+                        
+                    } catch (Exception e) {
+                        Slog.w(TAG, "Process recovery execution failed: " + e.getMessage());
+                    }
+                }
+            }, delayMs);
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule process recovery: " + e.getMessage());
+        }
+    }
+    
+    
+    private void tryAlternativeStartupMethods() {
+        Slog.w(TAG, "Trying alternative startup methods...");
+        
+        try {
+            
+            Context alternativeContext = getAlternativeContext();
+            if (alternativeContext != null) {
+                Intent intent = new Intent();
+                intent.setClass(alternativeContext, DaemonService.class);
+                alternativeContext.startService(intent);
+                Slog.d(TAG, "Alternative context startup successful");
+                return;
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Alternative context startup failed: " + e.getMessage());
+        }
+        
+        try {
+            
+            Context appContext = getContext().getApplicationContext();
+            if (appContext != null && appContext != getContext()) {
+                Intent intent = new Intent();
+                intent.setClass(appContext, DaemonService.class);
+                appContext.startService(intent);
+                Slog.d(TAG, "Application context startup successful");
+                return;
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Application context startup failed: " + e.getMessage());
+        }
+        
+        Slog.e(TAG, "All alternative startup methods failed");
+    }
+    
+    
+    private Context getAlternativeContext() {
+        try {
+            
+            Context appContext = getContext().getApplicationContext();
+            if (appContext != null) {
+                return appContext;
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to get application context: " + e.getMessage());
+        }
+        
+        return null;
+    }
+    
+    
+    private void refreshProcessContext() {
+        try {
+            
+            
+            Slog.d(TAG, "Attempting to refresh process context");
+            
+            
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Context refresh failed: " + e.getMessage());
+        }
+    }
+    
+    
+    private void scheduleDelayedServiceStart() {
+        try {
+            
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Slog.d(TAG, "Executing delayed service start");
+                    if (isMainProcess() && !isBlackProcessRunning()) {
+                        startBlackProcess();
+                    }
+                }
+            }, 5000); 
+            
+            Slog.d(TAG, "Scheduled delayed service start in 5 seconds");
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule delayed service start: " + e.getMessage());
+        }
+    }
+    
+    
+    public void ensureBlackProcessInitialized() {
+        if (isMainProcess() && !isBlackProcessRunning()) {
+            Slog.w(TAG, "Ensuring black process is initialized...");
+            startBlackProcess();
+            
+            
+            int maxRetries = 5;
+            int retryCount = 0;
+            while (retryCount < maxRetries && !isBlackProcessRunning()) {
+                try {
+                    Thread.sleep(500);
+                    retryCount++;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+            
+            if (isBlackProcessRunning()) {
+                Slog.d(TAG, "The Universe process initialized successfully");
+            } else {
+                Slog.w(TAG, "The Universe process failed to initialize, using fallback services");
+            }
+        }
+    }
+
+    public void doAttachBaseContext(Context context,
+                                   ClientConfiguration clientConfiguration) {
+        sContext = context;
+        mClientConfiguration = clientConfiguration;
+
+        final String processName = getProcessName(context);
+        mProcessName = processName;
+        if (processName.equals(TheUniverseCore.getHostPkg())) {
+            mProcessType = ProcessType.Main;
+        } else if (processName.endsWith(getContext().getString(R.string.the_universe_service_name))) {
+            mProcessType = ProcessType.Server;
+        } else {
+            mProcessType = ProcessType.BAppClient;
+        }
+
+        Slog.i(TAG, "Process detected: name=" + processName + ", hostPkg=" + TheUniverseCore.getHostPkg() + ", type=" + mProcessType);
+
+        try {
+            setEssentialProperties(context, clientConfiguration, mProcessType == ProcessType.Main);
+
+            if (mProcessType == ProcessType.Main) {
+                Slog.i(TAG, "Main process: skipped native theuniverse resource/hideapi hooks");
+            }
+
+            try {
+                Class<?> windowManagerClass = Class.forName("android.view.WindowManager");
+                Field ignoreLeaksField = windowManagerClass.getDeclaredField("mIgnoreWindowLeaks");
+                ignoreLeaksField.setAccessible(true);
+
+            } catch (Exception e) {
+                Slog.w(TAG, "Could not access WindowManager leak field: " + e.getMessage());
+            }
+
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to set essential properties: " + e.getMessage());
+        }
+
+        installSystemHooks();
+        initNotificationManager();
+        if (TheUniverseCore.get().isBlackProcess()) {
+            BEnvironment.load();
+            if (processName.endsWith("p0")) {
+
+            }
+
+        }
+        if (isServerProcess()) {
+            if (clientConfiguration.isEnableDaemonService()) {
+                try {
+                    
+                    if (!isValidProcessState()) {
+                        Slog.w(TAG, "Server process state is invalid, delaying service start");
+                        
+                        scheduleDelayedServerServiceStart();
+                        return;
+                    }
+                    
+                    Intent intent = new Intent();
+                    intent.setClass(getContext(), DaemonService.class);
+                    
+                    
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    
+                    boolean serviceStarted = false;
+                    int maxRetries = 3;
+                    
+                    for (int retry = 0; retry < maxRetries && !serviceStarted; retry++) {
+                        try {
+                            if (retry > 0) {
+                                Slog.d(TAG, "Retry attempt " + (retry + 1) + " for starting DaemonService in server process");
+                                
+                                if (retry == 1) {
+                                    
+                                    Slog.d(TAG, "First retry for server process - continuing immediately");
+                                } else {
+                                    
+                                    scheduleDelayedServerRetry(intent, retry);
+                                    return;
+                                }
+                            }
+                            
+                            if (BuildCompat.isOreo()) {
+                                getContext().startForegroundService(intent);
+                                Slog.d(TAG, "Started DaemonService as foreground service in server process");
+                                serviceStarted = true;
+                            } else {
+                                getContext().startService(intent);
+                                Slog.d(TAG, "Started DaemonService as regular service in server process");
+                                serviceStarted = true;
+                            }
+                            
+                        } catch (SecurityException e) {
+                            if (e.getMessage() != null && e.getMessage().contains("MissingForegroundServiceTypeException")) {
+                                Slog.w(TAG, "Foreground service type missing in server process, falling back to regular service");
+                                try {
+                                    getContext().startService(intent);
+                                    Slog.d(TAG, "Started DaemonService as regular service in server process (fallback)");
+                                    serviceStarted = true;
+                                } catch (Exception fallbackEx) {
+                                    Slog.e(TAG, "Failed to start DaemonService in server process even as regular service: " + fallbackEx.getMessage(), fallbackEx);
+                                    handleServerServiceStartFailure(retry, maxRetries, fallbackEx);
+                                }
+                            } else if (e.getMessage() != null && e.getMessage().contains("process is bad")) {
+                                Slog.w(TAG, "Server process is bad, attempting to recover and retry");
+                                handleServerProcessBadError(retry, maxRetries);
+                            } else {
+                                Slog.e(TAG, "Security exception starting DaemonService in server process: " + e.getMessage(), e);
+                                handleServerServiceStartFailure(retry, maxRetries, e);
+                            }
+                        } catch (Exception e) {
+                            Slog.e(TAG, "Failed to start DaemonService in server process: " + e.getMessage(), e);
+                            handleServerServiceStartFailure(retry, maxRetries, e);
+                        }
+                    }
+                    
+                    if (!serviceStarted) {
+                        Slog.e(TAG, "Failed to start DaemonService in server process after " + maxRetries + " attempts");
+                        
+                        tryAlternativeServerStartupMethods();
+                    }
+                    
+                } catch (Exception e) {
+                    Slog.e(TAG, "Unexpected error starting DaemonService in server process: " + e.getMessage(), e);
+                    
+                    scheduleDelayedServerServiceStart();
+                }
+            }
+        }
+        
+        
+        
+        HookManager.get().init();
+    }
+
+    public void doCreate() {
+        
+        installSystemHooks();
+        
+        
+        long startTime = System.currentTimeMillis();
+        long maxInitTime = 10000; 
+        
+        try {
+            
+            ensureBlackProcessInitialized();
+            
+            
+            if (System.currentTimeMillis() - startTime > maxInitTime) {
+                Slog.w(TAG, "Initialization timeout exceeded, proceeding with fallback services");
+            }
+            
+            ensureProperInitialization();
+            
+            
+            if (isBlackProcess()) {
+                ContentProviderDelegate.init();
+            }
+            if (!isServerProcess()) {
+                
+                try {
+                    ServiceManager.initTheUniverseManager();
+                } catch (Exception e) {
+                    Slog.w(TAG, "Failed to initialize ServiceManager, continuing with fallback: " + e.getMessage());
+                }
+                
+                
+                getBPackageManager().resetTransactionThrottler();
+            }
+            
+            long totalTime = System.currentTimeMillis() - startTime;
+            Slog.d(TAG, "TheUniverse initialization completed in " + totalTime + "ms");
+            
+        } catch (Exception e) {
+            long totalTime = System.currentTimeMillis() - startTime;
+            Slog.e(TAG, "TheUniverse initialization failed after " + totalTime + "ms", e);
+            
+            
+            try {
+                if (!isServerProcess()) {
+                    ServiceManager.initTheUniverseManager();
+                }
+            } catch (Exception fallbackEx) {
+                Slog.e(TAG, "Fallback initialization also failed", fallbackEx);
+            }
+        }
+    }
+
+    public static Object mainThread() {
+        return BRActivityThread.get().currentActivityThread();
+    }
+
+    public void startActivity(Intent intent, int userId) {
+        getBActivityManager().startActivity(intent, userId);
+    }
+
+    public static BJobManager getBJobManager() {
+        return BJobManager.get();
+    }
+
+    public static BPackageManager getBPackageManager() {
+        return BPackageManager.get();
+    }
+
+    public static BActivityManager getBActivityManager() {
+        return BActivityManager.get();
+    }
+
+    public static BStorageManager getBStorageManager() {
+        return BStorageManager.get();
+    }
+    
+    
+    
+    
+    public boolean hasStoragePermission() {
+        return StoragePermissionHelper.hasStoragePermission(sContext);
+    }
+    
+    
+    public boolean hasAllFilesAccess() {
+        return StoragePermissionHelper.hasAllFilesAccess();
+    }
+    
+    
+    public boolean hasFullFileAccess() {
+        return StoragePermissionHelper.hasFullFileAccess(sContext);
+    }
+    
+    
+    public void requestStoragePermission(android.app.Activity activity) {
+        StoragePermissionHelper.requestStoragePermission(activity);
+    }
+    
+    
+    public void requestAllFilesAccess(android.app.Activity activity) {
+        StoragePermissionHelper.requestAllFilesAccess(activity);
+    }
+    
+    
+    public void requestFullFileAccess(android.app.Activity activity) {
+        StoragePermissionHelper.requestFullFileAccess(activity);
+    }
+    
+    
+    public boolean handleStoragePermissionResult(android.app.Activity activity, int requestCode, 
+            String[] permissions, int[] grantResults) {
+        return StoragePermissionHelper.handlePermissionResult(activity, requestCode, permissions, grantResults);
+    }
+    
+    
+    public boolean handleAllFilesAccessResult(int requestCode) {
+        return StoragePermissionHelper.handleAllFilesAccessResult(requestCode);
+    }
+    
+    
+    public static int getStoragePermissionRequestCode() {
+        return StoragePermissionHelper.REQUEST_CODE_STORAGE_PERMISSION;
+    }
+    
+    public static int getAllFilesAccessRequestCode() {
+        return StoragePermissionHelper.REQUEST_CODE_MANAGE_STORAGE;
+    }
+
+    public boolean launchApk(String packageName, int userId) {
+        onBeforeMainLaunchApk(packageName, userId);
+        
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!hasAllFilesAccess()) {
+                Slog.w(TAG, "All files access not granted for launching: " + packageName);
+                
+                for (AppLifecycleCallback callback : mAppLifecycleCallbacks) {
+                    if (callback.onStoragePermissionNeeded(packageName, userId)) {
+                        
+                        Slog.d(TAG, "Launch cancelled - host app handling permission request");
+                        return false;
+                    }
+                }
+                
+                Slog.w(TAG, "Launching without all files access - some file operations may fail");
+            }
+        }
+
+        Intent launchIntentForPackage = getBPackageManager().getLaunchIntentForPackage(packageName, userId);
+        if (launchIntentForPackage == null) {
+            return false;
+        }
+        // A successful dispatch is not a guest-resume acknowledgement.
+        return getBActivityManager().startActivityAms(userId, launchIntentForPackage,
+                null, null, null, -1, 0, null) >= 0;
+    }
+    public boolean isInstalled(String packageName, int userId) {
+        return getBPackageManager().isInstalled(packageName, userId);
+    }
+
+    public void uninstallPackageAsUser(String packageName, int userId) {
+        getBPackageManager().uninstallPackageAsUser(packageName, userId);
+    }
+
+    public void uninstallPackage(String packageName) {
+        getBPackageManager().uninstallPackage(packageName);
+    }
+
+    public InstallResult installPackageAsUser(String packageName, int userId) {
+        try {
+            
+            if (packageName.equals(getHostPkg())) {
+                return new InstallResult().installError("Cannot clone TheUniverse app from within TheUniverse. This would create infinite recursion and is not allowed for security reasons.");
+            }
+            
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(packageName, 0);
+            return getBPackageManager().installPackageAsUser(packageInfo.applicationInfo.sourceDir, InstallOption.installBySystem(), userId);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return new InstallResult().installError(e.getMessage());
+        }
+    }
+
+    public InstallResult installPackageAsUser(File apk, int userId) {
+        
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageArchiveInfo(apk.getAbsolutePath(), 0);
+            if (packageInfo != null) {
+                String packageName = packageInfo.packageName;
+                if (packageName.equals(getHostPkg())) {
+                    return new InstallResult().installError("Cannot clone TheUniverse app from within TheUniverse. This would create infinite recursion and is not allowed for security reasons.");
+                }
+            }
+        } catch (Exception e) {
+            
+            Slog.w(TAG, "Could not verify package info for APK: " + apk.getAbsolutePath());
+        }
+        
+        return getBPackageManager().installPackageAsUser(apk.getAbsolutePath(), InstallOption.installByStorage(), userId);
+    }
+
+    public InstallResult installPackageAsUser(Uri apk, int userId) {
+        
+        return getBPackageManager().installPackageAsUser(apk.toString(), InstallOption.installByStorage().makeUriFile(), userId);
+    }
+
+
+
+
+
+    public List<ApplicationInfo> getInstalledApplications(int flags, int userId) {
+        return getBPackageManager().getInstalledApplications(flags, userId);
+    }
+
+    public List<PackageInfo> getInstalledPackages(int flags, int userId) {
+        return getBPackageManager().getInstalledPackages(flags, userId);
+    }
+
+    public void clearPackage(String packageName, int userId) {
+        BPackageManager.get().clearPackage(packageName, userId);
+    }
+
+    public void stopPackage(String packageName, int userId) {
+        BPackageManager.get().stopPackage(packageName, userId);
+    }
+
+    public List<BUserInfo> getUsers() {
+        return BUserManager.get().getUsers();
+    }
+
+    public BUserInfo createUser(int userId) {
+        return BUserManager.get().createUser(userId);
+    }
+
+    public void deleteUser(int userId) {
+        BUserManager.get().deleteUser(userId);
+    }
+
+    public List<AppLifecycleCallback> getAppLifecycleCallbacks() {
+        return mAppLifecycleCallbacks;
+    }
+
+    public void removeAppLifecycleCallback(AppLifecycleCallback appLifecycleCallback) {
+        mAppLifecycleCallbacks.remove(appLifecycleCallback);
+    }
+
+    public void addAppLifecycleCallback(AppLifecycleCallback appLifecycleCallback) {
+        mAppLifecycleCallbacks.add(appLifecycleCallback);
+    }
+
+    public boolean isSupportGms() {
+        return GmsCore.isSupportGms();
+    }
+
+    public boolean isInstallGms(int userId) {
+        return GmsCore.isInstalledGoogleService(userId);
+    }
+
+    public boolean hasGmsTraces(int userId) {
+        return GmsCore.hasGmsTraces(userId);
+    }
+
+    public InstallResult installGms(int userId) {
+        return GmsCore.installGApps(userId);
+    }
+
+    public boolean uninstallGms(int userId) {
+        GmsCore.uninstallGApps(userId);
+        return !GmsCore.isInstalledGoogleService(userId);
+    }
+
+    public boolean wipeGms(int userId) {
+        GmsCore.wipeGApps(userId);
+        return !GmsCore.hasGmsTraces(userId);
+    }
+
+    
+    private enum ProcessType {
+        
+        Server,
+        
+        BAppClient,
+        
+        Main,
+    }
+
+    public boolean isBlackProcess() {
+        return mProcessType == ProcessType.BAppClient;
+    }
+
+    public boolean isMainProcess() {
+        return mProcessType == ProcessType.Main;
+    }
+
+    public boolean isServerProcess() {
+        return mProcessType == ProcessType.Server;
+    }
+
+    @Override
+    public boolean isHideRoot() {
+        return mClientConfiguration.isHideRoot();
+    }
+
+    @Override
+    public boolean isDisableFlagSecure() {
+        return mClientConfiguration.isDisableFlagSecure();
+    }
+
+
+
+    @Override
+    public String getHostPackageName() {
+        return mClientConfiguration.getHostPackageName();
+    }
+
+    @Override
+    public boolean requestInstallPackage(File file, int userId) {
+        return mClientConfiguration.requestInstallPackage(file, userId);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static String getProcessName(Context context) {
+        int pid = Process.myPid();
+        String processName = null;
+        
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+                if (processes != null) {
+                    for (ActivityManager.RunningAppProcessInfo info : processes) {
+                        if (info.pid == pid) {
+                            processName = info.processName;
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Failed to get process name using modern API", e);
+            }
+        }
+        
+        
+        if (processName == null) {
+            try {
+                ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+                if (processes != null) {
+                    for (ActivityManager.RunningAppProcessInfo info : processes) {
+                        if (info.pid == pid) {
+                            processName = info.processName;
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Failed to get process name using deprecated API", e);
+            }
+        }
+        
+        if (processName == null) {
+            throw new RuntimeException("processName = null");
+        }
+        return processName;
+    }
+
+    public static boolean is64Bit() {
+        if (BuildCompat.isM()) {
+            return Process.is64Bit();
+        } else {
+            return Build.CPU_ABI.equals("arm64-v8a");
+        }
+    }
+
+    private void initNotificationManager() {
+        NotificationManager nm = (NotificationManager) TheUniverseCore.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        String CHANNEL_ONE_ID = TheUniverseCore.getContext().getPackageName() + ".theuniverse_core";
+        String CHANNEL_ONE_NAME = "theuniverse_core";
+        if (BuildCompat.isOreo()) {
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ONE_ID,
+                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setShowBadge(true);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            nm.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    public void closeCodeInit(){
+        try {
+            Class entry = Class.forName("com.dd.the.universe.closecode.Entry");
+            Method attach = entry.getDeclaredMethod("attach");
+            attach.invoke(null);
+        } catch (Exception e) {
+            Slog.w(TAG, "closeCodeInit reflection failed: " + e.getMessage());
+        }
+    }
+    public void onBeforeMainLaunchApk(String packageName,int userid) {
+        for (AppLifecycleCallback appLifecycleCallback : TheUniverseCore.get().getAppLifecycleCallbacks()) {
+            appLifecycleCallback.beforeMainLaunchApk(packageName,userid);
+        }
+    }
+    public void onBeforeMainApplicationAttach(Application app, Context context) {
+        for (AppLifecycleCallback appLifecycleCallback : TheUniverseCore.get().getAppLifecycleCallbacks()) {
+            appLifecycleCallback.beforeMainApplicationAttach(app, context);
+        }
+    }
+    public void onAfterMainApplicationAttach(Application app, Context context) {
+        for (AppLifecycleCallback appLifecycleCallback : TheUniverseCore.get().getAppLifecycleCallbacks()) {
+            appLifecycleCallback.afterMainApplicationAttach(app, context);
+        }
+    }
+    public void onBeforeMainActivityOnCreate(android.app.Activity activity) {
+        for (AppLifecycleCallback appLifecycleCallback : TheUniverseCore.get().getAppLifecycleCallbacks()) {
+            appLifecycleCallback.beforeMainActivityOnCreate(activity);
+        }
+    }
+    public void onAfterMainActivityOnCreate(android.app.Activity activity) {
+        for (AppLifecycleCallback appLifecycleCallback : TheUniverseCore.get().getAppLifecycleCallbacks()) {
+            appLifecycleCallback.afterMainActivityOnCreate(activity);
+        }
+    }
+
+
+    public static boolean isThreadInit() {
+        try {
+            return BActivityThread.isThreadInit();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.isThreadInit() failed, returning false", e);
+            return false;
+        }
+    }
+
+    public static BActivityThread currentActivityThread() {
+        try {
+            return BActivityThread.currentActivityThread();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.currentActivityThread() failed, returning null", e);
+            return null;
+        }
+    }
+
+    public static com.dd.the.universe.entity.AppConfig getAppConfig() {
+        try {
+            return BActivityThread.getAppConfig();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getAppConfig() failed, returning null", e);
+            return null;
+        }
+    }
+
+    public static String getAppProcessName() {
+        try {
+            return BActivityThread.getAppProcessName();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getAppProcessName() failed, returning null", e);
+            return null;
+        }
+    }
+
+    public static String getAppPackageName() {
+        try {
+            return BActivityThread.getAppPackageName();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getAppPackageName() failed, returning null", e);
+            return null;
+        }
+    }
+
+    public static Application getApplication() {
+        try {
+            return BActivityThread.getApplication();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getApplication() failed, returning null", e);
+            return null;
+        }
+    }
+
+    public static int getAppPid() {
+        try {
+            return BActivityThread.getAppPid();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getAppPid() failed, returning -1", e);
+            return -1;
+        }
+    }
+
+    public static int getBUid() {
+        try {
+            return BActivityThread.getBUid();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getBUid() failed, returning -1", e);
+            return -1;
+        }
+    }
+
+    public static int getCallingBUid() {
+        try {
+            return BActivityThread.getCallingBUid();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getCallingBUid() failed, returning -1", e);
+            return -1;
+        }
+    }
+
+    public static int getUid() {
+        try {
+            return BActivityThread.getUid();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getUid() failed, returning -1", e);
+            return -1;
+        }
+    }
+
+    public static int getUserId() {
+        try {
+            return BActivityThread.getUserId();
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.getUserId() failed, returning -1", e);
+            return -1;
+        }
+    }
+
+    public static void ensureActivityContext(android.app.Activity activity) {
+        try {
+            BActivityThread.ensureActivityContext(activity);
+        } catch (Exception e) {
+            Slog.w(TAG, "BActivityThread.ensureActivityContext() failed", e);
+        }
+    }
+    
+    
+    public static void installSystemHooks() {
+        try {
+            SimpleCrashFix.installSimpleFix();
+            Slog.d(TAG, "System hooks installed successfully");
+        } catch (Exception e) {
+            Slog.e(TAG, "Failed to install system hooks", e);
+        }
+    }
+    
+    
+    private void setEssentialProperties(Context context, ClientConfiguration clientConfiguration, boolean isHostMainProcess) {
+        if (clientConfiguration == null) {
+            throw new IllegalArgumentException("ClientConfiguration is null!");
+        }
+
+        // Avoid loading the native "theuniverse" library in the host main/UI process.
+        // On some devices this can destabilize rendering (Surface/GraphicBuffer/EGL).
+        if (isHostMainProcess) {
+            try {
+                Reflection.unseal(context);
+            } catch (Throwable t) {
+                Slog.w(TAG, "Reflection.unseal failed: " + t.getMessage());
+            }
+        } else {
+            if (!NativeCore.disableHiddenApi()) {
+                try {
+                    Reflection.unseal(context);
+                } catch (Throwable t) {
+                    Slog.w(TAG, "Reflection.unseal failed: " + t.getMessage());
+                }
+            }
+
+            try {
+                NativeCore.disableResourceLoading();
+            } catch (Exception e) {
+                Slog.w(TAG, "Failed to call native resource disabling: " + e.getMessage());
+            }
+        }
+        
+        
+        try {
+            
+            System.setProperty("android.view.WindowManager.IGNORE_WINDOW_LEAKS", "true");
+            System.setProperty("android.app.Activity.IGNORE_WINDOW_LEAKS", "true");
+            System.setProperty("android.view.WindowManager.SUPPRESS_WINDOW_LEAK_WARNINGS", "true");
+            
+            
+            try {
+                Class<?> resourcesManagerClass = Class.forName("android.app.ResourcesManager");
+                Field disableOverlayField = resourcesManagerClass.getDeclaredField("mDisableOverlayLoading");
+                disableOverlayField.setAccessible(true);
+                
+            } catch (Exception e) {
+                Slog.w(TAG, "Could not access ResourcesManager overlay field: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to set essential properties: " + e.getMessage());
+        }
+    }
+    
+    
+    private static void ensureProperInitialization() {
+        try {
+            // Keep the host main/UI process as “clean” as possible: no native init or
+            // ActivityThread hooking. These are intended for virtualized app/server processes
+            // and may destabilize rendering on some OEM builds.
+            if (TheUniverseCore.get().isMainProcess()) {
+                Slog.d(TAG, "Main process detected; skipping NativeCore/BActivityThread initialization");
+                return;
+            }
+
+            
+            Slog.d(TAG, "Ensuring proper initialization order...");
+            
+            
+            try {
+                NativeCore.init(android.os.Build.VERSION.SDK_INT);
+                Slog.d(TAG, "NativeCore initialized successfully");
+            } catch (Exception e) {
+                Slog.w(TAG, "NativeCore initialization failed: " + e.getMessage());
+            }
+            
+            
+            try {
+                ServiceManager.initTheUniverseManager();
+                Slog.d(TAG, "ServiceManager initialized successfully");
+            } catch (Exception e) {
+                Slog.w(TAG, "ServiceManager initialization failed: " + e.getMessage());
+            }
+            
+            
+            try {
+                BActivityThread.hookActivityThread();
+                Slog.d(TAG, "BActivityThread hooks initialized successfully");
+            } catch (Exception e) {
+                Slog.w(TAG, "BActivityThread hooks initialization failed: " + e.getMessage());
+            }
+            
+            Slog.d(TAG, "Proper initialization order ensured");
+        } catch (Exception e) {
+            Slog.e(TAG, "Failed to ensure proper initialization order", e);
+        }
+    }
+
+    
+    public static boolean isRunningApplication(String packageName, int userId) {
+        
+        try {
+            
+            android.app.ActivityManager am = (android.app.ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
+            if (am == null) return false;
+            
+            
+            
+            ServiceManager.get();
+            com.dd.the.universe.core.system.am.ActivityStack stack =
+                (com.dd.the.universe.core.system.am.ActivityStack) ServiceManager.getService(ServiceManager.ACTIVITY_MANAGER);
+            if (stack == null) return false;
+            java.util.Map<Integer, com.dd.the.universe.core.system.am.TaskRecord> tasks =
+                    com.dd.the.universe.utils.Reflector.with(stack).field("mTasks").get();
+            if (tasks == null) return false;
+            for (com.dd.the.universe.core.system.am.TaskRecord task : tasks.values()) {
+                if (task.userId == userId && task.taskAffinity != null && task.taskAffinity.contains(packageName)) {
+                    
+                    for (com.dd.the.universe.core.system.am.ActivityRecord activity : task.activities) {
+                        if (!activity.finished) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "isRunningApplication failed: " + e.getMessage());
+        }
+        return false;
+    }
+
+    
+    public void addServiceAvailableCallback(Runnable callback) {
+        synchronized (mServiceCallbackLock) {
+            if (mServicesInitialized) {
+                
+                callback.run();
+            } else {
+                mServiceAvailableCallbacks.add(callback);
+            }
+        }
+    }
+    
+    
+    public void removeServiceAvailableCallback(Runnable callback) {
+        synchronized (mServiceCallbackLock) {
+            mServiceAvailableCallbacks.remove(callback);
+        }
+    }
+    
+    
+    private void notifyServiceAvailableCallbacks() {
+        synchronized (mServiceCallbackLock) {
+            if (!mServiceAvailableCallbacks.isEmpty()) {
+                Slog.d(TAG, "Notifying " + mServiceAvailableCallbacks.size() + " callbacks that services are available");
+                for (Runnable callback : mServiceAvailableCallbacks) {
+                    try {
+                        callback.run();
+                    } catch (Exception e) {
+                        Slog.e(TAG, "Error in service available callback", e);
+                    }
+                }
+                mServiceAvailableCallbacks.clear();
+            }
+        }
+    }
+
+    
+    public boolean waitForServicesAvailable(long timeoutMs) {
+        if (mServicesInitialized) {
+            return true;
+        }
+        
+        long startTime = System.currentTimeMillis();
+        while (!mServicesInitialized && (System.currentTimeMillis() - startTime) < timeoutMs) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        
+        return mServicesInitialized;
+    }
+    
+    
+    public boolean isServicesAvailable() {
+        return mServicesInitialized;
+    }
+
+    
+    public boolean isTheUniverseApp(File apkFile) {
+        try {
+            if (apkFile == null || !apkFile.exists()) {
+                return false;
+            }
+            
+            PackageInfo packageInfo = getPackageManager().getPackageArchiveInfo(apkFile.getAbsolutePath(), 0);
+            if (packageInfo != null) {
+                String packageName = packageInfo.packageName;
+                return packageName.equals(getHostPkg());
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Error checking if APK is TheUniverse app: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    
+    public boolean isTheUniverseApp(String packageName) {
+        if (packageName == null || packageName.isEmpty()) {
+            return false;
+        }
+        return packageName.equals(getHostPkg());
+    }
+    
+    
+    private void handleServerServiceStartFailure(int retry, int maxRetries, Exception e) {
+        if (retry < maxRetries - 1) {
+            Slog.w(TAG, "Server service start failed, will retry. Attempt " + (retry + 1) + " of " + maxRetries);
+        } else {
+            Slog.e(TAG, "Server service start failed after " + maxRetries + " attempts: " + e.getMessage());
+            
+            tryAlternativeServerStartupMethods();
+        }
+    }
+    
+    
+    private void handleServerProcessBadError(int retry, int maxRetries) {
+        if (retry < maxRetries - 1) {
+            Slog.w(TAG, "Server process is bad, attempting recovery. Attempt " + (retry + 1) + " of " + maxRetries);
+            
+            
+            try {
+                
+                scheduleServerProcessRecovery(retry, maxRetries);
+                
+            } catch (Exception e) {
+                Slog.w(TAG, "Server process recovery failed: " + e.getMessage());
+            }
+        } else {
+            Slog.e(TAG, "Server process recovery failed after " + maxRetries + " attempts");
+            
+            tryAlternativeServerStartupMethods();
+        }
+    }
+    
+    
+    private void scheduleServerProcessRecovery(int retry, int maxRetries) {
+        try {
+            int delayMs = 2000; 
+            Slog.d(TAG, "Scheduling server process recovery in " + delayMs + "ms");
+            
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Slog.d(TAG, "Executing server process recovery");
+                        
+                        refreshServerProcessContext();
+                        
+                        
+                        if (isServerProcess() && mClientConfiguration.isEnableDaemonService()) {
+                            Intent intent = new Intent();
+                            intent.setClass(getContext(), DaemonService.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            
+                            if (BuildCompat.isOreo()) {
+                                getContext().startForegroundService(intent);
+                            } else {
+                                getContext().startService(intent);
+                            }
+                        }
+                        
+                    } catch (Exception e) {
+                        Slog.w(TAG, "Server process recovery execution failed: " + e.getMessage());
+                    }
+                }
+            }, delayMs);
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule server process recovery: " + e.getMessage());
+        }
+    }
+    
+    
+    private void tryAlternativeServerStartupMethods() {
+        Slog.w(TAG, "Trying alternative startup methods for server process...");
+        
+        try {
+            
+            Context alternativeContext = getAlternativeContext();
+            if (alternativeContext != null) {
+                Intent intent = new Intent();
+                intent.setClass(alternativeContext, DaemonService.class);
+                alternativeContext.startService(intent);
+                Slog.d(TAG, "Alternative context startup successful for server process");
+                return;
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Alternative context startup failed for server process: " + e.getMessage());
+        }
+        
+        try {
+            
+            Context appContext = getContext().getApplicationContext();
+            if (appContext != null && appContext != getContext()) {
+                Intent intent = new Intent();
+                intent.setClass(appContext, DaemonService.class);
+                appContext.startService(intent);
+                Slog.d(TAG, "Application context startup successful for server process");
+                return;
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "Application context startup failed for server process: " + e.getMessage());
+        }
+        
+        Slog.e(TAG, "All alternative startup methods failed for server process");
+    }
+    
+    
+    private void refreshServerProcessContext() {
+        try {
+            
+            
+            Slog.d(TAG, "Attempting to refresh server process context");
+            
+            
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Server process context refresh failed: " + e.getMessage());
+        }
+    }
+    
+    
+    private void scheduleDelayedServerServiceStart() {
+        try {
+            
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Slog.d(TAG, "Executing delayed server service start");
+                    if (isServerProcess() && mClientConfiguration.isEnableDaemonService()) {
+                        
+                        try {
+                            Intent intent = new Intent();
+                            intent.setClass(getContext(), DaemonService.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            
+                            if (BuildCompat.isOreo()) {
+                                getContext().startForegroundService(intent);
+                            } else {
+                                getContext().startService(intent);
+                            }
+                            Slog.d(TAG, "Delayed server service start successful");
+                        } catch (Exception e) {
+                            Slog.e(TAG, "Delayed server service start failed: " + e.getMessage());
+                        }
+                    }
+                }
+            }, 5000); 
+            
+            Slog.d(TAG, "Scheduled delayed server service start in 5 seconds");
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule delayed server service start: " + e.getMessage());
+        }
+    }
+    
+    
+    private void scheduleDelayedServerRetry(Intent intent, int retry) {
+        try {
+            int delayMs = 1000 * retry;
+            Slog.d(TAG, "Scheduling delayed server retry in " + delayMs + "ms");
+            
+            android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Slog.d(TAG, "Executing delayed server retry for DaemonService");
+                        if (BuildCompat.isOreo()) {
+                            getContext().startForegroundService(intent);
+                        } else {
+                            getContext().startService(intent);
+                        }
+                        Slog.d(TAG, "Delayed server retry successful");
+                    } catch (Exception e) {
+                        Slog.e(TAG, "Delayed server retry failed: " + e.getMessage());
+                        
+                        tryAlternativeServerStartupMethods();
+                    }
+                }
+            }, delayMs);
+            
+        } catch (Exception e) {
+            Slog.w(TAG, "Failed to schedule delayed server retry: " + e.getMessage());
+            
+            tryAlternativeServerStartupMethods();
+        }
+    }
+}

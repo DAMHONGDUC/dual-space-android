@@ -4,9 +4,9 @@ import android.location.Location;
 import android.os.IBinder;
 import android.os.IInterface;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.location.ILocationListener")
 public interface ILocationListener {

@@ -3,9 +3,9 @@ package universeproxy.android.content.pm;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BField;
 
 @BClassName("mirror.android.content.pm.PackageInstaller")
 public interface PackageInstaller {

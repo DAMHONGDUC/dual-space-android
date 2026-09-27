@@ -3,8 +3,8 @@ package universeproxy.android.os.mount;
 import android.os.IBinder;
 import android.os.IInterface;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BStaticMethod;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BStaticMethod;
 
 @BClassName("android.os.storage.IMountService")
 public interface IMountService {

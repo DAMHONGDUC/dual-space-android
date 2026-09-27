@@ -3,11 +3,11 @@ package universeproxy.android.content;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BConstructor;
-import com.duplicateapp.theuniverse.reflection.annotation.BField;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClassName;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BConstructor;
+import com.dd.the.universe.reflection.annotation.BField;
+import com.dd.the.universe.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BParamClassName;
 
 @BClassName("android.content.BroadcastReceiver")
 public interface BroadcastReceiver {

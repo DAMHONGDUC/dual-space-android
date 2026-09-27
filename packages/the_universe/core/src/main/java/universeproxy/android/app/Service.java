@@ -6,9 +6,9 @@ import android.app.Application;
 import android.content.Context;
 import android.os.IBinder;
 
-import com.duplicateapp.theuniverse.reflection.annotation.BClassName;
-import com.duplicateapp.theuniverse.reflection.annotation.BMethod;
-import com.duplicateapp.theuniverse.reflection.annotation.BParamClass;
+import com.dd.the.universe.reflection.annotation.BClassName;
+import com.dd.the.universe.reflection.annotation.BMethod;
+import com.dd.the.universe.reflection.annotation.BParamClass;
 
 @BClassName("android.app.Service")
 public interface Service {

@@ -1,14 +1,32 @@
 # Pending setup
 
-- Reconnect the Lenovo TB710FU and run the The Universe ARM64 spike on Android 16.
-- Validate two-account login, 30-minute simultaneous survival, audio focus, background resume, network reconnect, and storage on the target game.
-- Keep the The Universe runtime in a personal/sideload build flavor; do not include it in a Google Play artifact.
-- Create a Play-safe product flavor that excludes native hooks, hidden APIs, permission mirroring, and the The Universe dependency.
-- Reduce the release manifest to permissions demonstrably required by the Play build and verify it from the signed AAB.
-- Have native speakers review ES, PT-BR, FR, DE, ID, HI, JA, KO, and zh-CN store copy and in-app translations.
-- Choose the supported game allowlist before promoting third-party APK execution beyond prototype status.
-- Configure Play Console signing, billing products, privacy policy, Data safety, and tester tracks.
-- Supply publisher identity, support contact, public privacy-policy URL, and legal review.
-- Decide whether Premium and Play Billing remain in scope for the no-server companion product.
-- Replace prototype session metrics and quota storage with trusted runtime and backend sources.
-- Decide the production application ID before publishing.
+The following publisher-owned configuration is required before authentication, advertising, and Premium can be enabled in a release build. Do not commit credential files or secret values.
+
+## Firebase
+
+- Create the Android app `com.dd.dual.space` in the publisher's Firebase project.
+- Add the upload and Play App Signing SHA-1 and SHA-256 certificate fingerprints.
+- Enable Google as a Firebase Authentication provider.
+- Download `google-services.json` to `app/google-services.json`; this path is gitignored.
+- Use the Firebase UID as the non-guessable RevenueCat App User ID after sign-in.
+
+## RevenueCat and Google Play Billing
+
+- Create a RevenueCat project and Android app, then store its public SDK key in local release configuration.
+- Create the Premium subscription and base plans in Play Console, then import the products into RevenueCat.
+- Create the `premium` entitlement, attach the products, and configure a current Offering.
+- Link Google Play service credentials to RevenueCat and configure Google Real-time Developer Notifications.
+- Decide RevenueCat restore behavior before testing account changes; verify anonymous-to-Firebase-UID merge and transfer scenarios.
+- Configure authenticated RevenueCat webhooks only if server-side entitlement sync, support automation, or audit history is required.
+
+## AdMob
+
+- Create the Android app and a banner ad unit in the publisher's AdMob account.
+- Record the production AdMob app ID and banner ad unit ID in local release configuration.
+- Use Google's demo banner unit or registered test devices during development; never click production ads while testing.
+
+## Store and release
+
+- Configure the upload signing key and enroll in Play App Signing.
+- Publish the privacy policy at a public HTTPS URL and update it for Firebase Authentication, purchase verification, and advertising data practices.
+- Complete Data safety and the Ads declaration from the final SDK inventory and release AAB.
