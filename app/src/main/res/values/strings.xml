@@ -99,7 +99,7 @@
     <string name="sign_out">Sign out</string>
     <string name="upgrade_premium">Upgrade to Premium</string>
     <string name="restore_purchases">Restore purchases</string>
-    <string name="sign_in_failed">Google sign-in is unavailable. Check Firebase configuration.</string>
+    <string name="sign_in_failed">Google sign-in is unavailable right now. Please try again.</string>
     <string name="premium_restored">Premium purchase restored.</string>
     <string name="premium_not_found">No active Premium purchase was found.</string>
     <string name="premium_activated">Premium activated.</string>
@@ -142,9 +142,9 @@
     <string name="compatibility_checking">Checking</string>
     <string name="about_and_help">About and help</string>
     <string name="about_title">About Dual Space</string>
-    <string name="about_description">Dual Space supports up to 2 independent copies per game. Together with the original game outside this app, you can use 3 separate game instances.</string>
+    <string name="about_description">Dual Space supports up to %1$d independent copies per game. Together with the original game outside this app, you can use %2$d separate game instances.</string>
     <string name="about_step_copy">1. Tap Add game and choose an installed game.</string>
-    <string name="about_step_add">2. Add the same game again to create a second independent copy.</string>
+    <string name="about_step_add">2. Add the same game again to create another independent copy.</string>
     <string name="about_step_play">3. Tap the game in your library to open its copy.</string>
     <string name="about_plan">Free includes ads. Premium removes all ads. Dual Space does not read or modify your game data.</string>
     <string name="got_it">Got it</string>

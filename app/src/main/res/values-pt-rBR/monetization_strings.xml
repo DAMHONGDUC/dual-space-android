@@ -7,7 +7,7 @@
     <string name="sign_out">Sign out</string>
     <string name="upgrade_premium">Upgrade to Premium</string>
     <string name="restore_purchases">Restore purchases</string>
-    <string name="sign_in_failed">Google sign-in is unavailable. Check Firebase configuration.</string>
+    <string name="sign_in_failed">O login com o Google não está disponível agora. Tente novamente.</string>
     <string name="premium_restored">Premium purchase restored.</string>
     <string name="premium_not_found">No active Premium purchase was found.</string>
     <string name="premium_activated">Premium activated.</string>

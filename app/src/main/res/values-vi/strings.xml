@@ -92,7 +92,7 @@
   <string name="sign_out">Đăng xuất</string>
   <string name="upgrade_premium">Nâng cấp Premium</string>
   <string name="restore_purchases">Khôi phục giao dịch</string>
-  <string name="sign_in_failed">Không thể đăng nhập Google. Hãy kiểm tra cấu hình Firebase.</string>
+  <string name="sign_in_failed">Hiện không thể đăng nhập Google. Vui lòng thử lại.</string>
   <string name="premium_restored">Đã khôi phục Premium.</string>
   <string name="premium_not_found">Không tìm thấy giao dịch Premium đang hoạt động.</string>
   <string name="premium_activated">Đã kích hoạt Premium.</string>
@@ -142,9 +142,9 @@
   <string name="compatibility_checking">Đang kiểm tra</string>
   <string name="about_and_help">Giới thiệu và trợ giúp</string>
   <string name="about_title">Về Dual Space</string>
-  <string name="about_description">Dual Space hỗ trợ tối đa 2 bản copy độc lập cho mỗi game. Tính cả game gốc ở bên ngoài, bạn có thể dùng 3 phiên game riêng biệt.</string>
+  <string name="about_description">Dual Space hỗ trợ tối đa %1$d bản copy độc lập cho mỗi game. Tính cả game gốc ở bên ngoài, bạn có thể dùng %2$d phiên game riêng biệt.</string>
   <string name="about_step_copy">1. Bấm Thêm game và chọn một game đã cài.</string>
-  <string name="about_step_add">2. Thêm lại cùng game để tạo bản copy độc lập thứ hai.</string>
+  <string name="about_step_add">2. Thêm lại cùng game đó để tạo thêm một bản copy độc lập.</string>
   <string name="about_step_play">3. Bấm vào game trong thư viện để mở bản copy.</string>
   <string name="about_plan">Bản Free có quảng cáo. Premium loại bỏ toàn bộ quảng cáo. Dual Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
   <string name="got_it">Đã hiểu</string>

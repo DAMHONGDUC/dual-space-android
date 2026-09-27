@@ -1,6 +1,7 @@
 package com.dd.dual.space.features.workspace.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import com.dd.dual.space.features.workspace.domain.GameCopyLimits
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +40,11 @@ fun aboutDialog(onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12),
             ) {
                 Text(
-                    stringResource(R.string.about_description),
+                    stringResource(
+                        R.string.about_description,
+                        GameCopyLimits.maximumCopiesPerGame,
+                        GameCopyLimits.maximumCopiesPerGame + 1,
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
