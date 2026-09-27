@@ -95,6 +95,8 @@
   <string name="premium_restored">Đã khôi phục Premium.</string>
   <string name="premium_not_found">Không tìm thấy giao dịch Premium đang hoạt động.</string>
   <string name="premium_activated">Đã kích hoạt Premium.</string>
+  <string name="premium_purchase_pending">Thanh toán đang chờ xử lý. Premium sẽ bật khi Google Play xác nhận.</string>
+  <string name="premium_purchase_not_active">Giao dịch đã xong nhưng Premium chưa được kích hoạt. Hãy thử Khôi phục giao dịch.</string>
   <string name="premium_purchase_failed">Hiện chưa thể mua Premium. Vui lòng thử lại.</string>
   <string name="second_copy_check_title">Second copy setup</string>
   <string name="rescan">Quét lại</string>

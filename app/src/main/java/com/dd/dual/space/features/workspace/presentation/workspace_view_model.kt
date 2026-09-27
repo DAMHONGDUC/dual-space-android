@@ -6,6 +6,7 @@ import com.dd.dual.space.features.auth.data.GoogleCredentialProvider
 import com.dd.dual.space.features.auth.domain.AuthRepository
 import com.dd.dual.space.features.auth.domain.AuthSession
 import com.dd.dual.space.features.premium.data.RevenueCatPurchaseManager
+import com.dd.dual.space.features.premium.domain.PurchaseOutcome
 import com.dd.dual.space.features.premium.domain.PremiumAccess
 import com.dd.dual.space.features.premium.domain.PremiumRepository
 import com.dd.dual.space.features.premium.domain.PremiumStatus
@@ -410,15 +411,18 @@ class WorkspaceViewModel(
         if (mutableIsMonetizationBusy.value) return
         mutableIsMonetizationBusy.value = true
         viewModelScope.launch {
-            val token: String? = googleCredentialProvider.getIdToken(activity)
-            val session: AuthSession? = token?.let { authRepository.authenticateGoogleIdToken(it) }
-            mutableAuthSession.value = session
-            if (session == null) {
-                mutableLaunchMessage.value = com.dd.dual.space.R.string.sign_in_failed
-            } else {
-                mutablePremiumAccess.value = premiumRepository.identify(session.userId)
+            try {
+                val token: String? = googleCredentialProvider.getIdToken(activity)
+                val session: AuthSession? = token?.let { authRepository.authenticateGoogleIdToken(it) }
+                mutableAuthSession.value = session
+                if (session == null) {
+                    mutableLaunchMessage.value = com.dd.dual.space.R.string.sign_in_failed
+                } else {
+                    mutablePremiumAccess.value = premiumRepository.identify(session.userId)
+                }
+            } finally {
+                mutableIsMonetizationBusy.value = false
             }
-            mutableIsMonetizationBusy.value = false
         }
     }
 
@@ -426,11 +430,14 @@ class WorkspaceViewModel(
         if (mutableIsMonetizationBusy.value) return
         mutableIsMonetizationBusy.value = true
         viewModelScope.launch {
-            premiumRepository.logOut()
-            authRepository.signOut()
-            mutableAuthSession.value = null
-            mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
-            mutableIsMonetizationBusy.value = false
+            try {
+                premiumRepository.logOut()
+                authRepository.signOut()
+                mutableAuthSession.value = null
+                mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
+            } finally {
+                mutableIsMonetizationBusy.value = false
+            }
         }
     }
 
@@ -438,31 +445,39 @@ class WorkspaceViewModel(
         if (mutableIsMonetizationBusy.value) return
         mutableIsMonetizationBusy.value = true
         viewModelScope.launch {
-            mutablePremiumAccess.value = premiumRepository.restore()
-            mutableLaunchMessage.value = if (mutablePremiumAccess.value.removesAds) {
-                com.dd.dual.space.R.string.premium_restored
-            } else {
-                com.dd.dual.space.R.string.premium_not_found
+            try {
+                val access: PremiumAccess = premiumRepository.restore()
+                mutablePremiumAccess.value = access
+                mutableLaunchMessage.value = when (access.status) {
+                    PremiumStatus.active -> com.dd.dual.space.R.string.premium_restored
+                    PremiumStatus.inactive -> com.dd.dual.space.R.string.premium_not_found
+                    PremiumStatus.unknown -> com.dd.dual.space.R.string.premium_purchase_failed
+                }
+            } finally {
+                mutableIsMonetizationBusy.value = false
             }
-            mutableIsMonetizationBusy.value = false
         }
     }
 
     fun purchasePremium(activity: Activity) {
         if (mutableIsMonetizationBusy.value) return
         mutableIsMonetizationBusy.value = true
-        purchaseManager.purchase(
-            activity = activity,
-            onResult = { access ->
-                mutablePremiumAccess.value = access
-                mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_activated
-                mutableIsMonetizationBusy.value = false
-            },
-            onUnavailable = {
-                mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_failed
-                mutableIsMonetizationBusy.value = false
-            },
-        )
+        purchaseManager.purchase(activity) { outcome ->
+            when (outcome) {
+                is PurchaseOutcome.Activated -> {
+                    mutablePremiumAccess.value = outcome.access
+                    mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_activated
+                }
+                is PurchaseOutcome.NotActivated -> {
+                    mutablePremiumAccess.value = outcome.access
+                    mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_not_active
+                }
+                PurchaseOutcome.Pending -> mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_pending
+                PurchaseOutcome.Cancelled -> Unit
+                PurchaseOutcome.Failed -> mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_failed
+            }
+            mutableIsMonetizationBusy.value = false
+        }
     }
 
     private fun refreshPremiumAccess() {

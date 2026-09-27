@@ -102,6 +102,8 @@
     <string name="premium_restored">Premium purchase restored.</string>
     <string name="premium_not_found">No active Premium purchase was found.</string>
     <string name="premium_activated">Premium activated.</string>
+    <string name="premium_purchase_pending">Your payment is pending. Premium turns on once Google Play confirms it.</string>
+    <string name="premium_purchase_not_active">The purchase finished, but Premium is not active yet. Try Restore purchases.</string>
     <string name="premium_purchase_failed">Premium purchase is unavailable. Please try again.</string>
     <string name="ready_to_open">Ready to open</string>
     <string name="needs_attention">Needs attention</string>
