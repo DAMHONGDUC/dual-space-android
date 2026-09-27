@@ -1,20 +1,16 @@
 package com.dd.dual.space.features.workspace.presentation.components
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dd.dual.space.R
-import com.dd.dual.space.features.premium.domain.PremiumAccess
-import com.dd.dual.space.features.premium.domain.PremiumOffer
-import com.dd.dual.space.features.premium.domain.PremiumPeriod
-import com.dd.dual.space.features.premium.domain.PremiumStatus
 import com.dd.dual.space.features.settings.domain.AppLanguage
 import com.dd.dual.space.features.settings.domain.ThemeMode
 import com.dd.dual.space.features.workspace.domain.ProfileProvisioningStatus
@@ -29,116 +25,52 @@ class SettingsDialogTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun freePlanOffersSignInAndAdFreeUpgrade() {
+    fun adConsentChoicesOpenWhenRequired() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        var signInRequested = false
+        var privacyOptionsOpened = false
 
         composeRule.setContent {
             MaterialTheme {
-                settingsDialog(
-                    profileStatus = ProfileProvisioningStatus.available,
-                    themeMode = ThemeMode.system,
-                    appLanguage = AppLanguage.system,
-                    authSession = null,
-                    premiumAccess = PremiumAccess(PremiumStatus.inactive),
-                    isMonetizationBusy = false,
-                    privacyOptionsRequired = false,
-                    privacyLockEnabled = false,
-                    privacyLockAvailable = true,
-                    onThemeModeChange = {},
-                    onLanguageChange = {},
-                    onOpenAndroidSettings = {},
-                    onSignIn = { signInRequested = true },
-                    onSignOut = {},
-                    onPurchasePremium = {},
-                    onRestorePremium = {},
-                    onOpenPrivacyOptions = {},
-                    onPrivacyLockChange = {},
-                    onShareDiagnosticReport = {},
-                    onOpenCompatibilityCenter = {},
-                    onDismiss = {},
-                )
+                settings(privacyOptionsRequired = true, onOpenPrivacyOptions = { privacyOptionsOpened = true })
             }
         }
 
-        composeRule.onNodeWithText(context.getString(R.string.sign_in_google)).performClick()
-        assertTrue(signInRequested)
+        composeRule.onNodeWithText(context.getString(R.string.privacy_options)).performScrollTo().performClick()
+        assertTrue(privacyOptionsOpened)
     }
 
     @Test
-    fun upgradeButtonShowsThePriceItWillCharge() {
+    fun freeAppShowsNoAccountOrPurchaseControls() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        var purchaseRequested = false
-        val offer = PremiumOffer("$" + "rc_annual", PremiumPeriod.annual, "US$19.99")
 
         composeRule.setContent {
             MaterialTheme {
-                settingsDialog(
-                    profileStatus = ProfileProvisioningStatus.available,
-                    themeMode = ThemeMode.system,
-                    appLanguage = AppLanguage.system,
-                    authSession = null,
-                    premiumAccess = PremiumAccess(PremiumStatus.inactive),
-                    premiumOffer = offer,
-                    isMonetizationBusy = false,
-                    privacyOptionsRequired = false,
-                    privacyLockEnabled = false,
-                    privacyLockAvailable = true,
-                    onThemeModeChange = {},
-                    onLanguageChange = {},
-                    onOpenAndroidSettings = {},
-                    onSignIn = {},
-                    onSignOut = {},
-                    onPurchasePremium = { purchaseRequested = true },
-                    onRestorePremium = {},
-                    onOpenPrivacyOptions = {},
-                    onPrivacyLockChange = {},
-                    onShareDiagnosticReport = {},
-                    onOpenCompatibilityCenter = {},
-                    onDismiss = {},
-                )
+                settings(privacyOptionsRequired = false, onOpenPrivacyOptions = {})
             }
         }
 
-        val price: String = context.getString(R.string.premium_price_annual, "US$19.99")
-        composeRule.onNodeWithText(context.getString(R.string.upgrade_premium_with_price, price)).performScrollTo().performClick()
-        composeRule.onNodeWithText(context.getString(R.string.premium_renewal_note)).assertExists()
-        assertTrue(purchaseRequested)
+        composeRule.onAllNodesWithText(context.getString(R.string.privacy_options)).assertCountEquals(0)
+        composeRule.onAllNodesWithText("Premium", substring = true).assertCountEquals(0)
+        composeRule.onAllNodesWithText("Google", substring = true).assertCountEquals(0)
     }
 
-    @Test
-    fun premiumPlanDoesNotOfferAdsOrPurchase() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-        composeRule.setContent {
-            MaterialTheme {
-                settingsDialog(
-                    profileStatus = ProfileProvisioningStatus.available,
-                    themeMode = ThemeMode.system,
-                    appLanguage = AppLanguage.system,
-                    authSession = null,
-                    premiumAccess = PremiumAccess(PremiumStatus.active),
-                    isMonetizationBusy = false,
-                    privacyOptionsRequired = false,
-                    privacyLockEnabled = false,
-                    privacyLockAvailable = true,
-                    onThemeModeChange = {},
-                    onLanguageChange = {},
-                    onOpenAndroidSettings = {},
-                    onSignIn = {},
-                    onSignOut = {},
-                    onPurchasePremium = {},
-                    onRestorePremium = {},
-                    onOpenPrivacyOptions = {},
-                    onPrivacyLockChange = {},
-                    onShareDiagnosticReport = {},
-                    onOpenCompatibilityCenter = {},
-                    onDismiss = {},
-                )
-            }
-        }
-
-        composeRule.onAllNodesWithText(context.getString(R.string.upgrade_premium)).assertCountEquals(0)
-        composeRule.onNodeWithText(context.getString(R.string.premium_active)).assertIsDisplayed()
+    @Composable
+    private fun settings(privacyOptionsRequired: Boolean, onOpenPrivacyOptions: () -> Unit) {
+        settingsDialog(
+            profileStatus = ProfileProvisioningStatus.available,
+            themeMode = ThemeMode.system,
+            appLanguage = AppLanguage.system,
+            privacyOptionsRequired = privacyOptionsRequired,
+            privacyLockEnabled = false,
+            privacyLockAvailable = true,
+            onThemeModeChange = {},
+            onLanguageChange = {},
+            onOpenAndroidSettings = {},
+            onOpenPrivacyOptions = onOpenPrivacyOptions,
+            onPrivacyLockChange = {},
+            onShareDiagnosticReport = {},
+            onOpenCompatibilityCenter = {},
+            onDismiss = {},
+        )
     }
 }

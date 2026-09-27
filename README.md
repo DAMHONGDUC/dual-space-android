@@ -32,24 +32,11 @@ cp .env.example .env.local
 Fill these values in `.env.local`:
 
 ```properties
-REVENUECAT_GOOGLE_API_KEY=
-REVENUECAT_ENTITLEMENT_ID=premium
-FIREBASE_WEB_CLIENT_ID=
 ADMOB_APP_ID=
 ADMOB_BANNER_AD_UNIT_ID=
 ```
 
 `.env.local` is ignored by Git. Gradle/CI properties take precedence over `.env.local`, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
-
-For Firebase Authentication:
-
-1. Register Android package `com.dd.dual.space` in Firebase.
-2. Enable the Google sign-in provider.
-3. Add debug and release SHA-1/SHA-256 fingerprints.
-4. Download `google-services.json` to `app/google-services.json`.
-5. Copy the Web OAuth client ID to `FIREBASE_WEB_CLIENT_ID`.
-
-`google-services.json` is ignored and must never be committed. The app still builds without Firebase configuration, but Google sign-in remains unavailable.
 
 For local ad testing, `.env.example` contains Google's sample AdMob IDs. Replace them with production IDs only in the protected release environment.
 
@@ -116,11 +103,10 @@ Reports are written under `app/build/reports/`.
 Before every release:
 
 1. Update `versionCode` and `versionName` in `app/build.gradle.kts`.
-2. Provide production Firebase, RevenueCat, and AdMob configuration through the protected release environment.
-3. Configure RevenueCat's Google Play product and attach it to the `premium` entitlement.
-4. Confirm the AdMob app and banner-ad unit belong to the production package.
-5. Run unit tests, connected UI tests, and lint.
-6. Review [store readiness](docs/store-readiness.md) and the [Google Play launch plan](docs/google-play-launch-plan.md).
+2. Provide production AdMob configuration through the protected release environment; `prodRelease` fails while any ID is missing or still a Google test ID.
+3. Confirm the AdMob app and banner-ad unit belong to the production package.
+4. Run unit tests, connected UI tests, `scripts/run_guest_e2e.sh`, `scripts/release_smoke.sh`, and lint.
+5. Review [store readiness](docs/store-readiness.md) and the [Google Play launch plan](docs/google-play-launch-plan.md).
 
 Build the Play release bundle:
 
@@ -157,9 +143,8 @@ Do not upload the `dev` flavor to Google Play.
 ## Product and policy boundaries
 
 - No auto-click, gameplay macros, memory editing, fake GPS, anti-cheat bypass, or silent installation.
-- Both app flavors are independent from `packages/the_universe`; that code remains research-only.
-- Free users can launch games without a time limit and see a small banner outside the launch path.
-- Premium removes all advertising.
+- Both app flavors run games through the virtualization engine in `packages/the_universe`.
+- The app is free: games launch without a time limit, and a small banner appears outside the launch path. There is no sign-in or purchase.
 - Every saved account has a distinct local color, last-opened timestamp, launch confirmation, and launcher shortcut.
 - Launch readiness is checked before Android opens the managed-profile game; diagnostics never include credentials or game data.
 - Privacy Lock uses the device credential or strong biometrics and is opt-in.

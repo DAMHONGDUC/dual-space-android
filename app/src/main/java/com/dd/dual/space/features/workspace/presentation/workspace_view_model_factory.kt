@@ -3,12 +3,7 @@ package com.dd.dual.space.features.workspace.presentation
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.dd.dual.space.BuildConfig
-import com.dd.dual.space.features.auth.data.FirebaseAuthRepository
-import com.dd.dual.space.features.auth.data.GoogleCredentialProvider
 import com.dd.dual.space.features.onboarding.data.OnboardingStore
-import com.dd.dual.space.features.premium.data.RevenueCatPremiumRepository
-import com.dd.dual.space.features.premium.data.RevenueCatPurchaseManager
 import com.dd.dual.space.features.settings.data.LocalLanguageRepository
 import com.dd.dual.space.features.settings.data.LocalLaunchPreferencesRepository
 import com.dd.dual.space.features.settings.data.LocalThemeRepository
@@ -38,14 +33,6 @@ class WorkspaceViewModelFactory(private val context: Context) : ViewModelProvide
             themeRepository = LocalThemeRepository(context),
             languageRepository = LocalLanguageRepository(context),
             launchPreferencesRepository = LocalLaunchPreferencesRepository(context),
-            authRepository = FirebaseAuthRepository(context),
-            premiumRepository = RevenueCatPremiumRepository(
-                context,
-                BuildConfig.REVENUECAT_API_KEY,
-                BuildConfig.REVENUECAT_ENTITLEMENT_ID,
-            ),
-            googleCredentialProvider = GoogleCredentialProvider(BuildConfig.FIREBASE_WEB_CLIENT_ID),
-            purchaseManager = RevenueCatPurchaseManager(BuildConfig.REVENUECAT_ENTITLEMENT_ID),
             shortcutPublisher = AndroidWorkspaceShortcutPublisher(context),
             diagnosticReporter = AndroidDiagnosticReporter(context),
             privacyLockRepository = LocalPrivacyLockRepository(context),

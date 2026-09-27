@@ -1,7 +1,6 @@
 package com.dd.dual.space.features.workspace.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,16 +38,11 @@ import androidx.compose.material3.Switch
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.painterResource
 import com.dd.dual.space.R
 import com.dd.dual.space.core.theme.ParallelAppDimensions
 import com.dd.dual.space.features.workspace.domain.ProfileProvisioningStatus
 import com.dd.dual.space.features.settings.domain.ThemeMode
 import com.dd.dual.space.features.settings.domain.AppLanguage
-import com.dd.dual.space.features.auth.domain.AuthSession
-import com.dd.dual.space.features.premium.domain.PremiumAccess
-import com.dd.dual.space.features.premium.domain.PremiumOffer
-import com.dd.dual.space.features.premium.domain.PremiumPeriod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,10 +50,6 @@ fun settingsDialog(
     profileStatus: ProfileProvisioningStatus,
     themeMode: ThemeMode,
     appLanguage: AppLanguage,
-    authSession: AuthSession?,
-    premiumAccess: PremiumAccess,
-    premiumOffer: PremiumOffer? = null,
-    isMonetizationBusy: Boolean,
     privacyOptionsRequired: Boolean,
     privacyLockEnabled: Boolean,
     privacyLockAvailable: Boolean,
@@ -68,11 +57,6 @@ fun settingsDialog(
     onThemeModeChange: (ThemeMode) -> Unit,
     onLanguageChange: (AppLanguage) -> Unit,
     onOpenAndroidSettings: () -> Unit,
-    onSignIn: () -> Unit,
-    onSignOut: () -> Unit,
-    onDeleteAccount: () -> Unit = {},
-    onPurchasePremium: () -> Unit,
-    onRestorePremium: () -> Unit,
     onOpenPrivacyOptions: () -> Unit,
     onPrivacyLockChange: (Boolean) -> Unit,
     onConfirmBeforeLaunchChange: (Boolean) -> Unit = {},
@@ -87,23 +71,6 @@ fun settingsDialog(
             ProfileProvisioningStatus.unsupported -> R.string.profile_unsupported
         },
     )
-    var isDeleteAccountVisible: Boolean by remember { mutableStateOf(false) }
-    if (isDeleteAccountVisible) {
-        AlertDialog(
-            onDismissRequest = { isDeleteAccountVisible = false },
-            title = { Text(stringResource(R.string.delete_account)) },
-            text = { Text(stringResource(R.string.delete_account_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    isDeleteAccountVisible = false
-                    onDeleteAccount()
-                }) { Text(stringResource(R.string.delete_account_confirm), color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton = {
-                TextButton(onClick = { isDeleteAccountVisible = false }) { Text(stringResource(R.string.cancel)) }
-            },
-        )
-    }
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
@@ -117,69 +84,6 @@ fun settingsDialog(
             ) {
                 settingsSection {
                     Text(stringResource(R.string.settings_profile, profileLabel), style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        stringResource(if (premiumAccess.removesAds) R.string.premium_active else R.string.premium_free),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    authSession?.let { session ->
-                        Text(
-                            stringResource(R.string.signed_in_as, session.email ?: session.displayName ?: session.userId),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    if (authSession == null) {
-                        OutlinedButton(
-                            onClick = onSignIn,
-                            enabled = !isMonetizationBusy,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Image(painter = painterResource(R.drawable.ic_google_g), contentDescription = null)
-                                Text(stringResource(R.string.sign_in_google))
-                            }
-                        }
-                    } else {
-                        OutlinedButton(
-                            onClick = onSignOut,
-                            enabled = !isMonetizationBusy,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) { Text(stringResource(R.string.sign_out)) }
-                        TextButton(
-                            onClick = { isDeleteAccountVisible = true },
-                            enabled = !isMonetizationBusy,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) { Text(stringResource(R.string.delete_account), color = MaterialTheme.colorScheme.error) }
-                    }
-                    if (!premiumAccess.removesAds) {
-                        Button(
-                            onClick = onPurchasePremium,
-                            enabled = !isMonetizationBusy && premiumOffer != null,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(
-                                premiumOffer?.let { offer ->
-                                    stringResource(R.string.upgrade_premium_with_price, offerPriceLabel(offer))
-                                } ?: stringResource(R.string.upgrade_premium),
-                            )
-                        }
-                        if (premiumOffer != null && premiumOffer.period != PremiumPeriod.lifetime) {
-                            Text(
-                                stringResource(R.string.premium_renewal_note),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                    TextButton(
-                        onClick = onRestorePremium,
-                        enabled = !isMonetizationBusy,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text(stringResource(R.string.restore_purchases)) }
                     if (privacyOptionsRequired) {
                         TextButton(
                             onClick = onOpenPrivacyOptions,
@@ -372,12 +276,4 @@ fun dialogIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, isDestruct
             modifier = Modifier.padding(ParallelAppDimensions.space12),
         )
     }
-}
-
-@Composable
-private fun offerPriceLabel(offer: PremiumOffer): String = when (offer.period) {
-    PremiumPeriod.annual -> stringResource(R.string.premium_price_annual, offer.formattedPrice)
-    PremiumPeriod.monthly -> stringResource(R.string.premium_price_monthly, offer.formattedPrice)
-    PremiumPeriod.lifetime -> stringResource(R.string.premium_price_lifetime, offer.formattedPrice)
-    PremiumPeriod.other -> offer.formattedPrice
 }

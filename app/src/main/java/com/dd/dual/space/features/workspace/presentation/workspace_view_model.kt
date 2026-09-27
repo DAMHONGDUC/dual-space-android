@@ -1,17 +1,6 @@
 package com.dd.dual.space.features.workspace.presentation
 
 import androidx.lifecycle.ViewModel
-import android.app.Activity
-import com.dd.dual.space.features.auth.data.GoogleCredentialProvider
-import com.dd.dual.space.features.auth.domain.AccountDeletionResult
-import com.dd.dual.space.features.auth.domain.AuthRepository
-import com.dd.dual.space.features.auth.domain.AuthSession
-import com.dd.dual.space.features.premium.data.RevenueCatPurchaseManager
-import com.dd.dual.space.features.premium.domain.PurchaseOutcome
-import com.dd.dual.space.features.premium.domain.PremiumAccess
-import com.dd.dual.space.features.premium.domain.PremiumOffer
-import com.dd.dual.space.features.premium.domain.PremiumRepository
-import com.dd.dual.space.features.premium.domain.PremiumStatus
 import com.dd.dual.space.features.workspace.domain.GameLaunchResult
 import com.dd.dual.space.features.workspace.domain.GameLauncher
 import com.dd.dual.space.features.workspace.domain.GameCopyRemover
@@ -55,10 +44,6 @@ class WorkspaceViewModel(
     private val themeRepository: ThemeRepository,
     private val languageRepository: LanguageRepository,
     private val launchPreferencesRepository: LaunchPreferencesRepository,
-    private val authRepository: AuthRepository,
-    private val premiumRepository: PremiumRepository,
-    private val googleCredentialProvider: GoogleCredentialProvider,
-    private val purchaseManager: RevenueCatPurchaseManager,
     private val shortcutPublisher: WorkspaceShortcutPublisher,
     private val diagnosticReporter: DiagnosticReporter,
     private val privacyLockRepository: PrivacyLockRepository,
@@ -75,10 +60,6 @@ class WorkspaceViewModel(
     private val mutableIsDeletingWholeGame = MutableStateFlow(false)
     private val mutableThemeMode = MutableStateFlow(themeRepository.load())
     private val mutableAppLanguage = MutableStateFlow(languageRepository.load())
-    private val mutableAuthSession = MutableStateFlow(authRepository.currentSession())
-    private val mutablePremiumAccess = MutableStateFlow(PremiumAccess(PremiumStatus.unknown))
-    private val mutablePremiumOffer = MutableStateFlow<PremiumOffer?>(null)
-    private val mutableIsMonetizationBusy = MutableStateFlow(false)
     private val mutableReadinessBySessionId = MutableStateFlow<Map<String, GameLaunchReadiness>>(emptyMap())
     private val mutablePendingLaunchSession = MutableStateFlow<GameSession?>(null)
     private val mutableConfirmBeforeLaunch = MutableStateFlow(launchPreferencesRepository.confirmBeforeLaunch())
@@ -90,7 +71,6 @@ class WorkspaceViewModel(
     private var catalogLoadJob: Job? = null
     private var isAddingSession: Boolean = false
     private val busySessionIds = mutableSetOf<String>()
-    private var premiumRefreshJob: Job? = null
     private var isWorkspaceReady: Boolean = false
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
@@ -105,10 +85,6 @@ class WorkspaceViewModel(
     val isDeletingWholeGame: StateFlow<Boolean> = mutableIsDeletingWholeGame.asStateFlow()
     val themeMode: StateFlow<ThemeMode> = mutableThemeMode.asStateFlow()
     val appLanguage: StateFlow<AppLanguage> = mutableAppLanguage.asStateFlow()
-    val authSession: StateFlow<AuthSession?> = mutableAuthSession.asStateFlow()
-    val premiumAccess: StateFlow<PremiumAccess> = mutablePremiumAccess.asStateFlow()
-    val premiumOffer: StateFlow<PremiumOffer?> = mutablePremiumOffer.asStateFlow()
-    val isMonetizationBusy: StateFlow<Boolean> = mutableIsMonetizationBusy.asStateFlow()
     val readinessBySessionId: StateFlow<Map<String, GameLaunchReadiness>> = mutableReadinessBySessionId.asStateFlow()
     val pendingLaunchSession: StateFlow<GameSession?> = mutablePendingLaunchSession.asStateFlow()
     val confirmBeforeLaunch: StateFlow<Boolean> = mutableConfirmBeforeLaunch.asStateFlow()
@@ -161,7 +137,6 @@ class WorkspaceViewModel(
         if (!isWorkspaceReady) return
         refreshReadiness()
         refreshRunningSessions()
-        refreshPremiumAccess()
     }
 
     fun onWorkspaceReady() {
@@ -169,8 +144,6 @@ class WorkspaceViewModel(
         isWorkspaceReady = true
         refreshReadiness()
         refreshRunningSessions()
-        refreshPremiumAccess()
-        purchaseManager.loadOffer { offer -> mutablePremiumOffer.value = offer }
         viewModelScope.launch(Dispatchers.IO) { shortcutPublisher.publish(sessions.value) }
     }
 
@@ -432,133 +405,6 @@ class WorkspaceViewModel(
         viewModelScope.launch {
             mutableRunningSessionIds.value = withContext(Dispatchers.IO) {
                 sessions.value.filter(gameLauncher::isRunning).map(GameSession::id).toSet()
-            }
-        }
-    }
-
-    fun signIn(activity: Activity) {
-        if (mutableIsMonetizationBusy.value) return
-        mutableIsMonetizationBusy.value = true
-        viewModelScope.launch {
-            try {
-                val token: String? = googleCredentialProvider.getIdToken(activity)
-                val session: AuthSession? = token?.let { authRepository.authenticateGoogleIdToken(it) }
-                mutableAuthSession.value = session
-                if (session == null) {
-                    mutableLaunchMessage.value = com.dd.dual.space.R.string.sign_in_failed
-                } else {
-                    mutablePremiumAccess.value = premiumRepository.identify(session.userId)
-                }
-            } finally {
-                mutableIsMonetizationBusy.value = false
-            }
-        }
-    }
-
-    fun signOut() {
-        if (mutableIsMonetizationBusy.value) return
-        mutableIsMonetizationBusy.value = true
-        viewModelScope.launch {
-            try {
-                premiumRepository.logOut()
-                authRepository.signOut()
-                mutableAuthSession.value = null
-                mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
-            } finally {
-                mutableIsMonetizationBusy.value = false
-            }
-        }
-    }
-
-    // Deletes only the sign-in account; Play subscriptions and local game copies are managed separately.
-    fun deleteAccount(activity: Activity) {
-        if (mutableIsMonetizationBusy.value || mutableAuthSession.value == null) return
-        mutableIsMonetizationBusy.value = true
-        viewModelScope.launch {
-            try {
-                var result: AccountDeletionResult = authRepository.deleteAccount()
-                if (result == AccountDeletionResult.requiresRecentSignIn) {
-                    // Firebase requires a fresh sign-in before deletion; the same Google account re-authenticates.
-                    val token: String? = googleCredentialProvider.getIdToken(activity)
-                    val session: AuthSession? = token?.let { authRepository.authenticateGoogleIdToken(it) }
-                    result = if (session?.userId == mutableAuthSession.value?.userId) {
-                        authRepository.deleteAccount()
-                    } else {
-                        AccountDeletionResult.failed
-                    }
-                }
-                if (result == AccountDeletionResult.deleted) {
-                    premiumRepository.logOut()
-                    authRepository.signOut()
-                    mutableAuthSession.value = null
-                    mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
-                    mutableLaunchMessage.value = com.dd.dual.space.R.string.account_deleted
-                } else {
-                    mutableLaunchMessage.value = com.dd.dual.space.R.string.account_deletion_failed
-                }
-            } finally {
-                mutableIsMonetizationBusy.value = false
-            }
-        }
-    }
-
-    fun restorePremium() {
-        if (mutableIsMonetizationBusy.value) return
-        mutableIsMonetizationBusy.value = true
-        viewModelScope.launch {
-            try {
-                val access: PremiumAccess = premiumRepository.restore()
-                mutablePremiumAccess.value = access
-                mutableLaunchMessage.value = when (access.status) {
-                    PremiumStatus.active -> com.dd.dual.space.R.string.premium_restored
-                    PremiumStatus.inactive -> com.dd.dual.space.R.string.premium_not_found
-                    PremiumStatus.unknown -> com.dd.dual.space.R.string.premium_purchase_failed
-                }
-            } finally {
-                mutableIsMonetizationBusy.value = false
-            }
-        }
-    }
-
-    fun purchasePremium(activity: Activity) {
-        if (mutableIsMonetizationBusy.value) return
-        val offer: PremiumOffer = mutablePremiumOffer.value ?: run {
-            // Without a displayed price there is nothing the user agreed to buy.
-            mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_failed
-            purchaseManager.loadOffer { loaded -> mutablePremiumOffer.value = loaded }
-            return
-        }
-        mutableIsMonetizationBusy.value = true
-        purchaseManager.purchase(activity, offer) { outcome ->
-            when (outcome) {
-                is PurchaseOutcome.Activated -> {
-                    mutablePremiumAccess.value = outcome.access
-                    mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_activated
-                }
-                is PurchaseOutcome.NotActivated -> {
-                    mutablePremiumAccess.value = outcome.access
-                    mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_not_active
-                }
-                PurchaseOutcome.Pending -> mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_pending
-                PurchaseOutcome.Cancelled -> Unit
-                PurchaseOutcome.Failed -> mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_failed
-            }
-            mutableIsMonetizationBusy.value = false
-        }
-    }
-
-    // Resume can expire, refund or restore an entitlement; only the newest refresh may publish, and
-    // never while a purchase, restore or sign-in owns the premium state.
-    private fun refreshPremiumAccess() {
-        if (mutableIsMonetizationBusy.value) return
-        premiumRefreshJob?.cancel()
-        premiumRefreshJob = viewModelScope.launch {
-            val access: PremiumAccess = mutableAuthSession.value?.let { premiumRepository.identify(it.userId) }
-                ?: premiumRepository.refresh()
-            if (mutableIsMonetizationBusy.value) return@launch
-            // A failed refresh keeps the last known state instead of flashing ads or removing Premium.
-            if (access.status != PremiumStatus.unknown || mutablePremiumAccess.value.status == PremiumStatus.unknown) {
-                mutablePremiumAccess.value = access
             }
         }
     }

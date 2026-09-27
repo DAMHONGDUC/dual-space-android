@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -50,7 +50,7 @@ fun onboardingDialog(onContinue: () -> Unit) {
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space12)) {
                 onboardingItem(Icons.Filled.ContentCopy, stringResource(R.string.onboarding_profiles, GameCopyLimits.maximumCopiesPerGame))
-                onboardingItem(Icons.Filled.WorkspacePremium, stringResource(R.string.onboarding_monetization))
+                onboardingItem(Icons.Filled.Info, stringResource(R.string.onboarding_monetization))
                 onboardingItem(Icons.Filled.Shield, stringResource(R.string.onboarding_privacy))
             }
         },

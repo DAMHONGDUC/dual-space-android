@@ -12,10 +12,8 @@ val localEnvironment: Properties = Properties().apply {
 fun configuredValue(name: String, fallback: String = ""): String =
     providers.gradleProperty(name).orNull ?: localEnvironment.getProperty(name, fallback)
 
-val revenueCatApiKey: String = configuredValue("REVENUECAT_GOOGLE_API_KEY")
-val revenueCatEntitlementId: String = configuredValue("REVENUECAT_ENTITLEMENT_ID", "premium")
-val firebaseWebClientId: String = configuredValue("FIREBASE_WEB_CLIENT_ID")
-val admobBannerAdUnitId: String = configuredValue("ADMOB_BANNER_AD_UNIT_ID")
+// Debug builds fall back to Google's test banner; prod release validation rejects test IDs.
+val admobBannerAdUnitId: String = configuredValue("ADMOB_BANNER_AD_UNIT_ID", "ca-app-pub-3940256099942544/6300978111")
 val admobAppId: String = configuredValue("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
 
 // Google's published sample publisher; its IDs never serve revenue.
@@ -23,17 +21,13 @@ val admobTestPublisherPrefix = "ca-app-pub-3940256099942544"
 
 // Reports only key names so secret values never reach build logs.
 val releaseConfigurationProblems: List<String> = buildList {
-    if (revenueCatApiKey.isBlank()) add("REVENUECAT_GOOGLE_API_KEY is missing")
-    if (revenueCatEntitlementId.isBlank()) add("REVENUECAT_ENTITLEMENT_ID is missing")
-    if (firebaseWebClientId.isBlank()) add("FIREBASE_WEB_CLIENT_ID is missing")
     if (admobBannerAdUnitId.isBlank()) add("ADMOB_BANNER_AD_UNIT_ID is missing")
     if (admobBannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID uses a Google test ID")
     if (admobAppId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID uses a Google test ID")
-    if (!file("google-services.json").exists()) add("app/google-services.json is missing")
 }
 
 val validateProdReleaseConfiguration by tasks.registering {
-    description = "Fails a Play release build that lacks production monetization configuration."
+    description = "Fails a Play release build that lacks production ad configuration."
     val problems = releaseConfigurationProblems
     doLast {
         if (problems.isNotEmpty()) {
@@ -48,10 +42,6 @@ tasks.configureEach {
 
 fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
-}
-
 android {
     namespace = "com.dd.dual.space"
     compileSdk = 37
@@ -64,9 +54,6 @@ android {
         versionName = "0.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "REVENUECAT_API_KEY", quotedBuildConfig(revenueCatApiKey))
-        buildConfigField("String", "REVENUECAT_ENTITLEMENT_ID", quotedBuildConfig(revenueCatEntitlementId))
-        buildConfigField("String", "FIREBASE_WEB_CLIENT_ID", quotedBuildConfig(firebaseWebClientId))
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(admobBannerAdUnitId))
         manifestPlaceholders["admobAppId"] = admobAppId
     }
@@ -133,13 +120,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.google.id)
     implementation(libs.google.play.services.ads)
-    implementation(libs.revenuecat.purchases)
     implementation(libs.play.app.update)
     implementation(libs.google.ump)
     implementation(libs.androidx.fragment)

@@ -35,10 +35,6 @@ fun workspaceScreen(
     val isDeletingWholeGame by viewModel.isDeletingWholeGame.collectAsStateWithLifecycle()
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val appLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
-    val authSession by viewModel.authSession.collectAsStateWithLifecycle()
-    val premiumAccess by viewModel.premiumAccess.collectAsStateWithLifecycle()
-    val premiumOffer by viewModel.premiumOffer.collectAsStateWithLifecycle()
-    val isMonetizationBusy by viewModel.isMonetizationBusy.collectAsStateWithLifecycle()
     val readinessBySessionId by viewModel.readinessBySessionId.collectAsStateWithLifecycle()
     val pendingLaunchSession by viewModel.pendingLaunchSession.collectAsStateWithLifecycle()
     val confirmBeforeLaunch by viewModel.confirmBeforeLaunch.collectAsStateWithLifecycle()
@@ -113,10 +109,6 @@ fun workspaceScreen(
             profileStatus = profileStatus,
             themeMode = themeMode,
             appLanguage = appLanguage,
-            authSession = authSession,
-            premiumAccess = premiumAccess,
-            premiumOffer = premiumOffer,
-            isMonetizationBusy = isMonetizationBusy,
             privacyOptionsRequired = privacyOptionsRequired,
             privacyLockEnabled = privacyLockEnabled,
             privacyLockAvailable = privacyLockAvailable,
@@ -127,11 +119,6 @@ fun workspaceScreen(
                 activity?.recreate()
             },
             onOpenAndroidSettings = viewModel::openAndroidSettings,
-            onSignIn = { activity?.let(viewModel::signIn) },
-            onSignOut = viewModel::signOut,
-            onDeleteAccount = { activity?.let(viewModel::deleteAccount) },
-            onPurchasePremium = { activity?.let(viewModel::purchasePremium) },
-            onRestorePremium = viewModel::restorePremium,
             onOpenPrivacyOptions = onOpenPrivacyOptions,
             onPrivacyLockChange = viewModel::setPrivacyLockEnabled,
             onConfirmBeforeLaunchChange = viewModel::setConfirmBeforeLaunch,
@@ -151,7 +138,7 @@ fun workspaceScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            if (premiumAccess.showsAds && canRequestAds) bannerAd(BuildConfig.ADMOB_BANNER_AD_UNIT_ID)
+            if (canRequestAds) bannerAd(BuildConfig.ADMOB_BANNER_AD_UNIT_ID)
         },
     ) { padding ->
         gameLibrary(

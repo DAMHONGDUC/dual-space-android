@@ -1,7 +1,4 @@
 # Copy these key names to ~/.gradle/gradle.properties or another untracked Gradle properties file.
 # Do not commit production values.
-REVENUECAT_GOOGLE_API_KEY=
-REVENUECAT_ENTITLEMENT_ID=premium
-FIREBASE_WEB_CLIENT_ID=
 ADMOB_APP_ID=
 ADMOB_BANNER_AD_UNIT_ID=
