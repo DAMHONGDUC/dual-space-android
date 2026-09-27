@@ -39,7 +39,7 @@ public class IOCore {
     }
 
     
-    public void addRedirect(String origPath, String redirectPath) {
+    public synchronized void addRedirect(String origPath, String redirectPath) {
         if (TextUtils.isEmpty(origPath) || TextUtils.isEmpty(redirectPath) || mRedirectMap.get(origPath) != null)
             return;
         
@@ -52,26 +52,26 @@ public class IOCore {
         NativeCore.addIORule(origPath, redirectPath);
     }
 
-    public void addBlackRedirect(String path) {
+    public synchronized void addBlackRedirect(String path) {
         if (TextUtils.isEmpty(path))
             return;
         sBlackTree.add(path);
     }
 
-    public String redirectPath(String path) {
-        if (TextUtils.isEmpty(path))
+    public synchronized String redirectPath(String path) {
+        if (path == null || path.isEmpty())
             return path;
         if (path.contains("/theuniverse/")) {
             return path;
         }
         String search = sBlackTree.search(path);
         if (!TextUtils.isEmpty(search))
-            return search;
+            return path;
 
         
         String key = mTrieTree.search(path);
         if (!TextUtils.isEmpty(key))
-            path = path.replace(key, Objects.requireNonNull(mRedirectMap.get(key)));
+            path = Objects.requireNonNull(mRedirectMap.get(key)) + path.substring(key.length());
 
         return path;
     }
@@ -84,15 +84,16 @@ public class IOCore {
     }
 
     public String redirectPath(String path, Map<String, String> rule) {
-        if (TextUtils.isEmpty(path))
+        if (path == null || path.isEmpty())
             return path;
-
-        
-        String key = mTrieTree.search(path);
-        if (!TextUtils.isEmpty(key))
-            path = path.replace(key, Objects.requireNonNull(rule.get(key)));
-
-        return path;
+        String match = null;
+        for (String key : rule.keySet()) {
+            if (key == null || key.isEmpty() || !path.startsWith(key)) continue;
+            boolean boundary = path.length() == key.length() || key.endsWith("/")
+                    || path.charAt(key.length()) == '/';
+            if (boundary && (match == null || key.length() > match.length())) match = key;
+        }
+        return match == null ? path : Objects.requireNonNull(rule.get(match)) + path.substring(match.length());
     }
 
     public File redirectPath(File path, Map<String, String> rule) {
