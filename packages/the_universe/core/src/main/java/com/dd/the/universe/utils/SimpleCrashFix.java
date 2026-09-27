@@ -37,57 +37,9 @@ public class SimpleCrashFix {
     
     
     private static void installGlobalExceptionHandler() {
-        try {
-            
-            Thread.UncaughtExceptionHandler currentHandler = Thread.getDefaultUncaughtExceptionHandler();
-            
-            Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                @Override
-                public void uncaughtException(Thread thread, Throwable throwable) {
-                    
-                    if (isNullContextCrash(throwable)) {
-                        Slog.w(TAG, "Caught null context crash, preventing crash: " + throwable.getMessage());
-                        return; 
-                    }
-
-                    
-                    if (isGooglePlayServicesCrash(throwable)) {
-                        Slog.w(TAG, "Caught Google Play Services crash, preventing crash: " + throwable.getMessage());
-                        return; 
-                    }
-
-                    
-                    if (isWebViewCrash(throwable)) {
-                        Slog.w(TAG, "Caught WebView crash, preventing crash: " + throwable.getMessage());
-                        return; 
-                    }
-
-                    
-                    if (isAttributionSourceCrash(throwable)) {
-                        Slog.w(TAG, "Caught AttributionSource crash, preventing crash: " + throwable.getMessage());
-                        return; 
-                    }
-
-                    
-                    if (isSocialMediaAppCrash(throwable)) {
-                        Slog.w(TAG, "Caught social media app crash, preventing crash: " + throwable.getMessage());
-                        return; 
-                    }
-
-                    
-                    Slog.e(TAG, "Fatal crash detected, delegating to default handler", throwable);
-
-
-                    if (currentHandler != null) {
-                        currentHandler.uncaughtException(thread, throwable);
-                    }
-                }
-            });
-            
-            Slog.d(TAG, "Global exception handler installed successfully");
-        } catch (Exception e) {
-            Slog.e(TAG, "Failed to install global exception handler: " + e.getMessage(), e);
-        }
+        // An uncaught exception cannot be recovered by returning from its handler.
+        // Preserve Android's handler and any crash reporter already installed.
+        Slog.d(TAG, "Preserving the platform uncaught exception handler");
     }
     
     
