@@ -1,0 +1,70 @@
+# Core release implementation progress
+
+This is an execution record, not a replacement for the immutable
+`2026-09-26-gitnexus-plan-app-core-release-improvements.md`.
+The application is **not release-ready** and the full plan is **not complete**.
+
+## Decisions preserved
+
+- Application identity is now `com.dd.dual.space`; the user's identity commits are preserved.
+- Engine Java and JNI compatibility contracts remain under `com.dd.the.universe`.
+- Privacy Lock protects the workspace only. Guest games and Recent Apps must not be claimed as protected.
+- Settings should provide email contact for support and account deletion requests. The destination email is still required from the owner; no address has been invented.
+- Public deletion/support resources and publisher details remain release inputs. An email action alone does not establish Play compliance.
+- No new subscription service, pricing change, store submission, or Git push has been performed.
+
+## Implemented changes and remaining evidence
+
+| Plan item | Implementation | Remaining work |
+| --- | --- | --- |
+| C01 | Guest-resume sequence acknowledgement instead of dispatch-only success | Device E2E; bound blocking Binder calls, not just the polling loop |
+| C02 | Install defaults to failure; persistence failure cannot return success | Fault injection and transaction rollback in C07 |
+| C03 | Main guest launch/install checks no longer fall back to host state | Device outage scenarios; unused fallback helpers still exist |
+| C04 | Composite user/process keys; identity-checked death cleanup; reserved slots included | Multi-user process lifecycle and PID-reuse tests on Android |
+| C05 | Existing initialization wait is bounded | **Unresolved:** provider initialization and other IPC still occur under the process registry lock |
+| C06 | Synchronized cache; monotonic retry clock; stale death callback cannot clear a replacement; no health-check ping; death-link failure returns no service | Real Binder death/reconnect and concurrency tests; acquisition can still block |
+| C12 | Java and native longest directory-prefix matching; suffix preserved; custom Java map independent of global trie | Android filesystem integration; Java virtual-path bypass still needs isolation review |
+| C13 | Blacklisted Java paths return the whole original path | Dedicated Android blacklist regression coverage |
+| C14 | Platform uncaught-exception handler retained | Device crash-reporting verification |
+| C16–C17 | Automatic native property hook and unbounded property-copy implementation removed; JNI setter signature retained as a no-op | Device compatibility smoke test |
+| C18 | Native rules own strings; JNI rule buffers released; rule updates synchronized | JNI allocation-failure and device stress coverage |
+| C19 | Unsafe native replacement allocation removed; thread-local result lifetime documented; optional open mode read only when required; missing original function fails safely | Android open/O_TMPFILE smoke tests; dormant wrappers were not activated |
+
+## Remaining implementation backlog
+
+1. C07–C11: transactional installation/update, complete split/ABI extraction, failure-aware deletion, safe package/UID recovery, and workspace JSON corruption recovery.
+2. C15: persisted per-install virtual identity with safe multi-process access and compatibility migration.
+3. C20–C24: workspace operation serialization, readiness/error mapping, entitlement refresh, purchase outcome handling, and explicit offering/price presentation.
+4. C25–C29: API 29 authentication compatibility, immediate workspace secure-window updates, auth/busy cleanup, shortcut lifecycle, and force-update result handling.
+5. C30–C31: companion request validation/body limits and trustworthy device-run verdicts.
+6. C32–C37: release configuration validation, locale parity, production logging, exported proxy validation, support/deletion entry point, and accurate release/privacy copy.
+7. G01–G08: device/OEM compatibility, guest-isolation assessment, license review, signed release and 16 KB verification, sandbox billing, Play Console setup, performance measurements, and expanded core tests. Unit tests and debug native builds do not satisfy these gates.
+
+Optional O-items remain deferred. Free/paid copy limits have not been changed.
+
+## Verification performed on 2026-09-27
+
+- Nine selected core JUnit tests passed: install result (1), trie (4), IO map (1), crash handler (1), stale process death (1), Binder cache (1).
+- Eight selected app tests passed in the renamed `devDebug` variant: launch acknowledgement (2) and virtualized launcher (6).
+- `scripts/test_native_io.sh` passed with AddressSanitizer and UndefinedBehaviorSanitizer, including owned-input mutation, longest prefix, sibling paths, repeated suffix, null input, replacement rules, and four concurrent workers.
+- Native ownership test failed against the pre-fix implementation and passed after the fix. Earlier Java path and crash-handler tests also reproduced their pre-fix failures.
+- `:the-universe-core:externalNativeBuildDebug` passed for arm64-v8a and armeabi-v7a. The build printed `fcntl(): Bad file descriptor`; runtime impact is unverified.
+- The first app test command used an ambiguous task name; rerunning `:app:testDevDebugUnitTest` succeeded. The first native host command used a runtime without JNI headers; using the installed OpenJDK header directory succeeded.
+- Core lint initially reported three `InlinedApi` warnings. API guards were corrected for receiver flags and batched location extras; the rerun produced an empty issues report. No lint suppression was added.
+- Core lint is configured to check only `NewApi` and `InlinedApi`; a clean result is **not** a full static-analysis pass.
+- Java compilation still reports the Java 8 annotation-processor/source 17 mismatch and deprecated/unchecked API notes. Gradle also reports deprecations.
+- No device E2E, sandbox purchase, signed release bundle, or Play review has been completed by this execution.
+
+## Local commits
+
+- `6844b17`: fail-closed installation result.
+- `94594c3`: guest launch acknowledgement.
+- `dcf64b3`: Java path matching.
+- `938734c`: preserve platform crash handling.
+- `8c4ab5e`: process identity and virtual-user cleanup; C05 explicitly remains open.
+- `f83d60c`: Binder cache synchronization and stale callback protection.
+- `ac258ed`: native path ownership, sanitizer tests, and removal of automatic property spoofing.
+
+GitNexus gates use the pinned 1.6.12 distribution with schema-4 runner receipts.
+Its graph has known dispatch/receiver-resolution and process-trace limits;
+zero reported affected flows is not proof of no runtime impact.
