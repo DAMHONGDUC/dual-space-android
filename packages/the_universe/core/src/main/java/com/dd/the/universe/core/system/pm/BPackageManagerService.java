@@ -40,6 +40,7 @@ import com.dd.the.universe.core.system.BProcessManagerService;
 import com.dd.the.universe.core.system.ISystemService;
 import com.dd.the.universe.core.system.ProcessRecord;
 import com.dd.the.universe.core.system.user.BUserHandle;
+import com.dd.the.universe.fake.device.VirtualDeviceIdentity;
 import com.dd.the.universe.core.system.user.BUserInfo;
 import com.dd.the.universe.core.system.user.BUserManagerService;
 import com.dd.the.universe.entity.pm.InstallOption;
@@ -812,9 +813,18 @@ public class BPackageManagerService extends IBPackageManagerService.Stub impleme
                 aPackage.applicationInfo = TheUniverseCore.getPackageManager().getPackageInfo(aPackage.packageName, 0).applicationInfo;
             }
             BPackageSettings previous;
+            boolean userHasExistingCopies = false;
             synchronized (mPackages) {
                 previous = mPackages.get(aPackage.packageName);
+                for (BPackageSettings installed : mPackages.values()) {
+                    if (installed.getInstalled(userId)) {
+                        userHasExistingCopies = true;
+                        break;
+                    }
+                }
             }
+            // Fixes this virtual user's identity before its first launch, from the single server process.
+            VirtualDeviceIdentity.ensureAndroidId(userId, userHasExistingCopies);
             BPackageSettings bPackageSettings = mSettings.getPackageLPw(aPackage.packageName, aPackage, option);
 
             // Binaries are shared by every copy of a package: a version change must stop all of them,

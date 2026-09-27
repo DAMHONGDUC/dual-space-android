@@ -53,6 +53,15 @@ class GuestFixtureLaunchTest {
         assertEquals("1", secondReport["launches"])
         assertNotEquals(firstReport["filesDir"], secondReport["filesDir"])
         assertNotEquals(firstReport["pid"], secondReport["pid"])
+        // Each copy sees its own Android ID: not the host app's, not the other copy's, and not the
+        // value derived identically on every device.
+        val hostAndroidId: String = android.provider.Settings.Secure.getString(
+            InstrumentationRegistry.getInstrumentation().targetContext.contentResolver,
+            android.provider.Settings.Secure.ANDROID_ID,
+        )
+        assertNotEquals("guest sees the host app's Android ID", hostAndroidId, firstReport["androidId"])
+        assertNotEquals(firstReport["androidId"], secondReport["androidId"])
+        assertNotEquals(legacyDerivedAndroidId(firstUserId), firstReport["androidId"])
     }
 
     @Test
@@ -86,6 +95,10 @@ class GuestFixtureLaunchTest {
         assertEquals(VirtualRuntimeResult.Success, runtime.uninstall(fixturePackage, firstUserId))
         assertFalse(filesDir.exists())
     }
+
+    private fun legacyDerivedAndroidId(userId: Int): String =
+        java.security.MessageDigest.getInstance("MD5").digest("bbb_default_$userId".toByteArray())
+            .joinToString("") { byte -> "%02x".format(byte) }.take(16)
 
     private fun readMarker(userId: Int): Map<String, String> =
         File(BEnvironment.getDataFilesDir(fixturePackage, userId), markerFileName).readLines()

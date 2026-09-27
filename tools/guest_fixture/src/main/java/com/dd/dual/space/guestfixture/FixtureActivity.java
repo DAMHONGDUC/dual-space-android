@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Process;
+import android.provider.Settings;
 import android.util.Log;
 
 import java.io.File;
@@ -21,7 +22,8 @@ public class FixtureActivity extends Activity {
         SharedPreferences preferences = getSharedPreferences("fixture", MODE_PRIVATE);
         int launches = preferences.getInt("launches", 0) + 1;
         preferences.edit().putInt("launches", launches).commit();
-        String report = "launches=" + launches + "\npid=" + Process.myPid() + "\nfilesDir=" + getFilesDir().getAbsolutePath() + "\n";
+        String report = "launches=" + launches + "\npid=" + Process.myPid() + "\nfilesDir=" + getFilesDir().getAbsolutePath()
+                + "\nandroidId=" + Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID) + "\n";
         File marker = new File(getFilesDir(), "guest_marker.txt");
         try (FileOutputStream output = new FileOutputStream(marker)) {
             output.write(report.getBytes(StandardCharsets.UTF_8));

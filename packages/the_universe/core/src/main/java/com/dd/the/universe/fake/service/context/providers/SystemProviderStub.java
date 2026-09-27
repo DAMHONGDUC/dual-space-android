@@ -1,5 +1,6 @@
 package com.dd.the.universe.fake.service.context.providers;
 
+import android.os.Bundle;
 import android.os.IInterface;
 
 import java.lang.reflect.Method;
@@ -7,11 +8,14 @@ import java.lang.reflect.Method;
 import universeproxy.android.content.BRAttributionSource;
 import com.dd.the.universe.TheUniverseCore;
 import com.dd.the.universe.app.BActivityThread;
+import com.dd.the.universe.fake.device.VirtualDeviceIdentity;
 import com.dd.the.universe.fake.hook.ClassInvocationStub;
 import com.dd.the.universe.utils.compat.ContextCompat;
 
 
 public class SystemProviderStub extends ClassInvocationStub implements BContentProvider {
+    private static final String SETTINGS_VALUE_KEY = "value";
+
     private IInterface mBase;
     private String mAppPkg;
 
@@ -70,6 +74,12 @@ public class SystemProviderStub extends ClassInvocationStub implements BContentP
                         ContextCompat.fixAttributionSourceState(arg, pkg, uid);
                     }
                 }
+            }
+            // Each virtual user gets its own Android ID; without this every copy reads the host's.
+            if (BActivityThread.getAppConfig() != null && SettingsAndroidIdCall.matches(args)) {
+                Bundle result = new Bundle();
+                result.putString(SETTINGS_VALUE_KEY, VirtualDeviceIdentity.getAndroidIdForCurrentUser());
+                return result;
             }
             return method.invoke(mBase, args);
         }
