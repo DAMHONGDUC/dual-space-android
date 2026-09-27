@@ -108,15 +108,24 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
             ?: preferences.getString(previousSessionsKey, null)
             ?: preferences.getString(oldestSessionsKey, null)
             ?: return emptyList()
-        return try {
-            val array = JSONArray(encoded)
-            val nextVirtualUserIdByPackage = mutableMapOf<String, Int>()
-            List(array.length()) { index ->
+        val array: JSONArray = try {
+            JSONArray(encoded)
+        } catch (error: Exception) {
+            AppLogger.error("load_sessions", error, mapOf("length" to encoded.length))
+            preserveUnreadableSessions(encoded)
+            return emptyList()
+        }
+        val nextVirtualUserIdByPackage = mutableMapOf<String, Int>()
+        val seenIds = mutableSetOf<String>()
+        val sessions = mutableListOf<GameSession>()
+        for (index in 0 until array.length()) {
+            // One damaged record must not discard the accounts that are still readable.
+            val session: GameSession? = try {
                 val item: JSONObject = array.getJSONObject(index)
                 val packageName: String = item.getString("packageName")
                 val migratedVirtualUserId: Int = nextVirtualUserIdByPackage.getOrDefault(packageName, 1)
                 val virtualUserId: Int = item.optInt("virtualUserId", migratedVirtualUserId)
-                nextVirtualUserIdByPackage[packageName] = virtualUserId + 1
+                nextVirtualUserIdByPackage[packageName] = maxOf(nextVirtualUserIdByPackage.getOrDefault(packageName, 1), virtualUserId + 1)
                 GameSession(
                     id = item.getString("id"),
                     name = item.getString("name"),
@@ -128,18 +137,41 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
                     packageName = packageName,
                     profileTarget = ProfileTarget.valueOf(item.getString("profileTarget")),
                     virtualUserId = virtualUserId,
-                )
+                ).takeIf { candidate ->
+                    candidate.id.isNotBlank() && candidate.packageName.isNotBlank() &&
+                        candidate.virtualUserId >= 0 && seenIds.add(candidate.id)
+                }
+            } catch (error: Exception) {
+                AppLogger.error("load_session_record", error, mapOf("index" to index))
+                null
             }
-        } catch (error: Exception) {
-            AppLogger.error("load_sessions", error, mapOf("length" to encoded.length))
-            emptyList()
+            if (session == null) {
+                AppLogger.error("load_session_record", IllegalStateException("invalid_record"), mapOf("index" to index))
+            } else {
+                sessions += session
+            }
         }
+        if (sessions.size != array.length()) {
+            AppLogger.error(
+                "load_sessions",
+                IllegalStateException("skipped_records"),
+                mapOf("loaded" to sessions.size, "stored" to array.length()),
+            )
+            preserveUnreadableSessions(encoded)
+        }
+        return sessions
+    }
+
+    // Keeps the first damaged payload so later saves cannot destroy the only recoverable copy.
+    private fun preserveUnreadableSessions(encoded: String) {
+        if (preferences.contains(recoveryBackupKey)) return
+        val saved: Boolean = preferences.edit().putString(recoveryBackupKey, encoded).commit()
+        AppLogger.success("backup_unreadable_sessions", mapOf("saved" to saved, "length" to encoded.length))
     }
 
     private fun update(sessions: List<GameSession>) {
-        mutableSessions.value = sessions
         val encoded = JSONArray().apply {
-            mutableSessions.value.forEach { session ->
+            sessions.forEach { session ->
                 put(JSONObject().apply {
                     put("id", session.id)
                     put("name", session.name)
@@ -152,7 +184,12 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
                 })
             }
         }.toString()
-        preferences.edit { putString(sessionsKey, encoded) }
+        // Publish only what storage accepted, so the UI never shows accounts that were not saved.
+        if (!preferences.edit().putString(sessionsKey, encoded).commit()) {
+            AppLogger.error("save_sessions", IllegalStateException("commit_failed"), mapOf("count" to sessions.size))
+            return
+        }
+        mutableSessions.value = sessions
     }
 
     private fun hasLegacySessions(): Boolean =
@@ -166,5 +203,6 @@ class PersistentWorkspaceRepository(context: Context) : WorkspaceRepository {
         const val selectedSessionKey = "selected_session_v6"
         const val previousSelectedSessionKey = "selected_session_v5"
         const val oldestSelectedSessionKey = "selected_session_v4"
+        const val recoveryBackupKey = "sessions_recovery_backup"
     }
 }
