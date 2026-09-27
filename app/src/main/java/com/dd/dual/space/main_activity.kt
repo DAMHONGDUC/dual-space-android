@@ -17,6 +17,7 @@ import com.dd.dual.space.features.settings.data.LocalLanguageRepository
 import com.dd.dual.space.features.update.data.ForceUpdateCoordinator
 import androidx.fragment.app.FragmentActivity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.view.WindowManager
 import android.os.SystemClock
 import com.dd.dual.space.core.logging.AppLogger
@@ -31,6 +32,7 @@ class MainActivity : FragmentActivity() {
     private lateinit var privacyLockRepository: LocalPrivacyLockRepository
     private lateinit var privacyLockCoordinator: BiometricPrivacyLockCoordinator
     private var isPrivacyLocked by mutableStateOf(false)
+    private var privacyLockListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
     private var shortcutSessionId by mutableStateOf<String?>(null)
     private val updateLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
         if (result.resultCode != RESULT_OK) isForceUpdateRequired = true
@@ -47,6 +49,7 @@ class MainActivity : FragmentActivity() {
         adConsentManager = AdConsentManager(this)
         privacyLockRepository = LocalPrivacyLockRepository(this)
         updateScreenCaptureProtection()
+        privacyLockListener = privacyLockRepository.observeEnabled { updateScreenCaptureProtection() }
         privacyLockCoordinator = BiometricPrivacyLockCoordinator(this) { isPrivacyLocked = false }
         isPrivacyLocked = privacyLockRepository.isEnabled()
         shortcutSessionId = intent.getStringExtra(shortcutSessionIdExtra)
@@ -89,6 +92,12 @@ class MainActivity : FragmentActivity() {
         if (::privacyLockRepository.isInitialized && privacyLockRepository.isEnabled() && !isChangingConfigurations) {
             isPrivacyLocked = true
         }
+    }
+
+    override fun onDestroy() {
+        privacyLockListener?.let(privacyLockRepository::stopObserving)
+        privacyLockListener = null
+        super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {

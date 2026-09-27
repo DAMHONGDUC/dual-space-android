@@ -11,7 +11,7 @@ class BiometricPrivacyLockCoordinator(
     private val activity: FragmentActivity,
     private val onUnlocked: () -> Unit,
 ) {
-    fun canAuthenticate(): Boolean = BiometricManager.from(activity).canAuthenticate(authenticators) == BiometricManager.BIOMETRIC_SUCCESS
+    fun canAuthenticate(): Boolean = BiometricManager.from(activity).canAuthenticate(privacyLockAuthenticators) == BiometricManager.BIOMETRIC_SUCCESS
 
     fun authenticate() {
         AppLogger.action("authenticate_privacy_lock", emptyMap())
@@ -40,13 +40,8 @@ class BiometricPrivacyLockCoordinator(
             BiometricPrompt.PromptInfo.Builder()
                 .setTitle(activity.getString(R.string.privacy_lock_title))
                 .setSubtitle(activity.getString(R.string.privacy_lock_prompt))
-                .setAllowedAuthenticators(authenticators)
+                .setAllowedAuthenticators(privacyLockAuthenticators)
                 .build(),
         )
-    }
-
-    private companion object {
-        const val authenticators: Int = BiometricManager.Authenticators.BIOMETRIC_STRONG or
-            BiometricManager.Authenticators.DEVICE_CREDENTIAL
     }
 }
