@@ -17,4 +17,9 @@
     <string name="sort_name">名称</string>
     <string name="account_count">%1$d 个账号</string>
     <string name="shortcut_removed_account">此账号已被移除。</string>
+    <string name="delete_account">删除账号</string>
+    <string name="delete_account_message">要删除你的 Dual Space 登录账号吗？此操作无法撤销。这不会取消 Google Play 订阅（请在 Google Play 中管理），也不会移除你的游戏副本。</string>
+    <string name="delete_account_confirm">删除</string>
+    <string name="account_deleted">你的账号已删除。</string>
+    <string name="account_deletion_failed">无法删除你的账号，请重试。</string>
 </resources>

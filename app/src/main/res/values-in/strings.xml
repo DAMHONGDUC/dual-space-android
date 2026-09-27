@@ -17,4 +17,9 @@
     <string name="sort_name">Nama</string>
     <string name="account_count">%1$d akun</string>
     <string name="shortcut_removed_account">Akun ini telah dihapus.</string>
+    <string name="delete_account">Hapus akun</string>
+    <string name="delete_account_message">Hapus akun login Dual Space Anda? Tindakan ini tidak dapat dibatalkan. Ini tidak membatalkan langganan Google Play (kelola di Google Play) dan tidak menghapus salinan game Anda.</string>
+    <string name="delete_account_confirm">Hapus</string>
+    <string name="account_deleted">Akun Anda telah dihapus.</string>
+    <string name="account_deletion_failed">Akun Anda tidak dapat dihapus. Silakan coba lagi.</string>
 </resources>

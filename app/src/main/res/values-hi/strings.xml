@@ -17,4 +17,9 @@
     <string name="sort_name">नाम</string>
     <string name="account_count">%1$d खाते</string>
     <string name="shortcut_removed_account">यह खाता हटा दिया गया है।</string>
+    <string name="delete_account">खाता हटाएं</string>
+    <string name="delete_account_message">अपना Dual Space साइन-इन खाता हटाएं? इसे पूर्ववत नहीं किया जा सकता। इससे Google Play सदस्यता रद्द नहीं होती (उसे Google Play में प्रबंधित करें) और आपकी गेम कॉपी नहीं हटतीं।</string>
+    <string name="delete_account_confirm">हटाएं</string>
+    <string name="account_deleted">आपका खाता हटा दिया गया।</string>
+    <string name="account_deletion_failed">आपका खाता हटाया नहीं जा सका। कृपया फिर कोशिश करें।</string>
 </resources>

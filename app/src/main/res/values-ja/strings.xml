@@ -17,4 +17,9 @@
     <string name="sort_name">名前</string>
     <string name="account_count">%1$d 件のアカウント</string>
     <string name="shortcut_removed_account">このアカウントは削除されました。</string>
+    <string name="delete_account">アカウントを削除</string>
+    <string name="delete_account_message">Dual Space のログインアカウントを削除しますか？この操作は元に戻せません。Google Play の定期購入は解約されず（Google Play で管理してください）、ゲームのコピーも削除されません。</string>
+    <string name="delete_account_confirm">削除</string>
+    <string name="account_deleted">アカウントを削除しました。</string>
+    <string name="account_deletion_failed">アカウントを削除できませんでした。もう一度お試しください。</string>
 </resources>

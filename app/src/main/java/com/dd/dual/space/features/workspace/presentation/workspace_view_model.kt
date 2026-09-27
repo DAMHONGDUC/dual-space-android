@@ -3,6 +3,7 @@ package com.dd.dual.space.features.workspace.presentation
 import androidx.lifecycle.ViewModel
 import android.app.Activity
 import com.dd.dual.space.features.auth.data.GoogleCredentialProvider
+import com.dd.dual.space.features.auth.domain.AccountDeletionResult
 import com.dd.dual.space.features.auth.domain.AuthRepository
 import com.dd.dual.space.features.auth.domain.AuthSession
 import com.dd.dual.space.features.premium.data.RevenueCatPurchaseManager
@@ -456,6 +457,38 @@ class WorkspaceViewModel(
                 authRepository.signOut()
                 mutableAuthSession.value = null
                 mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
+            } finally {
+                mutableIsMonetizationBusy.value = false
+            }
+        }
+    }
+
+    // Deletes only the sign-in account; Play subscriptions and local game copies are managed separately.
+    fun deleteAccount(activity: Activity) {
+        if (mutableIsMonetizationBusy.value || mutableAuthSession.value == null) return
+        mutableIsMonetizationBusy.value = true
+        viewModelScope.launch {
+            try {
+                var result: AccountDeletionResult = authRepository.deleteAccount()
+                if (result == AccountDeletionResult.requiresRecentSignIn) {
+                    // Firebase requires a fresh sign-in before deletion; the same Google account re-authenticates.
+                    val token: String? = googleCredentialProvider.getIdToken(activity)
+                    val session: AuthSession? = token?.let { authRepository.authenticateGoogleIdToken(it) }
+                    result = if (session?.userId == mutableAuthSession.value?.userId) {
+                        authRepository.deleteAccount()
+                    } else {
+                        AccountDeletionResult.failed
+                    }
+                }
+                if (result == AccountDeletionResult.deleted) {
+                    premiumRepository.logOut()
+                    authRepository.signOut()
+                    mutableAuthSession.value = null
+                    mutablePremiumAccess.value = PremiumAccess(PremiumStatus.inactive)
+                    mutableLaunchMessage.value = com.dd.dual.space.R.string.account_deleted
+                } else {
+                    mutableLaunchMessage.value = com.dd.dual.space.R.string.account_deletion_failed
+                }
             } finally {
                 mutableIsMonetizationBusy.value = false
             }

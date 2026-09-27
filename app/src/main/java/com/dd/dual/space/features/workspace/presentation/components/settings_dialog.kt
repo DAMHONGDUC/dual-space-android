@@ -67,6 +67,7 @@ fun settingsDialog(
     onOpenAndroidSettings: () -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit = {},
     onPurchasePremium: () -> Unit,
     onRestorePremium: () -> Unit,
     onOpenPrivacyOptions: () -> Unit,
@@ -83,6 +84,23 @@ fun settingsDialog(
             ProfileProvisioningStatus.unsupported -> R.string.profile_unsupported
         },
     )
+    var isDeleteAccountVisible: Boolean by remember { mutableStateOf(false) }
+    if (isDeleteAccountVisible) {
+        AlertDialog(
+            onDismissRequest = { isDeleteAccountVisible = false },
+            title = { Text(stringResource(R.string.delete_account)) },
+            text = { Text(stringResource(R.string.delete_account_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    isDeleteAccountVisible = false
+                    onDeleteAccount()
+                }) { Text(stringResource(R.string.delete_account_confirm), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { isDeleteAccountVisible = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
@@ -128,6 +146,11 @@ fun settingsDialog(
                             enabled = !isMonetizationBusy,
                             modifier = Modifier.fillMaxWidth(),
                         ) { Text(stringResource(R.string.sign_out)) }
+                        TextButton(
+                            onClick = { isDeleteAccountVisible = true },
+                            enabled = !isMonetizationBusy,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text(stringResource(R.string.delete_account), color = MaterialTheme.colorScheme.error) }
                     }
                     if (!premiumAccess.removesAds) {
                         Button(

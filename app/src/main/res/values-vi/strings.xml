@@ -148,4 +148,9 @@
   <string name="about_step_play">3. Bấm vào game trong thư viện để mở bản copy.</string>
   <string name="about_plan">Bản Free có quảng cáo. Premium loại bỏ toàn bộ quảng cáo. Dual Space không đọc hoặc chỉnh sửa dữ liệu game.</string>
   <string name="got_it">Đã hiểu</string>
+    <string name="delete_account">Xoá tài khoản</string>
+    <string name="delete_account_message">Xoá tài khoản đăng nhập Dual Space? Không thể hoàn tác. Việc này không huỷ gói đăng ký Google Play (hãy quản lý trong Google Play) và không xoá các bản copy game.</string>
+    <string name="delete_account_confirm">Xoá</string>
+    <string name="account_deleted">Đã xoá tài khoản.</string>
+    <string name="account_deletion_failed">Không thể xoá tài khoản. Vui lòng thử lại.</string>
 </resources>

@@ -127,6 +127,7 @@ fun workspaceScreen(
             onOpenAndroidSettings = viewModel::openAndroidSettings,
             onSignIn = { activity?.let(viewModel::signIn) },
             onSignOut = viewModel::signOut,
+            onDeleteAccount = { activity?.let(viewModel::deleteAccount) },
             onPurchasePremium = { activity?.let(viewModel::purchasePremium) },
             onRestorePremium = viewModel::restorePremium,
             onOpenPrivacyOptions = onOpenPrivacyOptions,

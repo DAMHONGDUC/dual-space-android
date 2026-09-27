@@ -17,4 +17,9 @@
     <string name="sort_name">Nome</string>
     <string name="account_count">%1$d contas</string>
     <string name="shortcut_removed_account">Esta conta foi removida.</string>
+    <string name="delete_account">Excluir conta</string>
+    <string name="delete_account_message">Excluir sua conta de login do Dual Space? Não é possível desfazer. Isso não cancela uma assinatura do Google Play (gerencie no Google Play) nem remove suas cópias de jogos.</string>
+    <string name="delete_account_confirm">Excluir</string>
+    <string name="account_deleted">Sua conta foi excluída.</string>
+    <string name="account_deletion_failed">Não foi possível excluir sua conta. Tente novamente.</string>
 </resources>

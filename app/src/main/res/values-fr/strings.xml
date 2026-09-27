@@ -18,4 +18,9 @@
     <string name="sort_name">Nom</string>
     <string name="account_count">%1$d comptes</string>
     <string name="shortcut_removed_account">Ce compte a été supprimé.</string>
+    <string name="delete_account">Supprimer le compte</string>
+    <string name="delete_account_message">Supprimer votre compte de connexion Dual Space ? Cette action est irréversible. Elle n’annule pas un abonnement Google Play (gérez-le dans Google Play) et ne supprime pas vos copies de jeux.</string>
+    <string name="delete_account_confirm">Supprimer</string>
+    <string name="account_deleted">Votre compte a été supprimé.</string>
+    <string name="account_deletion_failed">Impossible de supprimer votre compte. Veuillez réessayer.</string>
 </resources>

@@ -18,4 +18,9 @@
     <string name="sort_name">Name</string>
     <string name="account_count">%1$d Konten</string>
     <string name="shortcut_removed_account">Dieses Konto wurde entfernt.</string>
+    <string name="delete_account">Konto löschen</string>
+    <string name="delete_account_message">Dein Dual Space-Anmeldekonto löschen? Dies kann nicht rückgängig gemacht werden. Ein Google Play-Abo wird dadurch nicht gekündigt (verwalte es in Google Play), und deine Spielkopien bleiben erhalten.</string>
+    <string name="delete_account_confirm">Löschen</string>
+    <string name="account_deleted">Dein Konto wurde gelöscht.</string>
+    <string name="account_deletion_failed">Dein Konto konnte nicht gelöscht werden. Bitte versuche es erneut.</string>
 </resources>

@@ -6,8 +6,15 @@ data class AuthSession(
     val email: String?,
 )
 
+enum class AccountDeletionResult {
+    deleted,
+    requiresRecentSignIn,
+    failed,
+}
+
 interface AuthRepository {
     fun currentSession(): AuthSession?
     suspend fun authenticateGoogleIdToken(idToken: String): AuthSession?
     fun signOut()
+    suspend fun deleteAccount(): AccountDeletionResult
 }

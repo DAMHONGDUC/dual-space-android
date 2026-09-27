@@ -148,4 +148,9 @@
     <string name="about_step_play">3. Tap the game in your library to open its copy.</string>
     <string name="about_plan">Free includes ads. Premium removes all ads. Dual Space does not read or modify your game data.</string>
     <string name="got_it">Got it</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_message">Delete your Dual Space sign-in account? This cannot be undone. It does not cancel a Google Play subscription (manage that in Google Play) and does not remove your game copies.</string>
+    <string name="delete_account_confirm">Delete</string>
+    <string name="account_deleted">Your account was deleted.</string>
+    <string name="account_deletion_failed">Your account could not be deleted. Please try again.</string>
 </resources>
