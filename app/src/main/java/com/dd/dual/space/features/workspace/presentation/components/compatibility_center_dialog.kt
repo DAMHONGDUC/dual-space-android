@@ -75,6 +75,9 @@ private fun readinessLabel(readiness: GameLaunchReadiness?): String = stringReso
             LaunchUnavailableReason.missingManagedProfile -> R.string.compatibility_profile_missing
             LaunchUnavailableReason.gameNotInstalled -> R.string.compatibility_game_missing
             LaunchUnavailableReason.permissionDenied -> R.string.compatibility_permission
+            LaunchUnavailableReason.engineUnavailable -> R.string.launch_engine_unavailable
+            LaunchUnavailableReason.installFailed -> R.string.copy_install_failed
+            LaunchUnavailableReason.launchTimedOut -> R.string.launch_timed_out
         }
         null -> R.string.compatibility_checking
     },

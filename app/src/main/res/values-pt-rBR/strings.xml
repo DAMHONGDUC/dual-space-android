@@ -22,4 +22,7 @@
     <string name="delete_account_confirm">Excluir</string>
     <string name="account_deleted">Sua conta foi excluída.</string>
     <string name="account_deletion_failed">Não foi possível excluir sua conta. Tente novamente.</string>
+    <string name="launch_engine_unavailable">O Dual Space não conseguiu acessar o mecanismo de jogos. Feche o app e tente novamente.</string>
+    <string name="copy_install_failed">Não foi possível preparar esta cópia. Verifique o armazenamento livre e tente novamente.</string>
+    <string name="launch_timed_out">O jogo não abriu a tempo. Tente novamente.</string>
 </resources>

@@ -22,4 +22,7 @@
     <string name="delete_account_confirm">삭제</string>
     <string name="account_deleted">계정이 삭제되었습니다.</string>
     <string name="account_deletion_failed">계정을 삭제하지 못했습니다. 다시 시도하세요.</string>
+    <string name="launch_engine_unavailable">Dual Space가 게임 엔진에 연결하지 못했습니다. 앱을 닫고 다시 시도하세요.</string>
+    <string name="copy_install_failed">이 사본을 준비하지 못했습니다. 남은 저장 공간을 확인하고 다시 시도하세요.</string>
+    <string name="launch_timed_out">게임이 제시간에 열리지 않았습니다. 다시 시도하세요.</string>
 </resources>

@@ -20,4 +20,7 @@ enum class LaunchUnavailableReason {
     missingManagedProfile,
     gameNotInstalled,
     permissionDenied,
+    engineUnavailable,
+    installFailed,
+    launchTimedOut,
 }

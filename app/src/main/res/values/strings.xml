@@ -153,4 +153,7 @@
     <string name="delete_account_confirm">Delete</string>
     <string name="account_deleted">Your account was deleted.</string>
     <string name="account_deletion_failed">Your account could not be deleted. Please try again.</string>
+    <string name="launch_engine_unavailable">Dual Space could not reach its game engine. Close the app and try again.</string>
+    <string name="copy_install_failed">This copy could not be prepared. Check free storage and try again.</string>
+    <string name="launch_timed_out">The game did not open in time. Try again.</string>
 </resources>

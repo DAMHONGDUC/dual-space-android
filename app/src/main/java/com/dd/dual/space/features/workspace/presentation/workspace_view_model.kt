@@ -204,6 +204,9 @@ class WorkspaceViewModel(
                         LaunchUnavailableReason.missingManagedProfile -> com.dd.dual.space.R.string.missing_managed_profile
                         LaunchUnavailableReason.gameNotInstalled -> com.dd.dual.space.R.string.game_not_installed
                         LaunchUnavailableReason.permissionDenied -> com.dd.dual.space.R.string.profile_permission_denied
+                        LaunchUnavailableReason.engineUnavailable -> com.dd.dual.space.R.string.launch_engine_unavailable
+                        LaunchUnavailableReason.installFailed -> com.dd.dual.space.R.string.copy_install_failed
+                        LaunchUnavailableReason.launchTimedOut -> com.dd.dual.space.R.string.launch_timed_out
                     }
                 }
             }

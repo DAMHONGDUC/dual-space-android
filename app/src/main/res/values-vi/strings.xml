@@ -153,4 +153,7 @@
     <string name="delete_account_confirm">Xoá</string>
     <string name="account_deleted">Đã xoá tài khoản.</string>
     <string name="account_deletion_failed">Không thể xoá tài khoản. Vui lòng thử lại.</string>
+    <string name="launch_engine_unavailable">Dual Space không kết nối được với engine chạy game. Hãy đóng app và thử lại.</string>
+    <string name="copy_install_failed">Không thể chuẩn bị bản copy này. Hãy kiểm tra dung lượng trống và thử lại.</string>
+    <string name="launch_timed_out">Game không mở kịp thời. Vui lòng thử lại.</string>
 </resources>

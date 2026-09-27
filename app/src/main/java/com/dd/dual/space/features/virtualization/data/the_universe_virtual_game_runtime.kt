@@ -1,7 +1,9 @@
 package com.dd.dual.space.features.virtualization.data
 
+import android.content.pm.PackageManager
 import android.os.SystemClock
 import com.dd.dual.space.core.logging.AppLogger
+import com.dd.dual.space.features.virtualization.domain.FailureKind
 import com.dd.dual.space.features.virtualization.domain.VirtualGameRuntime
 import com.dd.dual.space.features.virtualization.domain.VirtualRuntimeResult
 import com.dd.the.universe.TheUniverseCore
@@ -12,6 +14,10 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
         val metadata: Map<String, Any> = metadata(packageName, virtualUserId)
 
         AppLogger.action("virtual_game_install", metadata)
+        if (!isSourceInstalled(packageName)) {
+            AppLogger.error("virtual_game_install", IllegalStateException("source_missing"), metadata)
+            return VirtualRuntimeResult.Failure("Original game is not installed", FailureKind.sourceMissing)
+        }
         return try {
             val result: InstallResult = TheUniverseCore.get().installPackageAsUser(packageName, virtualUserId)
             if (result.success) {
@@ -20,11 +26,11 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
             } else {
                 val error = IllegalStateException(result.msg ?: "Virtual install failed")
                 AppLogger.error("virtual_game_install", error, metadata)
-                VirtualRuntimeResult.Failure(result.msg)
+                VirtualRuntimeResult.Failure(result.msg, FailureKind.installFailed)
             }
         } catch (error: Exception) {
             AppLogger.error("virtual_game_install", error, metadata)
-            VirtualRuntimeResult.Failure(error.message)
+            VirtualRuntimeResult.Failure(error.message, FailureKind.engineUnavailable)
         }
     }
 
@@ -41,7 +47,7 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
         AppLogger.action("virtual_game_launch", metadata)
         return try {
             val service = TheUniverseCore.getBActivityManager().service
-                ?: return VirtualRuntimeResult.Failure("Virtual activity service unavailable")
+                ?: return VirtualRuntimeResult.Failure("Virtual activity service unavailable", FailureKind.engineUnavailable)
             val previousSequence: Long = service.getActivityResumeSequence(packageName, virtualUserId)
             val dispatched: Boolean = TheUniverseCore.get().launchApk(packageName, virtualUserId)
             val confirmed: Boolean = dispatched && LaunchConfirmation(
@@ -54,18 +60,25 @@ class TheUniverseVirtualGameRuntime : VirtualGameRuntime {
                 AppLogger.success("virtual_game_launch", metadata)
                 VirtualRuntimeResult.Success
             } else {
-                val error = IllegalStateException("Virtual launch failed")
+                val error = IllegalStateException(if (dispatched) "launch_not_confirmed" else "launch_not_dispatched")
                 AppLogger.error("virtual_game_launch", error, metadata)
-                VirtualRuntimeResult.Failure(error.message)
+                VirtualRuntimeResult.Failure(error.message, if (dispatched) FailureKind.launchTimedOut else FailureKind.engineUnavailable)
             }
         } catch (error: InterruptedException) {
             Thread.currentThread().interrupt()
             AppLogger.error("virtual_game_launch_interrupted", error, metadata)
-            VirtualRuntimeResult.Failure("Launch interrupted")
+            VirtualRuntimeResult.Failure("Launch interrupted", FailureKind.launchTimedOut)
         } catch (error: Exception) {
             AppLogger.error("virtual_game_launch", error, metadata)
-            VirtualRuntimeResult.Failure(error.message)
+            VirtualRuntimeResult.Failure(error.message, FailureKind.engineUnavailable)
         }
+    }
+
+    override fun isSourceInstalled(packageName: String): Boolean = try {
+        TheUniverseCore.getContext().packageManager.getPackageInfo(packageName, 0)
+        true
+    } catch (error: PackageManager.NameNotFoundException) {
+        false
     }
 
     override fun isRunning(packageName: String, virtualUserId: Int): Boolean = try {

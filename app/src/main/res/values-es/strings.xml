@@ -24,4 +24,7 @@
     <string name="delete_account_confirm">Eliminar</string>
     <string name="account_deleted">Tu cuenta se eliminó.</string>
     <string name="account_deletion_failed">No se pudo eliminar tu cuenta. Inténtalo de nuevo.</string>
+    <string name="launch_engine_unavailable">Dual Space no pudo conectar con su motor de juegos. Cierra la app e inténtalo de nuevo.</string>
+    <string name="copy_install_failed">No se pudo preparar esta copia. Revisa el almacenamiento libre e inténtalo de nuevo.</string>
+    <string name="launch_timed_out">El juego no se abrió a tiempo. Inténtalo de nuevo.</string>
 </resources>

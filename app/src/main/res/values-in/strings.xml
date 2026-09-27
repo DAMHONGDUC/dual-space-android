@@ -22,4 +22,7 @@
     <string name="delete_account_confirm">Hapus</string>
     <string name="account_deleted">Akun Anda telah dihapus.</string>
     <string name="account_deletion_failed">Akun Anda tidak dapat dihapus. Silakan coba lagi.</string>
+    <string name="launch_engine_unavailable">Dual Space tidak dapat terhubung ke mesin game. Tutup aplikasi lalu coba lagi.</string>
+    <string name="copy_install_failed">Salinan ini tidak dapat disiapkan. Periksa ruang penyimpanan lalu coba lagi.</string>
+    <string name="launch_timed_out">Game tidak terbuka tepat waktu. Coba lagi.</string>
 </resources>

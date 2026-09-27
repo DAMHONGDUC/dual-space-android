@@ -22,4 +22,7 @@
     <string name="delete_account_confirm">削除</string>
     <string name="account_deleted">アカウントを削除しました。</string>
     <string name="account_deletion_failed">アカウントを削除できませんでした。もう一度お試しください。</string>
+    <string name="launch_engine_unavailable">Dual Space がゲームエンジンに接続できません。アプリを閉じてもう一度お試しください。</string>
+    <string name="copy_install_failed">このコピーを準備できませんでした。空き容量を確認してもう一度お試しください。</string>
+    <string name="launch_timed_out">ゲームが時間内に開きませんでした。もう一度お試しください。</string>
 </resources>

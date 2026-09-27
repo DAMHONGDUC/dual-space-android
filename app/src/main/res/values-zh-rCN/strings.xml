@@ -22,4 +22,7 @@
     <string name="delete_account_confirm">删除</string>
     <string name="account_deleted">你的账号已删除。</string>
     <string name="account_deletion_failed">无法删除你的账号，请重试。</string>
+    <string name="launch_engine_unavailable">Dual Space 无法连接游戏引擎。请关闭应用后重试。</string>
+    <string name="copy_install_failed">无法准备此副本。请检查可用存储空间后重试。</string>
+    <string name="launch_timed_out">游戏未能及时打开，请重试。</string>
 </resources>

@@ -22,4 +22,7 @@
     <string name="delete_account_confirm">हटाएं</string>
     <string name="account_deleted">आपका खाता हटा दिया गया।</string>
     <string name="account_deletion_failed">आपका खाता हटाया नहीं जा सका। कृपया फिर कोशिश करें।</string>
+    <string name="launch_engine_unavailable">Dual Space अपने गेम इंजन से कनेक्ट नहीं हो सका। ऐप बंद करके फिर कोशिश करें।</string>
+    <string name="copy_install_failed">यह कॉपी तैयार नहीं हो सकी। खाली स्टोरेज जांचें और फिर कोशिश करें।</string>
+    <string name="launch_timed_out">गेम समय पर नहीं खुला। फिर कोशिश करें।</string>
 </resources>

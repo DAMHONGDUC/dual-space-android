@@ -26,6 +26,9 @@ fun launchConfirmationDialog(
         LaunchUnavailableReason.missingManagedProfile -> R.string.missing_managed_profile
         LaunchUnavailableReason.gameNotInstalled -> R.string.game_not_installed
         LaunchUnavailableReason.permissionDenied -> R.string.profile_permission_denied
+        LaunchUnavailableReason.engineUnavailable -> R.string.launch_engine_unavailable
+        LaunchUnavailableReason.installFailed -> R.string.copy_install_failed
+        LaunchUnavailableReason.launchTimedOut -> R.string.launch_timed_out
         null -> R.string.launch_confirmation_message
     }
     AlertDialog(
