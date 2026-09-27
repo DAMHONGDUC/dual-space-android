@@ -115,6 +115,7 @@
     <string name="sort_recent" tools:ignore="MissingTranslation">Recent</string>
     <string name="sort_name" tools:ignore="MissingTranslation">Name</string>
     <string name="account_count" tools:ignore="MissingTranslation">%1$d accounts</string>
+    <string name="shortcut_removed_account">This account was removed.</string>
     <string name="shortcut_long_label">Open %1$s in %2$s</string>
     <string name="diagnostic_report_title">Dual Space diagnostic</string>
     <string name="share_diagnostic_report">Share diagnostic report</string>

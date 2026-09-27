@@ -27,6 +27,18 @@ class AndroidWorkspaceShortcutPublisherTest {
         manager.removeAllDynamicShortcuts()
     }
 
+    @Test
+    fun blankSessionNameIsSkippedWithoutCrashing() {
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val manager: ShortcutManager = context.getSystemService(ShortcutManager::class.java)
+        val publisher = AndroidWorkspaceShortcutPublisher(context)
+
+        publisher.publish(listOf(session.copy(id = "blank-session", name = "  "), session))
+
+        assertEquals(listOf("session_" + session.id), manager.dynamicShortcuts.map { shortcut -> shortcut.id })
+        manager.removeAllDynamicShortcuts()
+    }
+
     private val session = GameSession(
         id = "shortcut-session",
         name = "Gaming",

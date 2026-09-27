@@ -115,6 +115,7 @@
   <string name="sort_recent">Gần đây</string>
   <string name="sort_name">Tên</string>
   <string name="account_count">%1$d tài khoản</string>
+  <string name="shortcut_removed_account">Tài khoản này đã bị xoá.</string>
   <string name="shortcut_long_label">Mở %1$s trong %2$s</string>
   <string name="diagnostic_report_title">Chẩn đoán Dual Space</string>
   <string name="share_diagnostic_report">Chia sẻ báo cáo chẩn đoán</string>
