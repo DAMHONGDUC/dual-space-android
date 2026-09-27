@@ -9,6 +9,7 @@
 
 #include <list>
 #include <iostream>
+#include <string>
 #include "UniverseNativeCore.h"
 
 using namespace std;
@@ -18,8 +19,8 @@ public:
     static void init(JNIEnv *env);
 
     struct RelocateInfo {
-        const char *targetPath;
-        const char *relocatePath;
+        std::string targetPath;
+        std::string relocatePath;
     };
 
     static void addRule(const char *targetPath, const char *relocatePath);
@@ -28,6 +29,7 @@ public:
 
     static jobject redirectPath(JNIEnv *env, jobject path);
 
+    // A redirected result remains valid until the next call on the same thread.
     static const char *redirectPath(const char *__path);
 };
 

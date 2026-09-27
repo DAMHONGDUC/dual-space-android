@@ -4,37 +4,16 @@
 
 #include "IO.h"
 #include "Log.h"
+#include <cstring>
+#include <mutex>
 
 jmethodID getAbsolutePathMethodId;
 
-list<IO::RelocateInfo> relocate_rule;
-
-char *replace(const char *str, const char *src, const char *dst) {
-    const char *pos = str;
-    int count = 0;
-    while ((pos = strstr(pos, src))) {
-        count++;
-        pos += strlen(src);
-    }
-
-    size_t result_len = strlen(str) + (strlen(dst) - strlen(src)) * count + 1;
-    char *result = (char *) malloc(result_len);
-    memset(result, 0, strlen(result));
-
-    const char *left = str;
-    const char *right = nullptr;
-
-    while ((right = strstr(left, src))) {
-        strncat(result, left, right - left);
-        strcat(result, dst);
-        right += strlen(src);
-        left = right;
-    }
-    strcat(result, left);
-    return result;
-}
+static list<IO::RelocateInfo> relocate_rule;
+static std::mutex relocate_mutex;
 
 const char *IO::redirectPath(const char *__path) {
+    if (__path == nullptr) return nullptr;
     
     if (strstr(__path, "resource-cache")) {
         ALOGD("Blocking resource-cache path: %s", __path);
@@ -71,14 +50,21 @@ const char *IO::redirectPath(const char *__path) {
         return "/dev/null";
     }
 
-    list<IO::RelocateInfo>::iterator iterator;
-    for (iterator = relocate_rule.begin(); iterator != relocate_rule.end(); ++iterator) {
-        IO::RelocateInfo info = *iterator;
-        if (strstr(__path, info.targetPath) && !strstr(__path, "/theuniverse/")) {
-            char *ret = replace(__path, info.targetPath, info.relocatePath);
-            
-            return ret;
+    const std::string path(__path);
+    std::lock_guard<std::mutex> guard(relocate_mutex);
+    const RelocateInfo *match = nullptr;
+    for (const auto &rule : relocate_rule) {
+        const size_t length = rule.targetPath.size();
+        if (path.compare(0, length, rule.targetPath) == 0 &&
+            (path.size() == length || rule.targetPath.back() == '/' || path[length] == '/') &&
+            (match == nullptr || length > match->targetPath.size())) {
+            match = &rule;
         }
+    }
+    if (match != nullptr) {
+        thread_local std::string redirected;
+        redirected = match->relocatePath + path.substr(match->targetPath.size());
+        return redirected.c_str();
     }
     return __path;
 }
@@ -102,10 +88,15 @@ jobject IO::redirectPath(JNIEnv *env, jobject path) {
 }
 
 void IO::addRule(const char *targetPath, const char *relocatePath) {
-    IO::RelocateInfo info{};
-    info.targetPath = targetPath;
-    info.relocatePath = relocatePath;
-    relocate_rule.push_back(info);
+    if (targetPath == nullptr || targetPath[0] == '\0' || relocatePath == nullptr) return;
+    std::lock_guard<std::mutex> guard(relocate_mutex);
+    for (auto &rule : relocate_rule) {
+        if (rule.targetPath == targetPath) {
+            rule.relocatePath = relocatePath;
+            return;
+        }
+    }
+    relocate_rule.push_back({targetPath, relocatePath});
 }
 
 void IO::init(JNIEnv *env) {

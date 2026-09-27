@@ -15,6 +15,13 @@
 static int (*orig_open)(const char *pathname, int flags, ...) = nullptr;
 static int (*orig_open64)(const char *pathname, int flags, ...) = nullptr;
 
+static bool requiresMode(int flags) {
+    if ((flags & O_CREAT) != 0) return true;
+#ifdef O_TMPFILE
+    if ((flags & O_TMPFILE) == O_TMPFILE) return true;
+#endif
+    return false;
+}
 
 int new_open(const char *pathname, int flags, ...) {
     
@@ -31,9 +38,14 @@ int new_open(const char *pathname, int flags, ...) {
     }
     
     
+    if (orig_open == nullptr) {
+        errno = ENOSYS;
+        return -1;
+    }
+    if (!requiresMode(flags)) return orig_open(pathname, flags);
     va_list args;
     va_start(args, flags);
-    mode_t mode = va_arg(args, mode_t);
+    int mode = va_arg(args, int);
     va_end(args);
     
     return orig_open(pathname, flags, mode);
@@ -55,9 +67,14 @@ int new_open64(const char *pathname, int flags, ...) {
     }
     
     
+    if (orig_open64 == nullptr) {
+        errno = ENOSYS;
+        return -1;
+    }
+    if (!requiresMode(flags)) return orig_open64(pathname, flags);
     va_list args;
     va_start(args, flags);
-    mode_t mode = va_arg(args, mode_t);
+    int mode = va_arg(args, int);
     va_end(args);
     
     return orig_open64(pathname, flags, mode);
