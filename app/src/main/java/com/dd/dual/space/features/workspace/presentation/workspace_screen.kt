@@ -37,6 +37,7 @@ fun workspaceScreen(
     val appLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
     val authSession by viewModel.authSession.collectAsStateWithLifecycle()
     val premiumAccess by viewModel.premiumAccess.collectAsStateWithLifecycle()
+    val premiumOffer by viewModel.premiumOffer.collectAsStateWithLifecycle()
     val isMonetizationBusy by viewModel.isMonetizationBusy.collectAsStateWithLifecycle()
     val readinessBySessionId by viewModel.readinessBySessionId.collectAsStateWithLifecycle()
     val pendingLaunchSession by viewModel.pendingLaunchSession.collectAsStateWithLifecycle()
@@ -114,6 +115,7 @@ fun workspaceScreen(
             appLanguage = appLanguage,
             authSession = authSession,
             premiumAccess = premiumAccess,
+            premiumOffer = premiumOffer,
             isMonetizationBusy = isMonetizationBusy,
             privacyOptionsRequired = privacyOptionsRequired,
             privacyLockEnabled = privacyLockEnabled,

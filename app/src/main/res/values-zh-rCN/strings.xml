@@ -25,4 +25,9 @@
     <string name="launch_engine_unavailable">Dual Space 无法连接游戏引擎。请关闭应用后重试。</string>
     <string name="copy_install_failed">无法准备此副本。请检查可用存储空间后重试。</string>
     <string name="launch_timed_out">游戏未能及时打开，请重试。</string>
+    <string name="upgrade_premium_with_price">升级到 Premium · %1$s</string>
+    <string name="premium_price_annual">%1$s / 年</string>
+    <string name="premium_price_monthly">%1$s / 月</string>
+    <string name="premium_price_lifetime">%1$s 一次性</string>
+    <string name="premium_renewal_note">在你取消前会自动续订。可随时在 Google Play 中管理或取消。</string>
 </resources>

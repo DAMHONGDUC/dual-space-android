@@ -26,4 +26,9 @@
     <string name="launch_engine_unavailable">Dual Space ne parvient pas à joindre son moteur de jeu. Fermez l’app et réessayez.</string>
     <string name="copy_install_failed">Impossible de préparer cette copie. Vérifiez l’espace libre et réessayez.</string>
     <string name="launch_timed_out">Le jeu ne s’est pas ouvert à temps. Réessayez.</string>
+    <string name="upgrade_premium_with_price">Passer à Premium · %1$s</string>
+    <string name="premium_price_annual">%1$s / an</string>
+    <string name="premium_price_monthly">%1$s / mois</string>
+    <string name="premium_price_lifetime">%1$s en une fois</string>
+    <string name="premium_renewal_note">Renouvellement automatique jusqu’à résiliation. Gérez ou résiliez à tout moment dans Google Play.</string>
 </resources>

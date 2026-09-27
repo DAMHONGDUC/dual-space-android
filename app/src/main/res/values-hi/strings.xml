@@ -25,4 +25,9 @@
     <string name="launch_engine_unavailable">Dual Space अपने गेम इंजन से कनेक्ट नहीं हो सका। ऐप बंद करके फिर कोशिश करें।</string>
     <string name="copy_install_failed">यह कॉपी तैयार नहीं हो सकी। खाली स्टोरेज जांचें और फिर कोशिश करें।</string>
     <string name="launch_timed_out">गेम समय पर नहीं खुला। फिर कोशिश करें।</string>
+    <string name="upgrade_premium_with_price">Premium में अपग्रेड करें · %1$s</string>
+    <string name="premium_price_annual">%1$s / वर्ष</string>
+    <string name="premium_price_monthly">%1$s / माह</string>
+    <string name="premium_price_lifetime">%1$s एक बार</string>
+    <string name="premium_renewal_note">रद्द करने तक अपने-आप नवीनीकृत होता है। Google Play में कभी भी प्रबंधित या रद्द करें।</string>
 </resources>

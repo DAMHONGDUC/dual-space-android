@@ -156,4 +156,9 @@
     <string name="launch_engine_unavailable">Dual Space không kết nối được với engine chạy game. Hãy đóng app và thử lại.</string>
     <string name="copy_install_failed">Không thể chuẩn bị bản copy này. Hãy kiểm tra dung lượng trống và thử lại.</string>
     <string name="launch_timed_out">Game không mở kịp thời. Vui lòng thử lại.</string>
+    <string name="upgrade_premium_with_price">Nâng cấp Premium · %1$s</string>
+    <string name="premium_price_annual">%1$s / năm</string>
+    <string name="premium_price_monthly">%1$s / tháng</string>
+    <string name="premium_price_lifetime">%1$s một lần</string>
+    <string name="premium_renewal_note">Tự động gia hạn cho đến khi bạn huỷ. Quản lý hoặc huỷ bất cứ lúc nào trong Google Play.</string>
 </resources>

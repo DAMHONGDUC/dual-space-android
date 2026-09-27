@@ -25,4 +25,9 @@
     <string name="launch_engine_unavailable">Dual Space がゲームエンジンに接続できません。アプリを閉じてもう一度お試しください。</string>
     <string name="copy_install_failed">このコピーを準備できませんでした。空き容量を確認してもう一度お試しください。</string>
     <string name="launch_timed_out">ゲームが時間内に開きませんでした。もう一度お試しください。</string>
+    <string name="upgrade_premium_with_price">Premium にアップグレード · %1$s</string>
+    <string name="premium_price_annual">%1$s / 年</string>
+    <string name="premium_price_monthly">%1$s / 月</string>
+    <string name="premium_price_lifetime">%1$s（買い切り）</string>
+    <string name="premium_renewal_note">解約するまで自動更新されます。Google Play でいつでも管理・解約できます。</string>
 </resources>

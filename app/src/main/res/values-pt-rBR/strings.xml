@@ -25,4 +25,9 @@
     <string name="launch_engine_unavailable">O Dual Space não conseguiu acessar o mecanismo de jogos. Feche o app e tente novamente.</string>
     <string name="copy_install_failed">Não foi possível preparar esta cópia. Verifique o armazenamento livre e tente novamente.</string>
     <string name="launch_timed_out">O jogo não abriu a tempo. Tente novamente.</string>
+    <string name="upgrade_premium_with_price">Assinar Premium · %1$s</string>
+    <string name="premium_price_annual">%1$s / ano</string>
+    <string name="premium_price_monthly">%1$s / mês</string>
+    <string name="premium_price_lifetime">%1$s pagamento único</string>
+    <string name="premium_renewal_note">Renova automaticamente até você cancelar. Gerencie ou cancele quando quiser no Google Play.</string>
 </resources>

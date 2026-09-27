@@ -25,4 +25,9 @@
     <string name="launch_engine_unavailable">Dual Space가 게임 엔진에 연결하지 못했습니다. 앱을 닫고 다시 시도하세요.</string>
     <string name="copy_install_failed">이 사본을 준비하지 못했습니다. 남은 저장 공간을 확인하고 다시 시도하세요.</string>
     <string name="launch_timed_out">게임이 제시간에 열리지 않았습니다. 다시 시도하세요.</string>
+    <string name="upgrade_premium_with_price">Premium으로 업그레이드 · %1$s</string>
+    <string name="premium_price_annual">%1$s / 년</string>
+    <string name="premium_price_monthly">%1$s / 월</string>
+    <string name="premium_price_lifetime">%1$s 일회성</string>
+    <string name="premium_renewal_note">해지할 때까지 자동 갱신됩니다. Google Play에서 언제든지 관리하거나 해지할 수 있습니다.</string>
 </resources>

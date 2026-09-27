@@ -48,6 +48,8 @@ import com.dd.dual.space.features.settings.domain.ThemeMode
 import com.dd.dual.space.features.settings.domain.AppLanguage
 import com.dd.dual.space.features.auth.domain.AuthSession
 import com.dd.dual.space.features.premium.domain.PremiumAccess
+import com.dd.dual.space.features.premium.domain.PremiumOffer
+import com.dd.dual.space.features.premium.domain.PremiumPeriod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +59,7 @@ fun settingsDialog(
     appLanguage: AppLanguage,
     authSession: AuthSession?,
     premiumAccess: PremiumAccess,
+    premiumOffer: PremiumOffer? = null,
     isMonetizationBusy: Boolean,
     privacyOptionsRequired: Boolean,
     privacyLockEnabled: Boolean,
@@ -155,9 +158,22 @@ fun settingsDialog(
                     if (!premiumAccess.removesAds) {
                         Button(
                             onClick = onPurchasePremium,
-                            enabled = !isMonetizationBusy,
+                            enabled = !isMonetizationBusy && premiumOffer != null,
                             modifier = Modifier.fillMaxWidth(),
-                        ) { Text(stringResource(R.string.upgrade_premium)) }
+                        ) {
+                            Text(
+                                premiumOffer?.let { offer ->
+                                    stringResource(R.string.upgrade_premium_with_price, offerPriceLabel(offer))
+                                } ?: stringResource(R.string.upgrade_premium),
+                            )
+                        }
+                        if (premiumOffer != null && premiumOffer.period != PremiumPeriod.lifetime) {
+                            Text(
+                                stringResource(R.string.premium_renewal_note),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                     TextButton(
                         onClick = onRestorePremium,
@@ -356,4 +372,12 @@ fun dialogIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, isDestruct
             modifier = Modifier.padding(ParallelAppDimensions.space12),
         )
     }
+}
+
+@Composable
+private fun offerPriceLabel(offer: PremiumOffer): String = when (offer.period) {
+    PremiumPeriod.annual -> stringResource(R.string.premium_price_annual, offer.formattedPrice)
+    PremiumPeriod.monthly -> stringResource(R.string.premium_price_monthly, offer.formattedPrice)
+    PremiumPeriod.lifetime -> stringResource(R.string.premium_price_lifetime, offer.formattedPrice)
+    PremiumPeriod.other -> offer.formattedPrice
 }

@@ -25,4 +25,9 @@
     <string name="launch_engine_unavailable">Dual Space tidak dapat terhubung ke mesin game. Tutup aplikasi lalu coba lagi.</string>
     <string name="copy_install_failed">Salinan ini tidak dapat disiapkan. Periksa ruang penyimpanan lalu coba lagi.</string>
     <string name="launch_timed_out">Game tidak terbuka tepat waktu. Coba lagi.</string>
+    <string name="upgrade_premium_with_price">Upgrade ke Premium · %1$s</string>
+    <string name="premium_price_annual">%1$s / tahun</string>
+    <string name="premium_price_monthly">%1$s / bulan</string>
+    <string name="premium_price_lifetime">%1$s sekali bayar</string>
+    <string name="premium_renewal_note">Diperpanjang otomatis hingga Anda membatalkan. Kelola atau batalkan kapan saja di Google Play.</string>
 </resources>

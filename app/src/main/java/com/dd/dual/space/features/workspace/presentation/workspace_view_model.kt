@@ -9,6 +9,7 @@ import com.dd.dual.space.features.auth.domain.AuthSession
 import com.dd.dual.space.features.premium.data.RevenueCatPurchaseManager
 import com.dd.dual.space.features.premium.domain.PurchaseOutcome
 import com.dd.dual.space.features.premium.domain.PremiumAccess
+import com.dd.dual.space.features.premium.domain.PremiumOffer
 import com.dd.dual.space.features.premium.domain.PremiumRepository
 import com.dd.dual.space.features.premium.domain.PremiumStatus
 import com.dd.dual.space.features.workspace.domain.GameLaunchResult
@@ -76,6 +77,7 @@ class WorkspaceViewModel(
     private val mutableAppLanguage = MutableStateFlow(languageRepository.load())
     private val mutableAuthSession = MutableStateFlow(authRepository.currentSession())
     private val mutablePremiumAccess = MutableStateFlow(PremiumAccess(PremiumStatus.unknown))
+    private val mutablePremiumOffer = MutableStateFlow<PremiumOffer?>(null)
     private val mutableIsMonetizationBusy = MutableStateFlow(false)
     private val mutableReadinessBySessionId = MutableStateFlow<Map<String, GameLaunchReadiness>>(emptyMap())
     private val mutablePendingLaunchSession = MutableStateFlow<GameSession?>(null)
@@ -105,6 +107,7 @@ class WorkspaceViewModel(
     val appLanguage: StateFlow<AppLanguage> = mutableAppLanguage.asStateFlow()
     val authSession: StateFlow<AuthSession?> = mutableAuthSession.asStateFlow()
     val premiumAccess: StateFlow<PremiumAccess> = mutablePremiumAccess.asStateFlow()
+    val premiumOffer: StateFlow<PremiumOffer?> = mutablePremiumOffer.asStateFlow()
     val isMonetizationBusy: StateFlow<Boolean> = mutableIsMonetizationBusy.asStateFlow()
     val readinessBySessionId: StateFlow<Map<String, GameLaunchReadiness>> = mutableReadinessBySessionId.asStateFlow()
     val pendingLaunchSession: StateFlow<GameSession?> = mutablePendingLaunchSession.asStateFlow()
@@ -167,6 +170,7 @@ class WorkspaceViewModel(
         refreshReadiness()
         refreshRunningSessions()
         refreshPremiumAccess()
+        purchaseManager.loadOffer { offer -> mutablePremiumOffer.value = offer }
         viewModelScope.launch(Dispatchers.IO) { shortcutPublisher.publish(sessions.value) }
     }
 
@@ -518,8 +522,14 @@ class WorkspaceViewModel(
 
     fun purchasePremium(activity: Activity) {
         if (mutableIsMonetizationBusy.value) return
+        val offer: PremiumOffer = mutablePremiumOffer.value ?: run {
+            // Without a displayed price there is nothing the user agreed to buy.
+            mutableLaunchMessage.value = com.dd.dual.space.R.string.premium_purchase_failed
+            purchaseManager.loadOffer { loaded -> mutablePremiumOffer.value = loaded }
+            return
+        }
         mutableIsMonetizationBusy.value = true
-        purchaseManager.purchase(activity) { outcome ->
+        purchaseManager.purchase(activity, offer) { outcome ->
             when (outcome) {
                 is PurchaseOutcome.Activated -> {
                     mutablePremiumAccess.value = outcome.access

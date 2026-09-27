@@ -156,4 +156,9 @@
     <string name="launch_engine_unavailable">Dual Space could not reach its game engine. Close the app and try again.</string>
     <string name="copy_install_failed">This copy could not be prepared. Check free storage and try again.</string>
     <string name="launch_timed_out">The game did not open in time. Try again.</string>
+    <string name="upgrade_premium_with_price">Upgrade to Premium · %1$s</string>
+    <string name="premium_price_annual">%1$s / year</string>
+    <string name="premium_price_monthly">%1$s / month</string>
+    <string name="premium_price_lifetime">%1$s one-time</string>
+    <string name="premium_renewal_note">Renews automatically until you cancel. Manage or cancel anytime in Google Play.</string>
 </resources>

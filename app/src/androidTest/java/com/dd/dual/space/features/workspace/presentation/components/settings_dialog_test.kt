@@ -7,10 +7,13 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dd.dual.space.R
 import com.dd.dual.space.features.premium.domain.PremiumAccess
+import com.dd.dual.space.features.premium.domain.PremiumOffer
+import com.dd.dual.space.features.premium.domain.PremiumPeriod
 import com.dd.dual.space.features.premium.domain.PremiumStatus
 import com.dd.dual.space.features.settings.domain.AppLanguage
 import com.dd.dual.space.features.settings.domain.ThemeMode
@@ -60,6 +63,47 @@ class SettingsDialogTest {
 
         composeRule.onNodeWithText(context.getString(R.string.sign_in_google)).performClick()
         assertTrue(signInRequested)
+    }
+
+    @Test
+    fun upgradeButtonShowsThePriceItWillCharge() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        var purchaseRequested = false
+        val offer = PremiumOffer("$" + "rc_annual", PremiumPeriod.annual, "US$19.99")
+
+        composeRule.setContent {
+            MaterialTheme {
+                settingsDialog(
+                    profileStatus = ProfileProvisioningStatus.available,
+                    themeMode = ThemeMode.system,
+                    appLanguage = AppLanguage.system,
+                    authSession = null,
+                    premiumAccess = PremiumAccess(PremiumStatus.inactive),
+                    premiumOffer = offer,
+                    isMonetizationBusy = false,
+                    privacyOptionsRequired = false,
+                    privacyLockEnabled = false,
+                    privacyLockAvailable = true,
+                    onThemeModeChange = {},
+                    onLanguageChange = {},
+                    onOpenAndroidSettings = {},
+                    onSignIn = {},
+                    onSignOut = {},
+                    onPurchasePremium = { purchaseRequested = true },
+                    onRestorePremium = {},
+                    onOpenPrivacyOptions = {},
+                    onPrivacyLockChange = {},
+                    onShareDiagnosticReport = {},
+                    onOpenCompatibilityCenter = {},
+                    onDismiss = {},
+                )
+            }
+        }
+
+        val price: String = context.getString(R.string.premium_price_annual, "US$19.99")
+        composeRule.onNodeWithText(context.getString(R.string.upgrade_premium_with_price, price)).performScrollTo().performClick()
+        composeRule.onNodeWithText(context.getString(R.string.premium_renewal_note)).assertExists()
+        assertTrue(purchaseRequested)
     }
 
     @Test
