@@ -19,6 +19,7 @@
     <string name="game_not_installed">Could not create this game copy. Make sure the original game is installed.</string>
     <string name="game_already_added">This game already has 5 copies.</string>
     <string name="profile_permission_denied">Could not open this game copy. Please try again.</string>
+    <string name="copy_busy">This account is still opening or being removed. Try again in a moment.</string>
     <string name="copy_removal_failed">Could not remove this game copy. Please try again.</string>
     <string name="add_profile">Enable second copy</string>
     <string name="profile_count">Second copy ready</string>

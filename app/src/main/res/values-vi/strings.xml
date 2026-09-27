@@ -19,6 +19,7 @@
   <string name="game_not_installed">Không thể tạo bản copy. Hãy kiểm tra game gốc đã được cài trên thiết bị.</string>
   <string name="game_already_added">Game này đã có đủ 5 bản copy.</string>
   <string name="profile_permission_denied">Không thể mở bản copy của game. Vui lòng thử lại.</string>
+  <string name="copy_busy">Tài khoản này đang được mở hoặc đang bị xoá. Vui lòng thử lại sau giây lát.</string>
   <string name="copy_removal_failed">Không thể xóa bản copy của game. Vui lòng thử lại.</string>
   <string name="add_profile">Bật bản sao thứ hai</string>
   <string name="profile_count">Bản sao đã sẵn sàng</string>

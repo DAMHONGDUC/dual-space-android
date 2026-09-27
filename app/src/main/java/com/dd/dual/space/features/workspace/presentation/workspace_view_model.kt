@@ -86,6 +86,8 @@ class WorkspaceViewModel(
     private val mutableIsCompatibilityCenterVisible = MutableStateFlow(false)
     private var catalogLoadJob: Job? = null
     private var isAddingSession: Boolean = false
+    private val busySessionIds = mutableSetOf<String>()
+    private var premiumRefreshJob: Job? = null
     private var isWorkspaceReady: Boolean = false
 
     val sessions: StateFlow<List<GameSession>> = repository.sessions
@@ -155,6 +157,7 @@ class WorkspaceViewModel(
         if (!isWorkspaceReady) return
         refreshReadiness()
         refreshRunningSessions()
+        refreshPremiumAccess()
     }
 
     fun onWorkspaceReady() {
@@ -177,8 +180,15 @@ class WorkspaceViewModel(
     }
 
     private fun launch(session: GameSession) {
+        // One operation per copy: a double tap or a delete must not race an in-flight launch.
+        if (!busySessionIds.add(session.id)) return
         viewModelScope.launch {
-            val result: GameLaunchResult = withContext(Dispatchers.IO) { gameLauncher.launch(session) }
+            val result: GameLaunchResult = try {
+                withContext(Dispatchers.IO) { gameLauncher.launch(session) }
+            } finally {
+                busySessionIds.remove(session.id)
+            }
+            if (repository.sessions.value.none { current -> current.id == session.id }) return@launch
             mutableLaunchMessage.value = when (result) {
                 is GameLaunchResult.Opened -> {
                     repository.recordSessionOpened(session.id, System.currentTimeMillis())
@@ -279,24 +289,35 @@ class WorkspaceViewModel(
             listOfNotNull(mutableSelectedSessionId.value)
         }
         if (sessionIds.isEmpty()) return
+        if (sessionIds.any(busySessionIds::contains)) {
+            mutableLaunchMessage.value = com.dd.dual.space.R.string.copy_busy
+            return
+        }
+        busySessionIds.addAll(sessionIds)
         viewModelScope.launch {
-            val sessionsToDelete: List<GameSession> = sessions.value.filter { session -> session.id in sessionIds }
-            val removalResults: Map<GameSession, Boolean> = withContext(Dispatchers.IO) {
-                sessionsToDelete.associateWith(gameCopyRemover::remove)
+            try {
+                val sessionsToDelete: List<GameSession> = sessions.value.filter { session -> session.id in sessionIds }
+                val removalResults: Map<GameSession, Boolean> = withContext(Dispatchers.IO) {
+                    sessionsToDelete.associateWith(gameCopyRemover::remove)
+                }
+                removalResults.filterValues { removed -> removed }.keys.forEach { session ->
+                    repository.deleteSession(session.id)
+                }
+                mutableRunningSessionIds.value = mutableRunningSessionIds.value -
+                    removalResults.filterValues { removed -> removed }.keys.map(GameSession::id).toSet()
+                if (removalResults.any { (_, removed) -> !removed }) {
+                    mutableLaunchMessage.value = com.dd.dual.space.R.string.copy_removal_failed
+                }
+                shortcutPublisher.publish(repository.sessions.value)
+                refreshReadiness()
+                mutableSelectedSessionId.value = repository.sessions.value.firstOrNull()?.id
+                mutablePendingDeleteSessionIds.value = emptyList()
+                mutableDeleteConfirmationName.value = null
+                mutableIsDeletingWholeGame.value = false
+                mutableIsDeleteConfirmationVisible.value = false
+            } finally {
+                busySessionIds.removeAll(sessionIds.toSet())
             }
-            removalResults.filterValues { removed -> removed }.keys.forEach { session ->
-                repository.deleteSession(session.id)
-            }
-            if (removalResults.any { (_, removed) -> !removed }) {
-                mutableLaunchMessage.value = com.dd.dual.space.R.string.copy_removal_failed
-            }
-            shortcutPublisher.publish(repository.sessions.value)
-            refreshReadiness()
-            mutableSelectedSessionId.value = repository.sessions.value.firstOrNull()?.id
-            mutablePendingDeleteSessionIds.value = emptyList()
-            mutableDeleteConfirmationName.value = null
-            mutableIsDeletingWholeGame.value = false
-            mutableIsDeleteConfirmationVisible.value = false
         }
     }
 
@@ -480,10 +501,19 @@ class WorkspaceViewModel(
         }
     }
 
+    // Resume can expire, refund or restore an entitlement; only the newest refresh may publish, and
+    // never while a purchase, restore or sign-in owns the premium state.
     private fun refreshPremiumAccess() {
-        viewModelScope.launch {
-            mutablePremiumAccess.value = mutableAuthSession.value?.let { premiumRepository.identify(it.userId) }
+        if (mutableIsMonetizationBusy.value) return
+        premiumRefreshJob?.cancel()
+        premiumRefreshJob = viewModelScope.launch {
+            val access: PremiumAccess = mutableAuthSession.value?.let { premiumRepository.identify(it.userId) }
                 ?: premiumRepository.refresh()
+            if (mutableIsMonetizationBusy.value) return@launch
+            // A failed refresh keeps the last known state instead of flashing ads or removing Premium.
+            if (access.status != PremiumStatus.unknown || mutablePremiumAccess.value.status == PremiumStatus.unknown) {
+                mutablePremiumAccess.value = access
+            }
         }
     }
 
