@@ -155,6 +155,7 @@ fun workspaceScreen(
             onOpenAndroidSettings = viewModel::openAndroidSettings,
             onHelp = { isAboutVisible = true },
             onSettings = { isSettingsVisible = true },
+            isDevEnvironment = BuildConfig.IS_DEV_ENVIRONMENT,
         )
     }
 }

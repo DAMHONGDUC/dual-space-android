@@ -31,9 +31,12 @@ Each flavor reads its AdMob IDs from its own ignored env file:
 Both files use the same keys:
 
 ```properties
+ENV=
 ADMOB_APP_ID=
 ADMOB_BANNER_AD_UNIT_ID=
 ```
+
+`ENV` is `dev` or `prod`; left empty it defaults to the flavor name. `ENV=dev` shows a "Dev version" tag next to the app name, and `prodRelease` fails unless `env/prod.env.properties` has `ENV` empty or `prod`.
 
 Empty values fall back to Google's test IDs, which is fine for debug builds; `prodRelease` fails until `env/prod.env.properties` holds production IDs. Gradle/CI properties take precedence over both files, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
 

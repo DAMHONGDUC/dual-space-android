@@ -69,6 +69,7 @@ fun gameLibrary(
     onOpenAndroidSettings: () -> Unit,
     onHelp: () -> Unit,
     onSettings: () -> Unit,
+    isDevEnvironment: Boolean = false,
 ) {
     var sortOrder by remember { mutableStateOf(AccountSortOrder.recent) }
     val gameRows: List<GameRowModel> = remember(sessions, sortOrder) {
@@ -85,7 +86,7 @@ fun gameLibrary(
 
     Box(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            libraryTopBar(sessions.size, onHelp, onSettings)
+            libraryTopBar(sessions.size, isDevEnvironment, onHelp, onSettings)
             if (gameRows.isNotEmpty()) {
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.padding(horizontal = ParallelAppDimensions.space16),
@@ -178,11 +179,17 @@ private fun profileHealthCard(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun libraryTopBar(sessionCount: Int, onHelp: () -> Unit, onSettings: () -> Unit) {
+private fun libraryTopBar(sessionCount: Int, isDevEnvironment: Boolean, onHelp: () -> Unit, onSettings: () -> Unit) {
     TopAppBar(
         title = {
             Column {
-                Text(stringResource(R.string.app_name), fontWeight = FontWeight.SemiBold)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(R.string.app_name), fontWeight = FontWeight.SemiBold)
+                    if (isDevEnvironment) devVersionTag()
+                }
                 Text(
                     stringResource(R.string.copy_count, sessionCount),
                     style = MaterialTheme.typography.labelMedium,
@@ -199,6 +206,22 @@ private fun libraryTopBar(sessionCount: Int, onHelp: () -> Unit, onSettings: () 
             }
         },
     )
+}
+
+@Composable
+private fun devVersionTag() {
+    Surface(
+        modifier = Modifier.testTag("dev_version_tag"),
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        shape = MaterialTheme.shapes.large,
+    ) {
+        Text(
+            stringResource(R.string.dev_version_tag),
+            modifier = Modifier.padding(horizontal = ParallelAppDimensions.space8, vertical = ParallelAppDimensions.space4),
+            style = MaterialTheme.typography.labelSmall,
+        )
+    }
 }
 
 @Composable

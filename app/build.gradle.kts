@@ -45,10 +45,26 @@ fun admobIds(flavor: String): AdmobIds {
 val prodAdmobIds = admobIds("prod")
 val devAdmobIds = admobIds("dev")
 
+val supportedAppEnvironments = setOf("dev", "prod")
+
+// ENV in the flavor's env file decides whether the app shows the dev version tag; unset means the flavor name.
+fun appEnvironment(flavor: String): String {
+    val environment = flavorEnvironment(flavor).getProperty("ENV")?.trim()?.lowercase()?.takeIf { value -> value.isNotEmpty() }
+        ?: return flavor
+    if (environment !in supportedAppEnvironments) {
+        throw GradleException("ENV in env/$flavor.env.properties must be dev or prod")
+    }
+    return environment
+}
+
+val prodAppEnvironment = appEnvironment("prod")
+val devAppEnvironment = appEnvironment("dev")
+
 // Reports only key names so secret values never reach build logs.
 val releaseConfigurationProblems: List<String> = buildList {
     if (prodAdmobIds.bannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID in env/prod.env.properties is missing or a Google test ID")
     if (prodAdmobIds.appId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID in env/prod.env.properties is missing or a Google test ID")
+    if (prodAppEnvironment != "prod") add("ENV in env/prod.env.properties must be prod for a Play release")
 }
 
 val validateProdReleaseConfiguration by tasks.registering {
@@ -86,6 +102,7 @@ android {
         create("prod") {
             dimension = "distribution"
             buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(prodAdmobIds.bannerAdUnitId))
+            buildConfigField("boolean", "IS_DEV_ENVIRONMENT", (prodAppEnvironment == "dev").toString())
             manifestPlaceholders["admobAppId"] = prodAdmobIds.appId
         }
         create("dev") {
@@ -93,6 +110,7 @@ android {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", quotedBuildConfig(devAdmobIds.bannerAdUnitId))
+            buildConfigField("boolean", "IS_DEV_ENVIRONMENT", (devAppEnvironment == "dev").toString())
             manifestPlaceholders["admobAppId"] = devAdmobIds.appId
         }
     }

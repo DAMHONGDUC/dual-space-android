@@ -2,6 +2,9 @@ package com.dd.dual.space.features.workspace.presentation.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -51,6 +54,33 @@ class GameLibraryTest {
         composeRule.onNodeWithText(context.getString(R.string.add_game)).performClick()
 
         assertTrue(addRequested)
+    }
+
+    @Test
+    fun devEnvironmentShowsDevVersionTagOnlyWhenEnabled() {
+        var isDevEnvironment by mutableStateOf(true)
+
+        composeRule.setContent {
+            MaterialTheme {
+                gameLibrary(
+                    sessions = emptyList(),
+                    profileStatus = ProfileProvisioningStatus.alreadyCreated,
+                    contentPadding = PaddingValues(),
+                    onLaunch = {},
+                    onAdd = {},
+                    onDeleteGame = {},
+                    onCreateProfile = {},
+                    onOpenAndroidSettings = {},
+                    onHelp = {},
+                    onSettings = {},
+                    isDevEnvironment = isDevEnvironment,
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("dev_version_tag").assertIsDisplayed()
+        isDevEnvironment = false
+        composeRule.onNodeWithTag("dev_version_tag").assertDoesNotExist()
     }
 
     @Test
