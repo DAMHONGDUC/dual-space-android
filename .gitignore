@@ -12,3 +12,9 @@ externalNativeBuild/
 gradle/gradle-daemon-jvm.properties
 tools/play_test_companion/data/
 __pycache__/
+
+# Release signing: keystore and passwords stay local; only the example is committed.
+env/*
+!env/keystore.properties.example
+*.jks
+*.keystore
