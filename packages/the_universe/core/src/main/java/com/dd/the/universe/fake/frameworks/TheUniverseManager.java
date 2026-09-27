@@ -2,6 +2,7 @@ package com.dd.the.universe.fake.frameworks;
 
 import android.os.IBinder;
 import android.os.IInterface;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.lang.reflect.ParameterizedType;
@@ -15,7 +16,7 @@ import com.dd.the.universe.utils.Reflector;
 public abstract class TheUniverseManager<Service extends IInterface> {
     public static final String TAG = "TheUniverseManager";
 
-    private Service mService;
+    private volatile Service mService;
     private final AtomicBoolean mServiceCreationFailed = new AtomicBoolean(false);
     private long mLastRetryTime = 0;
     private long mLastServiceCreationTime = 0;
@@ -29,10 +30,10 @@ public abstract class TheUniverseManager<Service extends IInterface> {
 
     protected abstract String getServiceName();
 
-    public Service getService() {
+    public synchronized Service getService() {
         
         if (mServiceCreationFailed.get()) {
-            long currentTime = System.currentTimeMillis();
+            long currentTime = SystemClock.elapsedRealtime();
             if (currentTime - mLastRetryTime < RETRY_TIMEOUT_MS) {
                 Log.d(TAG, "Skipping service creation for " + getServiceName() + " due to recent failure");
                 return null;
@@ -41,12 +42,13 @@ public abstract class TheUniverseManager<Service extends IInterface> {
             mServiceCreationFailed.set(false);
         }
 
-        if (mService != null && mService.asBinder().pingBinder() && mService.asBinder().isBinderAlive()) {
+        if (mService != null && mService.asBinder().isBinderAlive()) {
             return mService;
         }
+        mService = null;
 
         
-        long currentTime = System.currentTimeMillis();
+        long currentTime = SystemClock.elapsedRealtime();
         if (currentTime - mLastServiceCreationTime < MIN_SERVICE_CREATION_INTERVAL_MS) {
             Log.d(TAG, "Rate limiting service creation for " + getServiceName());
             return mService; 
@@ -101,13 +103,17 @@ public abstract class TheUniverseManager<Service extends IInterface> {
                             } catch (Exception e) {
                                 Log.w(TAG, "Error unlinking death recipient for " + getServiceName(), e);
                             }
-                            mService = null;
+                            synchronized (TheUniverseManager.this) {
+                                if (mService == serviceRef) mService = null;
+                            }
                             Log.w(TAG, "Service died: " + getServiceName());
                         }
                     }, 0);
                 } catch (Exception e) {
                     Log.w(TAG, "Error linking death recipient for " + getServiceName(), e);
-                    
+                    mService = null;
+                    markServiceCreationFailed();
+                    return null;
                 }
                 
                 Log.d(TAG, "Successfully created service: " + getServiceName());
@@ -119,7 +125,7 @@ public abstract class TheUniverseManager<Service extends IInterface> {
             }
             
             return mService;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error creating service for " + getServiceName(), e);
             markServiceCreationFailed();
             return null;
@@ -128,22 +134,24 @@ public abstract class TheUniverseManager<Service extends IInterface> {
 
     private void markServiceCreationFailed() {
         mServiceCreationFailed.set(true);
-        mLastRetryTime = System.currentTimeMillis();
+        mLastRetryTime = SystemClock.elapsedRealtime();
     }
     
     
-    public void clearServiceCache() {
+    public synchronized void clearServiceCache() {
         mService = null;
+        mServiceCreationFailed.set(false);
+        mLastServiceCreationTime = 0;
         Log.d(TAG, "Cleared service cache for " + getServiceName());
     }
     
     
-    public boolean isServiceHealthy() {
+    public synchronized boolean isServiceHealthy() {
         if (mService == null) {
             return false;
         }
         try {
-            return mService.asBinder().pingBinder() && mService.asBinder().isBinderAlive();
+            return mService.asBinder().isBinderAlive();
         } catch (Exception e) {
             Log.w(TAG, "Service health check failed for " + getServiceName(), e);
             return false;
