@@ -17,7 +17,7 @@
   <section class="card" style="margin-top:16px"><h2>Lịch sử tự động</h2><table><thead><tr><th>Thời gian</th><th>Thiết bị</th><th>Kết quả</th><th>Chi tiết</th></tr></thead><tbody id="runs"></tbody></table></section>
 </main><script>
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function action(path,body){await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});await refresh()}
+async function action(path,body){await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Companion-Request':'1'},body:body?JSON.stringify(body):undefined});await refresh()}
 function duration(seconds){if(!seconds)return '0 ngày';const d=Math.floor(seconds/86400),h=Math.floor(seconds%86400/3600),m=Math.floor(seconds%3600/60);return `${d} ngày ${h} giờ ${m} phút`}
 async function addTester(event){event.preventDefault();await action('/api/testers',{label:document.querySelector('#tester-label').value,opted_in_at:document.querySelector('#tester-date').value,notes:document.querySelector('#tester-notes').value});event.target.reset()}
 async function removeTester(id){await action(`/api/testers/${id}`)}

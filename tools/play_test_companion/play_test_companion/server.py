@@ -11,6 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
+from .request_guard import reject_reason
 from .service import CompanionService
 
 LOGGER = logging.getLogger(__name__)
@@ -25,6 +26,8 @@ class CompanionHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         LOGGER.info("http_get path=%s", path)
+        if self._rejected("GET"):
+            return
         if path == "/api/status":
             self._json(self.service.status())
             return
@@ -39,6 +42,8 @@ class CompanionHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         path = urlparse(self.path).path
         LOGGER.info("http_post path=%s", path)
+        if self._rejected("POST"):
+            return
         try:
             if path == "/api/campaign/start":
                 self.service.start_campaign()
@@ -60,6 +65,15 @@ class CompanionHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format: str, *args: object) -> None:
         LOGGER.info("http_access message=%s", format % args)
+
+    def _rejected(self, method: str) -> bool:
+        reason = reject_reason(method, self.headers, PORT)
+        if reason is None:
+            return False
+        LOGGER.warning("http_rejected method=%s reason=%s", method, reason)
+        status = HTTPStatus.REQUEST_ENTITY_TOO_LARGE if reason == "body_too_large" else HTTPStatus.FORBIDDEN
+        self.send_error(status)
+        return True
 
     def _read_json(self) -> dict[str, object]:
         length = int(self.headers.get("Content-Length", "0"))

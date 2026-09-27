@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .device_checks import crash_detected, is_foreground, package_installed, parse_pid
 from .domain import AppProfile
 
 LOGGER = logging.getLogger(__name__)
@@ -39,10 +40,13 @@ class AdbRunner:
         error: str | None = None
         LOGGER.info("device_test_start serial=%s package=%s", serial, self._profile.package_name)
         try:
-            packages = self._adb([serial], "shell", "pm", "list", "packages", self._profile.package_name).stdout
-            checks["installed"] = f"package:{self._profile.package_name}" in packages
+            package_name = self._profile.package_name
+            packages = self._adb([serial], "shell", "pm", "list", "packages", package_name).stdout
+            checks["installed"] = package_installed(packages, package_name)
             if not checks["installed"]:
                 raise RuntimeError("Package is not installed on the device")
+            # Start from empty crash and event buffers so older failures cannot pass or fail this run.
+            self._adb([serial], "logcat", "-b", "all", "-c")
 
             launch = self._adb(
                 [serial], "shell", "monkey", "-p", self._profile.package_name,
@@ -51,8 +55,10 @@ class AdbRunner:
             checks["launch_command"] = launch.returncode == 0
             time.sleep(self._profile.launch_wait_seconds)
 
-            foreground = self._adb([serial], "shell", "dumpsys", "window", "windows").stdout
-            checks["foreground"] = self._profile.package_name in foreground
+            foreground = self._adb([serial], "shell", "dumpsys", "window").stdout
+            checks["foreground"] = is_foreground(foreground, package_name)
+            launched_pid = parse_pid(self._adb([serial], "shell", "pidof", package_name, allow_failure=True).stdout)
+            checks["process_started"] = launched_pid is not None
 
             monkey = self._adb(
                 [serial], "shell", "monkey", "-p", self._profile.package_name,
@@ -65,12 +71,13 @@ class AdbRunner:
             screenshot_path.write_bytes(screenshot.stdout)
             checks["screenshot"] = screenshot_path.stat().st_size > 0
 
-            crash_log = self._adb(
-                [serial], "logcat", "-d", "-t", "500", "AndroidRuntime:E", "*:S",
-                allow_failure=True,
-            ).stdout
-            (artifact_directory / "crash.log").write_text(crash_log, encoding="utf-8")
-            checks["no_fatal_exception"] = "FATAL EXCEPTION" not in crash_log
+            # A failed log read is an unknown result, which must not count as a pass.
+            crash_log = self._adb([serial], "logcat", "-d", "-b", "crash").stdout
+            event_log = self._adb([serial], "logcat", "-d", "-b", "events", "-s", "am_anr").stdout
+            (artifact_directory / "crash.log").write_text(crash_log + event_log, encoding="utf-8")
+            checks["no_crash_or_anr"] = not crash_detected(crash_log + event_log, package_name)
+            final_pid = parse_pid(self._adb([serial], "shell", "pidof", package_name, allow_failure=True).stdout)
+            checks["same_process_alive"] = launched_pid is not None and final_pid == launched_pid
         except Exception as exception:
             LOGGER.exception("device_test_failed serial=%s", serial)
             error = str(exception)
