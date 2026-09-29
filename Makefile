@@ -23,8 +23,13 @@ setup: ## Fetch the script-tools submodule after cloning
 tools-update: ## Pull the latest script-tools; commit the new submodule pointer afterwards
 	git submodule update --init --remote $(SCRIPT_TOOLS)
 
-release: aab apk ## Signed release AAB and APK into Release/
+# Sub-make so each flavor runs aab and apk again, even when both targets are given at once.
+release-dev: ## Signed dev AAB and APK into Release/
+	$(MAKE) aab apk FLAVOR=dev
 
+release-prod: ## Signed prod AAB and APK into Release/
+	$(MAKE) aab apk FLAVOR=prod
+	
 guest-e2e: ## Install the guest fixture and run the engine end-to-end tests on the device
 	scripts/run_guest_e2e.sh
 
