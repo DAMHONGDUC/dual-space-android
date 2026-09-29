@@ -29,7 +29,7 @@ Shared scripts come from the `packages/script-tools` submodule; fetch it after c
 make setup
 ```
 
-Run `make` to list every target (release builds, end-to-end tests, submodule update).
+Run `make` to list every target: `build`, `install`, `test` (`TEST=<ClassName>` for one class), `lint` and the release builds come from `packages/script-tools/android/android.mk` for the `DevDebug` variant; `guest-e2e`, `native-io-test` and `tools-update` are this project's own.
 
 Local secrets live in the ignored `env/` directory:
 
@@ -126,12 +126,12 @@ Before every release:
 Build the signed release into `Release/` (clean build, unit tests, signature check) with the shared scripts in the `packages/script-tools` submodule:
 
 ```sh
-make release-aab   # Release/dual-space-prod-<versionName>-<versionCode>.aab for Google Play
-make release-apk   # Release/dual-space-prod-<versionName>-<versionCode>.apk for direct install
-make release       # both
+make aab       # Release/dual-space-prod-<versionName>-<versionCode>.aab for Google Play
+make apk       # Release/dual-space-prod-<versionName>-<versionCode>.apk for direct install
+make release   # both
 ```
 
-Add `FLAVOR=dev` (e.g. `make release-apk FLAVOR=dev`) to build the dev flavor. Project-specific settings (app name, flavors, unit test tasks, version and signing files) live in `script-tools.properties`. `ndk-build` cannot handle spaces in paths, so from a path like `.../Jetpack Compose/...` the scripts build in a temporary copy and still write to this checkout's `Release/`.
+Add `FLAVOR=dev` (e.g. `make apk FLAVOR=dev`) to build the dev flavor. Project-specific settings (app name, flavors, unit test tasks, version and signing files) live in `script-tools.properties`. `ndk-build` cannot handle spaces in paths, so from a path like `.../Jetpack Compose/...` the scripts build in a temporary copy and still write to this checkout's `Release/`.
 
 Or build the Play release bundle with Gradle only:
 
