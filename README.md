@@ -109,7 +109,7 @@ Reports are written under `app/build/reports/`.
 
 Before every release:
 
-1. Bump `versionCode` and `versionName` in `version.properties`.
+1. Bump `versionCode` and `versionName` in `env/version.properties`.
 2. Provide production AdMob configuration through the protected release environment; `prodRelease` fails while any ID is missing or still a Google test ID.
 3. Confirm the AdMob app and banner-ad unit belong to the production package.
 4. Run unit tests, connected UI tests, `scripts/run_guest_e2e.sh`, `scripts/release_smoke.sh`, and lint.

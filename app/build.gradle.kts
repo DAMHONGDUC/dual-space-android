@@ -16,15 +16,15 @@ fun envProperties(fileName: String): Properties = Properties().apply {
 fun flavorEnvironment(flavor: String): Properties = envProperties("env.$flavor.properties")
 
 val versionProperties: Properties = Properties().apply {
-    rootProject.file("version.properties").inputStream().use { stream -> load(stream) }
+    rootProject.file("env/version.properties").inputStream().use { stream -> load(stream) }
 }
 
 fun versionValue(name: String): String =
     versionProperties.getProperty(name)?.trim()?.takeIf { value -> value.isNotEmpty() }
-        ?: throw GradleException("$name is missing in version.properties")
+        ?: throw GradleException("$name is missing in env/version.properties")
 
 val appVersionCode: Int = versionValue("versionCode").toIntOrNull()
-    ?: throw GradleException("versionCode in version.properties must be a whole number")
+    ?: throw GradleException("versionCode in env/version.properties must be a whole number")
 val appVersionName: String = versionValue("versionName")
 
 // Blank values count as unset so an env file with empty keys still builds with the fallback.

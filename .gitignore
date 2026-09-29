@@ -12,7 +12,8 @@ gradle/gradle-daemon-jvm.properties
 tools/play_test_companion/data/
 __pycache__/
 
-# Local env files and signing keys stay out of Git.
-env/
+# Local env files and signing keys stay out of Git; only the shared app version is committed.
+env/*
+!env/version.properties
 *.jks
 *.keystore

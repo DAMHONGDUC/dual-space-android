@@ -47,8 +47,8 @@ if [ ! -f "$bundle" ]; then
 fi
 
 mkdir -p "$output_dir"
-version_name="$(grep -E '^[[:space:]]*versionName[[:space:]]*=' "$root/version.properties" | tail -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]+$//')"
-version_code="$(grep -E '^[[:space:]]*versionCode[[:space:]]*=' "$root/version.properties" | tail -1 | sed -E 's/[^0-9]//g')"
+version_name="$(grep -E '^[[:space:]]*versionName[[:space:]]*=' "$root/env/version.properties" | tail -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]+$//')"
+version_code="$(grep -E '^[[:space:]]*versionCode[[:space:]]*=' "$root/env/version.properties" | tail -1 | sed -E 's/[^0-9]//g')"
 result="$output_dir/dual-space-${flavor}-${version_name}-${version_code}.aab"
 
 echo "==> 4/4 Verifying signature"
