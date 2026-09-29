@@ -1,1 +1,1 @@
-<resources><string name="delete_game">गेम हटाएँ</string><string name="delete_game_message">“%1$s” और उसके सभी अकाउंट Dual Space से हटाएँ? इंस्टॉल ऐप और उसका डेटा नहीं मिटेगा।</string></resources>
+<resources><string name="delete_game">ऐप हटाएँ</string><string name="delete_game_message">Dual Space से “%1$s” की सभी कॉपी हटाएँ? उनका डेटा हटा दिया जाएगा। मूल ऐप पर कोई असर नहीं पड़ेगा।</string></resources>

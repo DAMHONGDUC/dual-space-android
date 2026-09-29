@@ -2,12 +2,11 @@
 # Clears every build output, rebuilds from scratch, and produces the Play release bundle (AAB).
 #
 # Usage:
-#   scripts/build_release_aab.sh            # prod bundle for Google Play, ads from env/prod.env.properties
-#   FLAVOR=dev scripts/build_release_aab.sh # dev bundle, ads from env/dev.env.properties; pipeline check only
+#   scripts/build_release_aab.sh            # prod bundle for Google Play, ads from env/env.prod.properties
+#   FLAVOR=dev scripts/build_release_aab.sh # dev bundle, ads from env/env.dev.properties; pipeline check only
 #
-# Signing: reads env/keystore.properties (storeFile, storePassword, keyAlias, keyPassword). Without it the
-# bundle is left unsigned and must be signed before upload. KEYSTORE_PROPERTIES overrides the path.
-# Passwords are passed to jarsigner through the environment, never on the command line.
+# Signing: Gradle signs the bundle with env/key.properties (storeFile, storePassword, keyAlias, keyPassword),
+# storeFile relative to env/ (release.jks). Without it the bundle is left unsigned and must be signed before upload.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -19,29 +18,7 @@ esac
 flavor_title="$(printf '%s' "${flavor:0:1}" | tr '[:lower:]' '[:upper:]')${flavor:1}"
 bundle="$root/app/build/outputs/bundle/${flavor}Release/app-${flavor}-release.aab"
 output_dir="$root/build/release"
-keystore_properties="${KEYSTORE_PROPERTIES:-$root/env/keystore.properties}"
-
-# Reads one key from a .properties file without evaluating it as shell code.
-property() {
-  grep -E "^[[:space:]]*$1[[:space:]]*=" "$keystore_properties" | tail -1 | sed -E "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*//; s/[[:space:]]+$//"
-}
-
-if [ -f "$keystore_properties" ]; then
-  properties_dir="$(cd "$(dirname "$keystore_properties")" && pwd)"
-  store_file="$(property storeFile)"
-  case "$store_file" in
-    /*) UPLOAD_KEYSTORE="$store_file" ;;
-    *) UPLOAD_KEYSTORE="$properties_dir/$store_file" ;;
-  esac
-  UPLOAD_KEY_ALIAS="$(property keyAlias)"
-  UPLOAD_STORE_PASSWORD="$(property storePassword)"
-  UPLOAD_KEY_PASSWORD="$(property keyPassword)"
-  export UPLOAD_STORE_PASSWORD UPLOAD_KEY_PASSWORD
-  if [ ! -f "$UPLOAD_KEYSTORE" ]; then
-    echo "Keystore not found: $UPLOAD_KEYSTORE (from $keystore_properties)" >&2
-    exit 1
-  fi
-fi
+key_properties="$root/env/key.properties"
 
 if [ -z "${JAVA_HOME:-}" ] && [ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]; then
   export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
@@ -74,20 +51,13 @@ version_name="$(grep -E '^[[:space:]]*versionName[[:space:]]*=' "$root/env/versi
 version_code="$(grep -E '^[[:space:]]*versionCode[[:space:]]*=' "$root/env/version.properties" | tail -1 | sed -E 's/[^0-9]//g')"
 result="$output_dir/dual-space-${flavor}-${version_name}-${version_code}.aab"
 
-echo "==> 4/4 Signing and verifying"
-if [ -n "${UPLOAD_KEYSTORE:-}" ]; then
-  : "${UPLOAD_KEY_ALIAS:?keyAlias is missing in $keystore_properties}"
-  : "${UPLOAD_STORE_PASSWORD:?storePassword is missing in $keystore_properties}"
-  : "${UPLOAD_KEY_PASSWORD:?keyPassword is missing in $keystore_properties}"
-  "$jarsigner" -keystore "$UPLOAD_KEYSTORE" \
-    -storepass:env UPLOAD_STORE_PASSWORD -keypass:env UPLOAD_KEY_PASSWORD \
-    -sigalg SHA256withRSA -digestalg SHA-256 \
-    -signedjar "$result" "$bundle" "$UPLOAD_KEY_ALIAS" >/dev/null
+echo "==> 4/4 Verifying signature"
+cp "$bundle" "$result"
+if [ -f "$key_properties" ]; then
   "$jarsigner" -verify "$result" >/dev/null
-  echo "Signed with upload key alias: $UPLOAD_KEY_ALIAS"
+  echo "Signed with the release key from $key_properties"
 else
-  cp "$bundle" "$result"
-  echo "WARNING: $keystore_properties not found; the bundle is UNSIGNED and cannot be uploaded to Play yet." >&2
+  echo "WARNING: $key_properties not found; the bundle is UNSIGNED and cannot be uploaded to Play yet." >&2
 fi
 
 echo

@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -49,7 +49,7 @@ fun emptyGamePane(onAddGame: () -> Unit, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8, Alignment.CenterVertically),
         ) {
-            Icon(Icons.Filled.SportsEsports, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Icon(Icons.Filled.Apps, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Text(stringResource(R.string.no_game_selected), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.select_game_description), color = MaterialTheme.colorScheme.onSurfaceVariant)
             Button(onClick = onAddGame) { Text(stringResource(R.string.add_game)) }
@@ -131,7 +131,7 @@ private fun gameStage(modifier: Modifier, gameName: String, compact: Boolean) {
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.SportsEsports, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.Apps, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }
             Text(gameName, style = MaterialTheme.typography.titleSmall)
             if (!compact) {

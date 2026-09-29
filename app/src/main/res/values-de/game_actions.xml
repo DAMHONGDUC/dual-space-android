@@ -1,1 +1,1 @@
-<resources><string name="delete_game">Spiel entfernen</string><string name="delete_game_message">„%1$s“ und alle Konten aus Dual Space entfernen? Die installierte App und ihre Daten bleiben erhalten.</string></resources>
+<resources><string name="delete_game">App entfernen</string><string name="delete_game_message">Alle Kopien von „%1$s“ aus Dual Space entfernen? Ihre App-Daten werden gelöscht. Die Original-App ist nicht betroffen.</string></resources>
