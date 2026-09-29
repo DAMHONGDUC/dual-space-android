@@ -115,7 +115,20 @@ Before every release:
 4. Run unit tests, connected UI tests, `scripts/run_guest_e2e.sh`, `scripts/release_smoke.sh`, and lint.
 5. Review [store readiness](docs/store-readiness.md) and the [Google Play launch plan](docs/google-play-launch-plan.md).
 
-Build the Play release bundle:
+Build the signed release into `Release/` (clean build, unit tests, signature check):
+
+```sh
+scripts/build_release_aab.sh   # Release/dual-space-prod-<versionName>-<versionCode>.aab for Google Play
+scripts/build_release_apk.sh   # Release/dual-space-prod-<versionName>-<versionCode>.apk for direct install
+```
+
+```sh
+scripts/build_release_aab.sh && scripts/build_release_apk.sh
+```
+
+Prefix either with `FLAVOR=dev` to build the dev flavor. `ndk-build` cannot handle spaces in paths, so from a path like `.../Jetpack Compose/...` the scripts build in a temporary copy and still write to this checkout's `Release/`.
+
+Or build the Play release bundle with Gradle only:
 
 ```sh
 ./gradlew :app:bundleProdRelease
