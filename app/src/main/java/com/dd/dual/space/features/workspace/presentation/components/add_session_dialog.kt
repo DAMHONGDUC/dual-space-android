@@ -5,9 +5,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -68,7 +68,7 @@ fun addSessionDialog(
                                     shape = RoundedCornerShape(ParallelAppDimensions.space12),
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Filled.SportsEsports,
+                                        imageVector = Icons.Filled.Apps,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.padding(ParallelAppDimensions.space12),
@@ -107,7 +107,7 @@ fun addSessionDialog(
                                 verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8),
                             ) {
                                 Icon(
-                                    imageVector = Icons.Filled.SportsEsports,
+                                    imageVector = Icons.Filled.Apps,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(ParallelAppDimensions.dialogIconContainer),

@@ -11,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -402,7 +402,7 @@ private fun gameIcon(packageName: String) {
         color = MaterialTheme.colorScheme.primaryContainer,
     ) {
         if (bitmap == null) {
-            Icon(Icons.Filled.SportsEsports, null, modifier = Modifier.padding(ParallelAppDimensions.space16))
+            Icon(Icons.Filled.Apps, null, modifier = Modifier.padding(ParallelAppDimensions.space16))
         } else {
             Image(BitmapPainter(bitmap), null, modifier = Modifier.fillMaxSize())
         }
@@ -432,7 +432,7 @@ private fun emptyLibrary(onAdd: () -> Unit, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(ParallelAppDimensions.space8, Alignment.CenterVertically),
     ) {
-        Icon(Icons.Filled.SportsEsports, null, Modifier.size(ParallelAppDimensions.emptyIcon), MaterialTheme.colorScheme.primary)
+        Icon(Icons.Filled.Apps, null, Modifier.size(ParallelAppDimensions.emptyIcon), MaterialTheme.colorScheme.primary)
         Text(stringResource(R.string.empty_library_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.empty_library_description), color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         Button(onClick = onAdd) {

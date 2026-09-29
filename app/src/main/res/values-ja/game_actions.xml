@@ -1,1 +1,1 @@
-<resources><string name="delete_game">ゲームを削除</string><string name="delete_game_message">「%1$s」とすべてのアカウントをDual Spaceから削除しますか？インストール済みアプリとデータは削除されません。</string></resources>
+<resources><string name="delete_game">アプリを削除</string><string name="delete_game_message">「%1$s」のすべてのコピーを Dual Space から削除しますか？データも削除されます。元のアプリには影響しません。</string></resources>
