@@ -23,6 +23,14 @@ In Android Studio, set **Settings → Build, Execution, Deployment → Build Too
 
 ## Local setup
 
+Shared scripts come from the `packages/script-tools` submodule; fetch it after cloning:
+
+```sh
+make setup
+```
+
+Run `make` to list every target (release builds, end-to-end tests, submodule update).
+
 Local secrets live in the ignored `env/` directory:
 
 | File | Used for |
@@ -112,21 +120,18 @@ Before every release:
 1. Bump `versionCode` and `versionName` in `env/version.properties`.
 2. Provide production AdMob configuration through the protected release environment; `prodRelease` fails while any ID is missing or still a Google test ID.
 3. Confirm the AdMob app and banner-ad unit belong to the production package.
-4. Run unit tests, connected UI tests, `scripts/run_guest_e2e.sh`, `scripts/release_smoke.sh`, and lint.
+4. Run unit tests, connected UI tests, `make guest-e2e`, and lint.
 5. Review [store readiness](docs/store-readiness.md) and the [Google Play launch plan](docs/google-play-launch-plan.md).
 
-Build the signed release into `Release/` (clean build, unit tests, signature check):
+Build the signed release into `Release/` (clean build, unit tests, signature check) with the shared scripts in the `packages/script-tools` submodule:
 
 ```sh
-scripts/build_release_aab.sh   # Release/dual-space-prod-<versionName>-<versionCode>.aab for Google Play
-scripts/build_release_apk.sh   # Release/dual-space-prod-<versionName>-<versionCode>.apk for direct install
+make release-aab   # Release/dual-space-prod-<versionName>-<versionCode>.aab for Google Play
+make release-apk   # Release/dual-space-prod-<versionName>-<versionCode>.apk for direct install
+make release       # both
 ```
 
-```sh
-scripts/build_release_aab.sh && scripts/build_release_apk.sh
-```
-
-Prefix either with `FLAVOR=dev` to build the dev flavor. `ndk-build` cannot handle spaces in paths, so from a path like `.../Jetpack Compose/...` the scripts build in a temporary copy and still write to this checkout's `Release/`.
+Add `FLAVOR=dev` (e.g. `make release-apk FLAVOR=dev`) to build the dev flavor. Project-specific settings (app name, flavors, unit test tasks, version and signing files) live in `script-tools.properties`. `ndk-build` cannot handle spaces in paths, so from a path like `.../Jetpack Compose/...` the scripts build in a temporary copy and still write to this checkout's `Release/`.
 
 Or build the Play release bundle with Gradle only:
 
