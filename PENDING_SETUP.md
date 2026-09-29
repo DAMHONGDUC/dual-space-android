@@ -5,9 +5,9 @@ The app is free and funded by a banner ad. There is no sign-in, account, or purc
 ## AdMob
 
 - Create the Android app and one banner ad unit in the publisher's AdMob account.
-- Put the production IDs in `env/prod.env.properties` or protected Gradle properties: `ADMOB_APP_ID` and `ADMOB_BANNER_AD_UNIT_ID`. `prodRelease` fails while either is missing or still a Google test ID.
+- Put the production IDs in `env/env.prod.properties` or protected Gradle properties: `ADMOB_APP_ID` and `ADMOB_BANNER_AD_UNIT_ID`. `prodRelease` fails while either is missing or still a Google test ID.
 - Publish the GDPR/UMP consent message in AdMob Privacy & messaging; the app shows it before requesting ads.
-- Use Google's test IDs (the fallback when `env/dev.env.properties` is empty) during development; never click production ads while testing.
+- Use Google's test IDs (the fallback when `env/env.dev.properties` is empty) during development; never click production ads while testing.
 
 ## Store and release
 

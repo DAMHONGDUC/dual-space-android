@@ -5,21 +5,26 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-// Each flavor reads its own env file: env/dev.env.properties or env/prod.env.properties.
-fun flavorEnvironment(flavor: String): Properties = Properties().apply {
-    rootProject.file("env/$flavor.env.properties").takeIf { file -> file.isFile }?.inputStream()?.use { stream -> load(stream) }
+// Local secrets live in env/ (git-ignored): env.<flavor>.properties, key.properties, release.jks, debug.keystore.
+val envDirectory: File = rootProject.file("env")
+
+fun envProperties(fileName: String): Properties = Properties().apply {
+    envDirectory.resolve(fileName).takeIf { file -> file.isFile }?.inputStream()?.use { stream -> load(stream) }
 }
 
+// Each flavor reads its own env file: env/env.dev.properties or env/env.prod.properties.
+fun flavorEnvironment(flavor: String): Properties = envProperties("env.$flavor.properties")
+
 val versionProperties: Properties = Properties().apply {
-    rootProject.file("env/version.properties").inputStream().use { stream -> load(stream) }
+    rootProject.file("version.properties").inputStream().use { stream -> load(stream) }
 }
 
 fun versionValue(name: String): String =
     versionProperties.getProperty(name)?.trim()?.takeIf { value -> value.isNotEmpty() }
-        ?: throw GradleException("$name is missing in env/version.properties")
+        ?: throw GradleException("$name is missing in version.properties")
 
 val appVersionCode: Int = versionValue("versionCode").toIntOrNull()
-    ?: throw GradleException("versionCode in env/version.properties must be a whole number")
+    ?: throw GradleException("versionCode in version.properties must be a whole number")
 val appVersionName: String = versionValue("versionName")
 
 // Blank values count as unset so an env file with empty keys still builds with the fallback.
@@ -52,7 +57,7 @@ fun appEnvironment(flavor: String): String {
     val environment = flavorEnvironment(flavor).getProperty("ENV")?.trim()?.lowercase()?.takeIf { value -> value.isNotEmpty() }
         ?: return flavor
     if (environment !in supportedAppEnvironments) {
-        throw GradleException("ENV in env/$flavor.env.properties must be dev or prod")
+        throw GradleException("ENV in env/env.$flavor.properties must be dev or prod")
     }
     return environment
 }
@@ -62,9 +67,9 @@ val devAppEnvironment = appEnvironment("dev")
 
 // Reports only key names so secret values never reach build logs.
 val releaseConfigurationProblems: List<String> = buildList {
-    if (prodAdmobIds.bannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID in env/prod.env.properties is missing or a Google test ID")
-    if (prodAdmobIds.appId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID in env/prod.env.properties is missing or a Google test ID")
-    if (prodAppEnvironment != "prod") add("ENV in env/prod.env.properties must be prod for a Play release")
+    if (prodAdmobIds.bannerAdUnitId.startsWith(admobTestPublisherPrefix)) add("ADMOB_BANNER_AD_UNIT_ID in env/env.prod.properties is missing or a Google test ID")
+    if (prodAdmobIds.appId.startsWith(admobTestPublisherPrefix)) add("ADMOB_APP_ID in env/env.prod.properties is missing or a Google test ID")
+    if (prodAppEnvironment != "prod") add("ENV in env/env.prod.properties must be prod for a Play release")
 }
 
 val validateProdReleaseConfiguration by tasks.registering {
@@ -81,6 +86,18 @@ tasks.configureEach {
     if (name == "preProdReleaseBuild") dependsOn(validateProdReleaseConfiguration)
 }
 
+// Release signing reads env/key.properties (storeFile relative to env/); without it release builds stay unsigned.
+val releaseKeyProperties: Properties = envProperties("key.properties")
+
+fun releaseKeyValue(name: String): String =
+    releaseKeyProperties.getProperty(name)?.trim()?.takeIf { value -> value.isNotEmpty() }
+        ?: throw GradleException("$name is missing in env/key.properties")
+
+val hasReleaseKey: Boolean = !releaseKeyProperties.isEmpty
+
+// A shared env/debug.keystore keeps the debug signature stable across machines; without it AGP uses ~/.android.
+val sharedDebugKeystore: File = envDirectory.resolve("debug.keystore")
+
 fun quotedBuildConfig(value: String): String = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
 android {
@@ -95,6 +112,25 @@ android {
         versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        getByName("debug") {
+            if (sharedDebugKeystore.isFile) {
+                storeFile = sharedDebugKeystore
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = envDirectory.resolve(releaseKeyValue("storeFile"))
+                storePassword = releaseKeyValue("storePassword")
+                keyAlias = releaseKeyValue("keyAlias")
+                keyPassword = releaseKeyValue("keyPassword")
+            }
+        }
     }
 
     flavorDimensions += "distribution"
@@ -133,6 +169,7 @@ android {
 
     buildTypes {
         release {
+            if (hasReleaseKey) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

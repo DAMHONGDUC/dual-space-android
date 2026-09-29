@@ -23,12 +23,19 @@ In Android Studio, set **Settings → Build, Execution, Deployment → Build Too
 
 ## Local setup
 
-Each flavor reads its AdMob IDs from its own ignored env file:
+Local secrets live in the ignored `env/` directory:
 
-- `env/dev.env.properties` for `devDebug` and `devRelease`
-- `env/prod.env.properties` for `prodDebug` and `prodRelease`
+| File | Used for |
+| --- | --- |
+| `env/env.dev.properties` | AdMob IDs and `ENV` for `devDebug` and `devRelease` |
+| `env/env.prod.properties` | AdMob IDs and `ENV` for `prodDebug` and `prodRelease` |
+| `env/key.properties` | Release signing: `storeFile`, `storePassword`, `keyAlias`, `keyPassword` |
+| `env/release.jks` | Play upload keystore named by `storeFile` (resolved relative to `env/`) |
+| `env/debug.keystore` | Shared debug key (`android` / `androiddebugkey`) so every machine signs debug builds the same way |
 
-Both files use the same keys:
+Every file is optional: without `key.properties` release builds are unsigned, and without `debug.keystore` Gradle uses `~/.android/debug.keystore`.
+
+Both env files use the same keys:
 
 ```properties
 ENV=
@@ -36,9 +43,9 @@ ADMOB_APP_ID=
 ADMOB_BANNER_AD_UNIT_ID=
 ```
 
-`ENV` is `dev` or `prod`; left empty it defaults to the flavor name. `ENV=dev` shows a "Dev version" tag next to the app name, and `prodRelease` fails unless `env/prod.env.properties` has `ENV` empty or `prod`.
+`ENV` is `dev` or `prod`; left empty it defaults to the flavor name. `ENV=dev` shows a "Dev version" tag next to the app name, and `prodRelease` fails unless `env/env.prod.properties` has `ENV` empty or `prod`.
 
-Empty values fall back to Google's test IDs, which is fine for debug builds; `prodRelease` fails until `env/prod.env.properties` holds production IDs. Gradle/CI properties take precedence over both files, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
+Empty values fall back to Google's test IDs, which is fine for debug builds; `prodRelease` fails until `env/env.prod.properties` holds production IDs. Gradle/CI properties take precedence over both files, so CI can supply the same keys with `-PKEY=value` or its protected Gradle properties file.
 
 ## Run from Android Studio
 
@@ -102,7 +109,7 @@ Reports are written under `app/build/reports/`.
 
 Before every release:
 
-1. Bump `versionCode` and `versionName` in `env/version.properties`.
+1. Bump `versionCode` and `versionName` in `version.properties`.
 2. Provide production AdMob configuration through the protected release environment; `prodRelease` fails while any ID is missing or still a Google test ID.
 3. Confirm the AdMob app and banner-ad unit belong to the production package.
 4. Run unit tests, connected UI tests, `scripts/run_guest_e2e.sh`, `scripts/release_smoke.sh`, and lint.
@@ -120,7 +127,7 @@ Generated bundle:
 app/build/outputs/bundle/prodRelease/app-prod-release.aab
 ```
 
-The repository does not contain an upload keystore or signing passwords. Configure release signing with protected CI/Gradle credentials, or use Android Studio **Build → Generate Signed App Bundle or APK → Android App Bundle** and select the Play upload key. Never commit the keystore, aliases, or passwords.
+The repository does not contain an upload keystore or signing passwords. Gradle signs release builds with `env/key.properties` and `env/release.jks` when they exist; CI must write both files from protected secrets before building. Never commit the keystore, aliases, or passwords.
 
 Before uploading, verify the signed bundle and inspect the final manifest:
 
