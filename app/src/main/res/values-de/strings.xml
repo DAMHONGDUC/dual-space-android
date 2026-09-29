@@ -19,4 +19,7 @@
     <string name="launch_engine_unavailable">Dual Space konnte seine App-Engine nicht erreichen. Schließe Dual Space und versuche es erneut.</string>
     <string name="copy_install_failed">Diese Kopie konnte nicht vorbereitet werden. Prüfe den freien Speicher und versuche es erneut.</string>
     <string name="launch_timed_out">Die App wurde nicht rechtzeitig geöffnet. Versuche es erneut.</string>
+    <string name="search_apps_hint">Nach Name oder Paket-ID suchen</string>
+    <string name="search_no_results">Keine Apps passen zu „%1$s“</string>
+    <string name="clear_search">Suche löschen</string>
 </resources>

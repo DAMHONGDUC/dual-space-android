@@ -4,7 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -87,6 +89,32 @@ class AddSessionDialogTest {
         composeRule.onNodeWithText(context.getString(R.string.android_settings)).performClick()
         assertTrue(refreshRequested)
         assertTrue(settingsRequested)
+    }
+
+    @Test
+    fun searchFiltersByNameAndPackageId() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val game = InstalledGame(gameName, packageName, ProfileTarget.managed)
+        val other = InstalledGame("Notes", "org.sample.notes", ProfileTarget.managed)
+
+        composeRule.setContent {
+            MaterialTheme {
+                addSessionDialog(
+                    games = listOf(game, other),
+                    onDismiss = {},
+                    onAdd = { _, _ -> },
+                    onRefresh = {},
+                    onOpenSettings = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(appSearchFieldTestTag).performTextInput("org.sample")
+        composeRule.onNodeWithText("Notes").assertIsDisplayed()
+        composeRule.onNodeWithText(gameName).assertDoesNotExist()
+
+        composeRule.onNodeWithTag(appSearchFieldTestTag).performTextInput("zzz")
+        composeRule.onNodeWithText(context.getString(R.string.search_no_results, "org.samplezzz")).assertIsDisplayed()
     }
 
     private companion object {

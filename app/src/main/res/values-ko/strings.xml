@@ -18,4 +18,7 @@
     <string name="launch_engine_unavailable">Dual Space가 앱 엔진에 연결할 수 없습니다. Dual Space를 닫고 다시 시도하세요.</string>
     <string name="copy_install_failed">이 사본을 준비하지 못했습니다. 남은 저장 공간을 확인하고 다시 시도하세요.</string>
     <string name="launch_timed_out">앱이 제시간에 열리지 않았습니다. 다시 시도하세요.</string>
+    <string name="search_apps_hint">이름 또는 패키지 ID로 검색</string>
+    <string name="search_no_results">“%1$s”와(과) 일치하는 앱이 없습니다</string>
+    <string name="clear_search">검색어 지우기</string>
 </resources>

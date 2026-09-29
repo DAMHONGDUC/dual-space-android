@@ -18,4 +18,7 @@
     <string name="launch_engine_unavailable">Dual Space tidak dapat menjangkau mesin aplikasinya. Tutup Dual Space dan coba lagi.</string>
     <string name="copy_install_failed">Salinan ini tidak dapat disiapkan. Periksa ruang penyimpanan lalu coba lagi.</string>
     <string name="launch_timed_out">Aplikasi tidak terbuka tepat waktu. Coba lagi.</string>
+    <string name="search_apps_hint">Cari berdasarkan nama atau ID paket</string>
+    <string name="search_no_results">Tidak ada aplikasi yang cocok dengan “%1$s”</string>
+    <string name="clear_search">Hapus pencarian</string>
 </resources>

@@ -18,4 +18,7 @@
     <string name="launch_engine_unavailable">Dual Space 无法连接其应用引擎。请关闭 Dual Space 后重试。</string>
     <string name="copy_install_failed">无法准备此副本。请检查可用存储空间后重试。</string>
     <string name="launch_timed_out">应用未能及时打开。请重试。</string>
+    <string name="search_apps_hint">按名称或包 ID 搜索</string>
+    <string name="search_no_results">没有与“%1$s”匹配的应用</string>
+    <string name="clear_search">清除搜索</string>
 </resources>

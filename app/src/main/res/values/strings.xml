@@ -138,4 +138,7 @@
     <string name="launch_engine_unavailable">Dual Space could not reach its app engine. Close Dual Space and try again.</string>
     <string name="copy_install_failed">This copy could not be prepared. Check free storage and try again.</string>
     <string name="launch_timed_out">The app did not open in time. Try again.</string>
+    <string name="search_apps_hint">Search by name or package ID</string>
+    <string name="search_no_results">No apps match “%1$s”</string>
+    <string name="clear_search">Clear search</string>
 </resources>

@@ -18,4 +18,7 @@
     <string name="launch_engine_unavailable">Dual Space がアプリエンジンに接続できませんでした。Dual Space を閉じてもう一度お試しください。</string>
     <string name="copy_install_failed">このコピーを準備できませんでした。空き容量を確認してもう一度お試しください。</string>
     <string name="launch_timed_out">アプリが時間内に開きませんでした。もう一度お試しください。</string>
+    <string name="search_apps_hint">名前またはパッケージIDで検索</string>
+    <string name="search_no_results">「%1$s」に一致するアプリはありません</string>
+    <string name="clear_search">検索をクリア</string>
 </resources>

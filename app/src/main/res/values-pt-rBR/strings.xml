@@ -18,4 +18,7 @@
     <string name="launch_engine_unavailable">O Dual Space não conseguiu acessar seu mecanismo de apps. Feche o Dual Space e tente novamente.</string>
     <string name="copy_install_failed">Não foi possível preparar esta cópia. Verifique o armazenamento livre e tente novamente.</string>
     <string name="launch_timed_out">O app não abriu a tempo. Tente novamente.</string>
+    <string name="search_apps_hint">Pesquisar por nome ou ID do pacote</string>
+    <string name="search_no_results">Nenhum app corresponde a “%1$s”</string>
+    <string name="clear_search">Limpar pesquisa</string>
 </resources>

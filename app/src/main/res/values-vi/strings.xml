@@ -137,4 +137,7 @@
     <string name="launch_engine_unavailable">Dual Space không kết nối được với engine chạy ứng dụng. Hãy đóng Dual Space và thử lại.</string>
     <string name="copy_install_failed">Không thể chuẩn bị bản copy này. Hãy kiểm tra dung lượng trống và thử lại.</string>
     <string name="launch_timed_out">Ứng dụng không mở kịp thời. Vui lòng thử lại.</string>
+    <string name="search_apps_hint">Tìm theo tên hoặc package ID</string>
+    <string name="search_no_results">Không có ứng dụng nào khớp “%1$s”</string>
+    <string name="clear_search">Xóa tìm kiếm</string>
 </resources>

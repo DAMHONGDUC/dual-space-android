@@ -19,4 +19,7 @@
     <string name="launch_engine_unavailable">Dual Space n\'a pas pu joindre son moteur d\'applications. Fermez Dual Space et réessayez.</string>
     <string name="copy_install_failed">Impossible de préparer cette copie. Vérifiez l’espace libre et réessayez.</string>
     <string name="launch_timed_out">L\'application ne s\'est pas ouverte à temps. Réessayez.</string>
+    <string name="search_apps_hint">Rechercher par nom ou ID de package</string>
+    <string name="search_no_results">Aucune application ne correspond à « %1$s »</string>
+    <string name="clear_search">Effacer la recherche</string>
 </resources>
